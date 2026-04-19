@@ -10,7 +10,6 @@ const TABS = [
   { id: 'departments', label: '院系设置', icon: '🎓' },
   { id: 'majors', label: '招生专业', icon: '📚' },
   { id: 'contact', label: '联系方式', icon: '📞' },
-  { id: 'translate', label: '官网翻译', icon: '🌐' },
 ]
 
 export default function SchoolDetailPage() {
@@ -378,44 +377,6 @@ export default function SchoolDetailPage() {
               <div className="bg-white rounded-xl p-12 shadow-sm text-center">
                 <div className="text-6xl mb-4">📞</div>
                 <p className="text-gray-500">暂无联系方式信息</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* 官网翻译 Tab */}
-        {activeTab === 'translate' && (
-          <div className="space-y-6">
-            {school.website ? (
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div className="p-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🌐</span>
-                    <div>
-                      <h3 className="font-bold text-gray-900">官网中文翻译</h3>
-                      <p className="text-xs text-gray-500">由 Google Translate 自动翻译</p>
-                    </div>
-                  </div>
-                  <a
-                    href={school.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-                  >
-                    访问原始官网 →
-                  </a>
-                </div>
-                <iframe
-                  src={`https://translate.google.com/translate?sl=ru&tl=zh-CN&u=${encodeURIComponent(school.website)}`}
-                  className="w-full"
-                  style={{ height: '80vh', minHeight: '600px' }}
-                  title="官网翻译"
-                />
-              </div>
-            ) : (
-              <div className="bg-white rounded-xl p-12 shadow-sm text-center">
-                <div className="text-6xl mb-4">🌐</div>
-                <p className="text-gray-500">暂无官网信息</p>
               </div>
             )}
           </div>
