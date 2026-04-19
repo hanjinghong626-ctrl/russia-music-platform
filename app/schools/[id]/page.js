@@ -97,7 +97,7 @@ export default function SchoolDetailPage() {
   }
 
   const basicInfo = details?.basicInfo
-  const is Tchaikovsky = school.name?.includes('柴可夫斯基') || params.id === 'chaikovsky'
+  const isTchaikovsky = school.name?.includes('柴可夫斯基') || params.id === 'chaikovsky'
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -117,7 +117,7 @@ export default function SchoolDetailPage() {
         <div className="container mx-auto px-4">
           <div className="flex items-start gap-6">
             <div className="w-24 h-24 bg-white/20 rounded-xl flex items-center justify-center text-5xl">
-              {is Tchaikovsky ? '🎹' : 
+              {isTchaikovsky ? '🎹' : 
                school.name?.includes('圣彼得堡') ? '🎻' : 
                school.name?.includes('格涅辛') ? '🎷' : '🎵'}
             </div>
