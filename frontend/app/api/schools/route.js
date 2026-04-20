@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server'
-import schoolsData from '../../../data/schools.json'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
 // 直接从本地JSON获取所有院校
 export async function GET() {
   try {
+    const filePath = join(process.cwd(), 'data', 'schools.json')
+    const fileContent = readFileSync(filePath, 'utf8')
+    const schoolsData = JSON.parse(fileContent)
+    
     const items = schoolsData.data?.items || []
     
     const schools = items.map(item => {
@@ -32,6 +37,6 @@ export async function GET() {
     return NextResponse.json(schools)
   } catch (error) {
     console.error('Error:', error)
-    return NextResponse.json([], { status: 500 })
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

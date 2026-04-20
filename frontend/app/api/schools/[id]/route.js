@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server'
-import schoolsData from '../../../../data/schools.json'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
 // 直接从本地JSON获取单个院校
 export async function GET(request, { params }) {
   try {
     const { id } = await params
+    const filePath = join(process.cwd(), 'data', 'schools.json')
+    const fileContent = readFileSync(filePath, 'utf8')
+    const schoolsData = JSON.parse(fileContent)
+    
     const items = schoolsData.data?.items || []
     const item = items.find(i => i.record_id === id)
     
@@ -36,6 +41,6 @@ export async function GET(request, { params }) {
     return NextResponse.json(school)
   } catch (error) {
     console.error('Error:', error)
-    return NextResponse.json({ error: '服务器错误' }, { status: 500 })
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
