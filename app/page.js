@@ -68,6 +68,9 @@ export default async function HomePage() {
             <div className="flex items-center space-x-6">
               <Link href="/" className="text-gray-600 hover:text-gray-900">首页</Link>
               <Link href="/schools" className="text-gray-600 hover:text-gray-900">院校</Link>
+              <Link href="/evaluate" className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                AI评估
+              </Link>
             </div>
           </div>
         </div>
@@ -117,6 +120,69 @@ export default async function HomePage() {
               <div className="text-4xl mb-4">🌍</div>
               <h3 className="font-semibold text-gray-900 mb-2">文化体验</h3>
               <p className="text-gray-600 text-sm">深度体验俄罗斯丰富的音乐与艺术文化</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI评估入口 */}
+      <section className="py-16 bg-gradient-to-br from-purple-50 to-indigo-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <span className="inline-block px-4 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-4">
+              🤖 新功能上线
+            </span>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">免费AI声乐水平评估</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              上传您的演唱音频，AI将分析音准、节奏、音色，并给出俄罗斯留学适配度评估
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-8">
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                  <span className="text-2xl">🤖</span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">AI自动评估（免费）</h3>
+                  <p className="text-sm text-gray-500">即时分析</p>
+                </div>
+              </div>
+              <ul className="space-y-2 text-sm text-gray-600 mb-4">
+                <li className="flex items-center"><span className="mr-2 text-green-500">✓</span> 音准分析</li>
+                <li className="flex items-center"><span className="mr-2 text-green-500">✓</span> 节奏分析</li>
+                <li className="flex items-center"><span className="mr-2 text-green-500">✓</span> 音色评估</li>
+                <li className="flex items-center"><span className="mr-2 text-green-500">✓</span> 留学适配建议</li>
+              </ul>
+              <Link
+                href="/evaluate"
+                className="block text-center bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                立即免费评估
+              </Link>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mr-4">
+                  <span className="text-2xl">👨‍🏫</span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">俄罗斯专家评估（付费）</h3>
+                  <p className="text-sm text-gray-500">24h内微信对接</p>
+                </div>
+              </div>
+              <ul className="space-y-2 text-sm text-gray-600 mb-4">
+                <li className="flex items-center"><span className="mr-2 text-amber-500">✓</span> 声乐技术细节</li>
+                <li className="flex items-center"><span className="mr-2 text-amber-500">✓</span> 咬字与语言正音</li>
+                <li className="flex items-center"><span className="mr-2 text-amber-500">✓</span> 情感表达指导</li>
+                <li className="flex items-center"><span className="mr-2 text-amber-500">✓</span> 个性化学习规划</li>
+              </ul>
+              <Link
+                href="/evaluate?tab=human"
+                className="block text-center border-2 border-amber-600 text-amber-600 py-2.5 rounded-lg hover:bg-amber-50 transition-colors font-medium"
+              >
+                申请专家评估 ¥299
+              </Link>
             </div>
           </div>
         </div>
