@@ -2,6 +2,209 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 字体设置 */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 俄罗斯花纹装饰样式 */
+.russian-pattern {
+  position: relative;
+}
+
+.russian-pattern::before,
+.russian-pattern::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  opacity: 0.3;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+/* 渐变文字 */
+.gradient-text {
+  background: linear-gradient(135deg, #7f1d1d 0%, #b91c1c 50%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 卡片悬浮效果 */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(185, 28, 28, 0.15);
+}
+
+/* 按钮悬浮效果 */
+.btn-elegant {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-elegant::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-elegant:hover::before {
+  left: 100%;
+}
+
+/* 俄式边框装饰 */
+.border-russian {
+  border-image: linear-gradient(
+    to right,
+    #b91c1c 0%,
+    #d97706 25%,
+    #1d4ed8 50%,
+    #d97706 75%,
+    #b91c1c 100%
+  ) 1;
+}
+
+/* 俄罗斯国旗条纹装饰 */
+.flag-stripe {
+  background: linear-gradient(
+    to bottom,
+    #fff 0%,
+    #fff 33.33%,
+    #2563eb 33.33%,
+    #2563eb 66.66%,
+    #dc2626 66.66%,
+    #dc2626 100%
+  );
+}
+
+/* 音符装饰动画 */
+.note-decoration {
+  animation: float 3s ease-in-out infinite;
+}
+
+.note-decoration:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.note-decoration:nth-child(3) {
+  animation-delay: 1s;
+}
+
+/* 卡片边框光晕效果 */
+.glow-border {
+  position: relative;
+}
+
+.glow-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #b91c1c, #1d4ed8, #d97706);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.glow-border:hover::before {
+  opacity: 1;
+}
+
+/* 加载动画 */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.pulse-ring {
+  animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #b91c1c, #991b1b);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #991b1b, #7f1d1d);
+}
+
+/* Tab 切换动画 */
+.tab-content {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 俄式花纹角标 */
+.corner-decoration::before,
+.corner-decoration::after {
+  content: '✦';
+  position: absolute;
+  font-size: 12px;
+  color: #d97706;
+}
+
+.corner-decoration::before {
+  top: 8px;
+  left: 8px;
+}
+
+.corner-decoration::after {
+  bottom: 8px;
+  right: 8px;
+}
+
+/* 标题下划线装饰 */
+.title-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.title-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #b91c1c, #d97706);
+  border-radius: 2px;
+}
+
+/* 响应式字体大小优化 */
+@media (max-width: 640px) {
+  .text-responsive {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
 }

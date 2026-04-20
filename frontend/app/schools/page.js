@@ -45,125 +45,208 @@ export default function SchoolsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 导航栏 */}
-      <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
+      <nav className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl">🎵</span>
-              <span className="font-bold text-gray-900">俄罗斯音乐留学</span>
-            </div>
-            <div className="flex items-center space-x-6">
-              <Link href="/" className="text-gray-600 hover:text-gray-900">首页</Link>
-              <Link href="/schools" className="text-primary-600 font-medium">院校</Link>
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-700 to-primary-800 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+                <span className="text-white text-xl">♪</span>
+              </div>
+              <span className="font-bold text-gray-900 text-lg tracking-tight">俄罗斯音乐留学</span>
+            </Link>
+            <div className="flex items-center space-x-8">
+              <Link href="/" className="text-gray-600 hover:text-primary-700 transition-colors font-medium">
+                首页
+              </Link>
+              <Link href="/schools" className="text-primary-700 font-semibold relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-primary-600 after:to-gold-500">
+                院校
+              </Link>
             </div>
           </div>
         </div>
       </nav>
 
+      {/* 页面头部 */}
+      <div className="bg-gradient-to-br from-primary-800 via-primary-700 to-accent-800 text-white py-12 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <pattern id="headerPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="10" cy="10" r="1.5" fill="#fff"/>
+              <path d="M0 10 L20 10 M10 0 L10 20" stroke="#fff" strokeWidth="0.5"/>
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#headerPattern)"/>
+          </svg>
+        </div>
+        
+        <div className="absolute top-0 right-0 text-[200px] opacity-5 transform translate-x-1/4 -translate-y-1/4">♪</div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <h1 className="text-3xl md:text-4xl font-bold mb-3">俄罗斯音乐学院</h1>
+          <p className="text-white/80 text-lg">探索俄罗斯顶尖音乐学府，开启您的艺术之旅</p>
+        </div>
+      </div>
+
       {/* 页面内容 */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">俄罗斯音乐学院</h1>
-          <p className="text-gray-600">浏览并筛选您感兴趣的俄罗斯音乐院校</p>
+      <main className="container mx-auto px-4 py-10">
+        {/* 搜索和筛选区域 */}
+        <div className="bg-white rounded-2xl shadow-card p-6 mb-8 border border-gray-100">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                placeholder="搜索院校名称..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all bg-gray-50 focus:bg-white"
+              />
+            </div>
+            <div className="w-full md:w-44 relative">
+              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <select
+                value={cityFilter}
+                onChange={(e) => setCityFilter(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl outline-none bg-gray-50 focus:bg-white transition-all appearance-none cursor-pointer"
+              >
+                <option value="">全部城市</option>
+                {cities.map((city) => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
+              </select>
+            </div>
+            {(search || cityFilter) && (
+              <button
+                onClick={() => { setSearch(''); setCityFilter('') }}
+                className="px-5 py-3 text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-xl transition-colors font-medium flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                清除筛选
+              </button>
+            )}
+          </div>
         </div>
 
+        {/* 加载状态 */}
         {loading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+          <div className="flex flex-col items-center justify-center py-24">
+            <div className="relative w-16 h-16 mb-4">
+              <div className="absolute inset-0 border-4 border-primary-200 rounded-full" />
+              <div className="absolute inset-0 border-4 border-primary-600 rounded-full border-t-transparent animate-spin" />
+            </div>
+            <p className="text-gray-500">正在加载院校数据...</p>
           </div>
         )}
 
+        {/* 错误状态 */}
         {error && !loading && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
-            <p className="font-medium">加载失败</p>
-            <p className="text-sm mt-1">{error}</p>
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+              <span className="text-3xl">⚠️</span>
+            </div>
+            <p className="font-medium text-red-800 mb-1">加载失败</p>
+            <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
 
         {!loading && !error && (
           <>
-            <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    placeholder="搜索院校名称..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
-                  />
-                </div>
-                <div className="w-full md:w-40">
-                  <select
-                    value={cityFilter}
-                    onChange={(e) => setCityFilter(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none bg-white"
-                  >
-                    <option value="">全部城市</option>
-                    {cities.map((city) => (
-                      <option key={city} value={city}>{city}</option>
-                    ))}
-                  </select>
-                </div>
-                {(search || cityFilter) && (
-                  <button
-                    onClick={() => { setSearch(''); setCityFilter('') }}
-                    className="px-4 py-2.5 text-gray-600 hover:text-gray-900"
-                  >
-                    清除
-                  </button>
-                )}
-              </div>
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-gray-600">
+                共找到 <span className="font-bold text-primary-600 text-lg">{filteredSchools.length}</span> 所院校
+              </p>
             </div>
 
-            <p className="text-gray-600 mb-6">
-              共找到 <span className="font-semibold text-primary-600">{filteredSchools.length}</span> 所院校
-            </p>
-
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredSchools.map((school) => (
+              {filteredSchools.map((school, index) => (
                 <Link 
                   key={school.id} 
                   href={`/schools/${school.id}`}
-                  className="block bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg hover:border-primary-300 transition-all"
+                  className="group card-hover bg-white rounded-2xl overflow-hidden shadow-card border border-gray-100"
+                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <div className="h-32 bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
-                    <span className="text-6xl">
+                  <div className="h-32 bg-gradient-to-br from-primary-700 via-primary-600 to-accent-700 flex items-center justify-center relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/5" />
+                    <span className="text-6xl relative z-10 group-hover:scale-110 transition-transform duration-300">
                       {school.name.includes('柴可夫斯基') ? '🎹' : 
-                       school.name.includes('圣彼得堡') ? '🎻' : '🎵'}
+                       school.name.includes('圣彼得堡') ? '🎻' : 
+                       school.name.includes('格涅辛') ? '🎷' : '🎵'}
                     </span>
+                    {/* 顶部装饰线 */}
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-400 via-white to-gold-400" />
                   </div>
                   <div className="p-5">
                     <div className="flex flex-wrap gap-2 mb-3">
-                      <span className="px-2 py-1 bg-primary-50 text-primary-700 text-xs rounded">{school.type}</span>
-                      <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">📍 {school.city}</span>
+                      <span className="px-3 py-1 bg-gradient-to-r from-primary-100 to-primary-50 text-primary-700 text-xs rounded-full font-medium">
+                        {school.type}
+                      </span>
+                      <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full flex items-center gap-1">
+                        📍 {school.city}
+                      </span>
                       {school.ranking && (
-                        <span className="px-2 py-1 bg-yellow-50 text-yellow-700 text-xs rounded">QS第{school.ranking}名</span>
+                        <span className="px-3 py-1 bg-gradient-to-r from-gold-100 to-gold-50 text-gold-700 text-xs rounded-full font-medium flex items-center gap-1">
+                          ★ QS第{school.ranking}名
+                        </span>
                       )}
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{school.name}</h3>
-                    <p className="text-sm text-gray-500 mb-2">{school.name_en}</p>
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{school.description}</p>
-                    {school.tuition && <p className="text-sm font-medium text-primary-600">{school.tuition}</p>}
+                    <h3 className="font-bold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors">{school.name}</h3>
+                    <p className="text-sm text-gray-400 mb-3 italic">{school.name_en}</p>
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">{school.description}</p>
+                    {school.tuition && (
+                      <p className="text-sm font-semibold bg-gradient-to-r from-accent-600 to-accent-500 bg-clip-text text-transparent">
+                        {school.tuition}
+                      </p>
+                    )}
+                    <div className="mt-4 flex items-center text-primary-600 font-medium text-sm group-hover:gap-2 transition-all">
+                      <span>查看详情</span>
+                      <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
                   </div>
                 </Link>
               ))}
             </div>
 
             {filteredSchools.length === 0 && (
-              <div className="text-center py-20">
-                <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">未找到匹配的院校</h3>
-                <p className="text-gray-600">尝试调整筛选条件</p>
+              <div className="text-center py-24 bg-white rounded-2xl border border-gray-100">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span className="text-5xl">🔍</span>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">未找到匹配的院校</h3>
+                <p className="text-gray-500 mb-4">尝试调整筛选条件</p>
+                <button
+                  onClick={() => { setSearch(''); setCityFilter('') }}
+                  className="text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  清除所有筛选
+                </button>
               </div>
             )}
           </>
         )}
       </main>
 
-      <footer className="bg-gray-900 text-white py-8 mt-12">
+      {/* 页脚 */}
+      <footer className="bg-gray-900 text-white py-10 mt-12">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-400 text-sm">© 2026 俄罗斯音乐留学平台</p>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center">
+              <span className="text-white text-xl">♪</span>
+            </div>
+            <span className="font-bold">俄罗斯音乐留学平台</span>
+          </div>
+          <p className="text-gray-400 text-sm">© 2026 Russia Music Study Platform. All rights reserved.</p>
         </div>
       </footer>
     </div>
