@@ -20,13 +20,13 @@ function parseMarkdown(markdown) {
   html = html.replace(/^## 摘要\n[\s\S]*?\n---\n/m, '');
   
   // 标题处理
-  html = html.replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold text-stone-800 mt-10 mb-4 pb-2 border-b border-stone-200">$1</h2>');
-  html = html.replace(/^### (.+)$/gm, '<h3 class="text-xl font-semibold text-stone-700 mt-8 mb-3">$1</h3>');
-  html = html.replace(/^#### (.+)$/gm, '<h4 class="text-lg font-medium text-stone-600 mt-6 mb-2">$1</h4>');
+  html = html.replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4 pb-2 border-b border-gray-200">$1</h2>');
+  html = html.replace(/^### (.+)$/gm, '<h3 class="text-xl font-semibold text-gray-700 mt-8 mb-3">$1</h3>');
+  html = html.replace(/^#### (.+)$/gm, '<h4 class="text-lg font-medium text-gray-600 mt-6 mb-2">$1</h4>');
   
   // 列表处理
-  html = html.replace(/^- (.+)$/gm, '<li class="ml-4 text-stone-600 leading-relaxed">$1</li>');
-  html = html.replace(/(<li.*<\/li>\n?)+/g, '<ul class="list-disc list-inside space-y-1 my-4 text-stone-600">$&</ul>');
+  html = html.replace(/^- (.+)$/gm, '<li class="ml-4 text-gray-600 leading-relaxed">$1</li>');
+  html = html.replace(/(<li.*<\/li>\n?)+/g, '<ul class="list-disc list-inside space-y-1 my-4 text-gray-600">$&</ul>');
   
   // 表格处理（简化）
   html = html.replace(/\|(.+)\|\n\|[-| ]+\|\n((?:\|.+\|\n?)+)/g, (match, header, rows) => {
@@ -37,13 +37,13 @@ function parseMarkdown(markdown) {
     
     let tableHtml = '<div class="overflow-x-auto my-6"><table class="min-w-full border-collapse"><thead><tr>';
     headers.forEach(h => {
-      tableHtml += `<th class="px-4 py-3 bg-stone-100 border border-stone-200 text-left text-sm font-semibold text-stone-700">${h.trim()}</th>`;
+      tableHtml += `<th class="px-4 py-3 bg-gray-100 border border-gray-200 text-left text-sm font-semibold text-gray-700">${h.trim()}</th>`;
     });
     tableHtml += '</tr></thead><tbody>';
     rowData.forEach((row, i) => {
-      tableHtml += `<tr class="${i % 2 === 0 ? 'bg-white' : 'bg-stone-50'}">`;
+      tableHtml += `<tr class="${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">`;
       row.forEach(cell => {
-        tableHtml += `<td class="px-4 py-3 border border-stone-200 text-sm text-stone-600">${cell.trim()}</td>`;
+        tableHtml += `<td class="px-4 py-3 border border-gray-200 text-sm text-gray-600">${cell.trim()}</td>`;
       });
       tableHtml += '</tr>';
     });
@@ -52,26 +52,26 @@ function parseMarkdown(markdown) {
   });
   
   // 粗体
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-stone-800">$1</strong>');
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-800">$1</strong>');
   
   // 斜体
   html = html.replace(/\*(.+?)\*/g, '<em class="italic">$1</em>');
   
   // 分割线
-  html = html.replace(/^---$/gm, '<hr class="my-8 border-stone-200" />');
+  html = html.replace(/^---$/gm, '<hr class="my-8 border-gray-200" />');
   
   // 引用块
-  html = html.replace(/^> (.+)$/gm, '<blockquote class="border-l-4 border-primary-500 pl-4 py-2 my-4 bg-stone-50 italic text-stone-600">$1</blockquote>');
+  html = html.replace(/^> (.+)$/gm, '<blockquote class="border-l-4 border-primary-500 pl-4 py-2 my-4 bg-gray-50 italic text-gray-600">$1</blockquote>');
   
   // 代码块
-  html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-stone-800 text-stone-100 p-4 rounded-lg my-4 overflow-x-auto text-sm"><code>$2</code></pre>');
+  html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-gray-800 text-gray-100 p-4 rounded-lg my-4 overflow-x-auto text-sm"><code>$2</code></pre>');
   
   // 段落处理（确保换行）
   html = html.split('\n\n').map(para => {
     if (para.startsWith('<') || para.trim() === '') {
       return para;
     }
-    return `<p class="text-stone-600 leading-relaxed mb-4">${para}</p>`;
+    return `<p class="text-gray-600 leading-relaxed mb-4">${para}</p>`;
   }).join('');
   
   // 清理多余换行
@@ -96,10 +96,10 @@ export default function ArticlePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-stone-600">加载中...</p>
+          <p className="text-gray-600">加载中...</p>
         </div>
       </div>
     );
@@ -107,9 +107,9 @@ export default function ArticlePage() {
 
   if (!article) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-stone-800 mb-4">文章未找到</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">文章未找到</h1>
           <Link href="/music-history" className="text-primary-600 hover:text-primary-700">
             返回时间轴
           </Link>
@@ -121,20 +121,20 @@ export default function ArticlePage() {
   const htmlContent = parseMarkdown(article.content);
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-gray-50">
       {/* 顶部导航栏 */}
       <div className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link 
             href="/music-history"
-            className="inline-flex items-center gap-2 text-stone-600 hover:text-primary-600 transition-colors"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-primary-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             <span className="font-medium">返回时间轴</span>
           </Link>
-          <span className="text-sm text-stone-400">
+          <span className="text-sm text-gray-400">
             {article.id} / 7
           </span>
         </div>
@@ -155,7 +155,7 @@ export default function ArticlePage() {
             <span className="px-4 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
               {article.period}
             </span>
-            <span className="px-4 py-1.5 bg-gold-500/90 rounded-full text-sm font-medium text-stone-900">
+            <span className="px-4 py-1.5 bg-gold-500/90 rounded-full text-sm font-medium text-gray-900">
               {article.era}
             </span>
           </div>
@@ -187,13 +187,13 @@ export default function ArticlePage() {
       </div>
 
       {/* 文章摘要 */}
-      <div className="bg-white border-b border-stone-200">
+      <div className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="bg-gradient-to-r from-stone-50 to-stone-100 rounded-xl p-6 border border-stone-200">
-            <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-3">
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
               摘要
             </h3>
-            <p className="text-stone-700 leading-relaxed">
+            <p className="text-gray-700 leading-relaxed">
               {article.summary}
             </p>
           </div>
@@ -204,13 +204,13 @@ export default function ArticlePage() {
       <div className="max-w-4xl mx-auto px-4 py-12">
         <article className="bg-white rounded-2xl shadow-card p-6 md:p-10">
           {/* 章节导航 */}
-          <nav className="mb-8 p-4 bg-stone-50 rounded-xl border border-stone-200">
-            <h4 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-3">
+          <nav className="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
               本章内容
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {['时期概述', '音乐特点', '代表人物', '历史影响', '结论'].map((section, i) => (
-                <span key={i} className="text-sm text-stone-600 py-1 px-2 bg-white rounded border border-stone-200">
+                <span key={i} className="text-sm text-gray-600 py-1 px-2 bg-white rounded border border-gray-200">
                   {section}
                 </span>
               ))}
@@ -235,8 +235,8 @@ export default function ArticlePage() {
                 {article.keyFigures.map((figure, i) => (
                   <div key={i} className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-gold-500"></div>
-                    <span className="text-stone-700">{figure.name}</span>
-                    <span className="text-stone-400 text-sm">— {figure.role}</span>
+                    <span className="text-gray-700">{figure.name}</span>
+                    <span className="text-gray-400 text-sm">— {figure.role}</span>
                   </div>
                 ))}
               </div>
@@ -250,7 +250,7 @@ export default function ArticlePage() {
           />
 
           {/* 底部装饰 */}
-          <div className="flex items-center justify-center gap-4 mt-12 pt-8 border-t border-stone-200">
+          <div className="flex items-center justify-center gap-4 mt-12 pt-8 border-t border-gray-200">
             <MusicalNote className="w-5 h-5 text-primary-400" />
             <MusicalNote className="w-5 h-5 text-gold-400" />
             <MusicalNote className="w-5 h-5 text-accent-400" />
@@ -261,12 +261,12 @@ export default function ArticlePage() {
       {/* 相关文章导航 */}
       <div className="max-w-4xl mx-auto px-4 pb-12">
         <div className="bg-white rounded-2xl shadow-card p-6">
-          <h3 className="text-lg font-semibold text-stone-800 mb-4">探索更多时期</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">探索更多时期</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {article.id !== '1' && (
               <Link 
                 href={`/music-history/${String(parseInt(article.id) - 1)}`}
-                className="flex items-center gap-3 p-4 bg-stone-50 rounded-xl hover:bg-stone-100 transition-colors group"
+                className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group"
               >
                 <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center group-hover:bg-primary-200 transition-colors">
                   <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -274,8 +274,8 @@ export default function ArticlePage() {
                   </svg>
                 </div>
                 <div className="text-left">
-                  <p className="text-sm text-stone-500">上一时期</p>
-                  <p className="font-medium text-stone-700">
+                  <p className="text-sm text-gray-500">上一时期</p>
+                  <p className="font-medium text-gray-700">
                     {musicHistoryData[parseInt(article.id) - 2]?.title}
                   </p>
                 </div>
@@ -284,7 +284,7 @@ export default function ArticlePage() {
             {article.id !== '7' && (
               <Link 
                 href={`/music-history/${String(parseInt(article.id) + 1)}`}
-                className="flex items-center gap-3 p-4 bg-stone-50 rounded-xl hover:bg-stone-100 transition-colors group md:col-start-2"
+                className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group md:col-start-2"
               >
                 <div className="w-10 h-10 rounded-full bg-accent-100 flex items-center justify-center group-hover:bg-accent-200 transition-colors">
                   <svg className="w-5 h-5 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -292,8 +292,8 @@ export default function ArticlePage() {
                   </svg>
                 </div>
                 <div className="text-left">
-                  <p className="text-sm text-stone-500">下一时期</p>
-                  <p className="font-medium text-stone-700">
+                  <p className="text-sm text-gray-500">下一时期</p>
+                  <p className="font-medium text-gray-700">
                     {musicHistoryData[parseInt(article.id)]?.title}
                   </p>
                 </div>
@@ -316,7 +316,7 @@ export default function ArticlePage() {
         </Link>
         <button 
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="w-12 h-12 bg-white text-stone-600 rounded-full shadow-lg flex items-center justify-center hover:bg-stone-100 transition-colors border border-stone-200"
+          className="w-12 h-12 bg-white text-gray-600 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-100 transition-colors border border-gray-200"
           title="返回顶部"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

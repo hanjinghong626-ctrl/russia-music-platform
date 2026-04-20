@@ -99,7 +99,7 @@ export default function MusicHistoryPage() {
   const [activeIndex, setActiveIndex] = useState(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-stone-50 to-stone-100">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       {/* 顶部装饰 */}
       <div className="relative h-64 md:h-80 bg-gradient-to-r from-primary-900 via-primary-800 to-accent-900 overflow-hidden">
         {/* 背景装饰 - 五线谱 */}
@@ -136,7 +136,7 @@ export default function MusicHistoryPage() {
         
         {/* 引言 */}
         <div className="text-center mb-12">
-          <p className="text-lg text-stone-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
             俄罗斯古典音乐拥有深厚的历史底蕴，从公元988年东正教传入基辅罗斯开始，历经千年发展，
             孕育了格林卡、柴可夫斯基、拉赫玛尼诺夫、肖斯塔科维奇等享誉世界的音乐大师。
             探索这七个辉煌时期，深入了解俄罗斯音乐的灵魂与精神。
@@ -187,13 +187,13 @@ export default function MusicHistoryPage() {
                     </div>
 
                     {/* 标题 */}
-                    <h3 className="text-xl md:text-2xl font-bold text-stone-800 mb-1">
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-1">
                       {item.title}
                     </h3>
-                    <p className="text-stone-500 mb-4">{item.subtitle}</p>
+                    <p className="text-gray-500 mb-4">{item.subtitle}</p>
 
                     {/* 简介 */}
-                    <p className="text-stone-600 text-sm leading-relaxed mb-4">
+                    <p className="text-gray-600 text-sm leading-relaxed mb-4">
                       {item.summary}
                     </p>
 
@@ -202,7 +202,7 @@ export default function MusicHistoryPage() {
                       {item.highlights.map((highlight, i) => (
                         <span 
                           key={i}
-                          className="px-2 py-1 bg-stone-100 text-stone-600 text-xs rounded border border-stone-200"
+                          className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200"
                         >
                           {highlight}
                         </span>
@@ -211,8 +211,8 @@ export default function MusicHistoryPage() {
 
                     {/* 代表人物 */}
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="text-stone-400 text-sm">代表人物：</span>
-                      <span className="text-stone-600 text-sm">{item.keyFigures.join('、')}</span>
+                      <span className="text-gray-400 text-sm">代表人物：</span>
+                      <span className="text-gray-600 text-sm">{item.keyFigures.join('、')}</span>
                     </div>
 
                     {/* 阅读按钮 */}
@@ -252,7 +252,7 @@ export default function MusicHistoryPage() {
         <div className="mt-24 text-center">
           <div className="inline-flex items-center gap-4 px-8 py-4 bg-white rounded-2xl shadow-elegant">
             <MusicalNote className="w-6 h-6 text-primary-600" />
-            <p className="text-stone-600">
+            <p className="text-gray-600">
               俄罗斯音乐历经千年发展，从东正教圣咏到当代新作，
               <br className="hidden md:block" />
               形成了独特而深厚的民族传统，至今仍在世界音乐舞台上闪耀光芒。
@@ -266,7 +266,7 @@ export default function MusicHistoryPage() {
       <div className="max-w-6xl mx-auto px-4 pb-12">
         <Link 
           href="/"
-          className="inline-flex items-center gap-2 text-stone-500 hover:text-primary-600 transition-colors"
+          className="inline-flex items-center gap-2 text-gray-500 hover:text-primary-600 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
