@@ -74,7 +74,8 @@ async function getSchoolById(id) {
 
 export async function GET(request, { params }) {
   try {
-    const school = await getSchoolById(params.id)
+    const { id } = await params
+    const school = await getSchoolById(id)
     if (!school) {
       return NextResponse.json({
         code: -1,
