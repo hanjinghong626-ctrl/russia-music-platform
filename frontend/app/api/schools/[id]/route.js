@@ -8,12 +8,12 @@ export async function GET(request, { params }) {
     const school = schoolsData.find(s => s.id === id)
     
     if (!school) {
-      return NextResponse.json({ error: '院校不存在' }, { status: 404 })
+      return NextResponse.json({ code: 404, message: '院校不存在' })
     }
     
-    return NextResponse.json(school)
+    return NextResponse.json({ code: 0, data: school })
   } catch (error) {
     console.error('Error:', error)
-    return NextResponse.json({ error: '服务器错误' }, { status: 500 })
+    return NextResponse.json({ code: 500, message: '服务器错误' })
   }
 }
