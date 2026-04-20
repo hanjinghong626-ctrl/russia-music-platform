@@ -61,6 +61,10 @@ export default function SchoolsPage() {
               <Link href="/schools" className="text-primary-700 font-semibold relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-primary-600 after:to-gold-500">
                 院校
               </Link>
+              <Link href="/evaluate" className="text-gray-600 hover:text-primary-700 transition-colors font-medium flex items-center gap-1">
+                <span>🎤</span>
+                AI评估
+              </Link>
             </div>
           </div>
         </div>
