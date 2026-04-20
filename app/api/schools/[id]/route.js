@@ -75,8 +75,11 @@ async function getSchoolById(id) {
 export async function GET(request, { params }) {
   try {
     const { id } = await params
+    console.log('[API] Fetching school with id:', id)
     const school = await getSchoolById(id)
+    console.log('[API] School found:', school ? school.name : 'null')
     if (!school) {
+      console.log('[API] School not found for id:', id)
       return NextResponse.json({
         code: -1,
         message: '院校不存在',
