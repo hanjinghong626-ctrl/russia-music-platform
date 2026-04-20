@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 
-// 飞书配置
-const FEISHU_APP_ID = process.env.FEISHU_APP_ID || 'cli_a968b3c219b9dbd3'
-const FEISHU_APP_SECRET = process.env.FEISHU_APP_SECRET || 'JkpPVLK9IySp24RawJ4ASgfgKX8GjLGU'
-const FEISHU_APP_TOKEN = process.env.FEISHU_APP_TOKEN || 'CqwBbnJ5xa9SbTsRfGnc3Ar7nLh'
-const FEISHU_TABLE_ID = process.env.FEISHU_TABLE_ID || 'tblommDyseaVLP8Q'
+// 飞书配置（直接硬编码）
+const FEISHU_APP_ID = 'cli_a968b3c219b9dbd3'
+const FEISHU_APP_SECRET = 'JkpPVLK9IySp24RawJ4ASgfgKX8GjLGU'
+const FEISHU_APP_TOKEN = 'CqwBbnJ5xa9SbTsRfGnc3Ar7nLh'
+const FEISHU_TABLE_ID = 'tblommDyseaVLP8Q'
 
 // 获取飞书 access_token
 async function getAccessToken() {
