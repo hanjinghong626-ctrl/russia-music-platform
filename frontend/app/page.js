@@ -97,6 +97,10 @@ export default async function HomePage() {
               <Link href="/schools" className="text-gray-600 hover:text-primary-700 transition-colors font-medium">
                 院校
               </Link>
+              <Link href="/schools-map" className="text-gray-600 hover:text-primary-700 transition-colors font-medium flex items-center gap-1">
+                <span>🗺️</span>
+                学院地图
+              </Link>
               <Link href="/evaluate" className="text-gray-600 hover:text-primary-700 transition-colors font-medium flex items-center gap-1">
                 <span>🎤</span>
                 AI评估
