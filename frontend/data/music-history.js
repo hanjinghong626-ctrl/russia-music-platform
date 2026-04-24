@@ -3,7 +3,7 @@
 
 export const musicHistoryData = [
   {
-    id: '1',
+    id: 'pre-18th',
     period: '18世纪前',
     title: '俄罗斯音乐的根基：东正教圣咏与民间传统',
     subtitle: 'Pre-18th Century',
@@ -200,7 +200,7 @@ export const musicHistoryData = [
 对于赴俄深造的留学生而言，理解这一奠基时期的音乐传统，不仅是掌握音乐史知识的要求，更是领悟俄罗斯音乐精神本质的必由之路。`
   },
   {
-    id: '2',
+    id: '18th-century',
     period: '18世纪',
     title: '西风东渐：俄罗斯音乐的启蒙时代',
     subtitle: '18th Century',
@@ -415,7 +415,7 @@ export const musicHistoryData = [
 对于赴俄深造的留学生而言，理解18世纪这一"西化"与"觉醒"的历史进程，有助于把握俄罗斯音乐发展的内在逻辑——为什么俄罗斯作曲家如此强调"民族性"，为什么格林卡的成就具有如此划时代的意义。`
   },
   {
-    id: '3',
+    id: 'glinka-era',
     period: '19世纪上半叶',
     title: '民族觉醒：格林卡与俄罗斯乐派的诞生',
     subtitle: 'First Half of 19th Century',
@@ -654,7 +654,7 @@ export const musicHistoryData = [
 **4. 天才的艺术创造力**：将民族性与艺术性完美融合，创造了经得起时间检验的艺术精品。`
   },
   {
-    id: '4',
+    id: 'mighty-handful',
     period: '19世纪下半叶',
     title: '黄金时代：强力集团与柴可夫斯基',
     subtitle: 'Second Half of 19th Century',
@@ -888,7 +888,7 @@ export const musicHistoryData = [
 对于赴俄深造的留学生而言，"黄金时代"是理解俄罗斯音乐传统的核心课程。只有深入了解这一时期的创作成就，才能真正领悟俄罗斯音乐的精髓。`
   },
   {
-    id: '5',
+    id: 'tchaikovsky-era',
     period: '19世纪末-20世纪初',
     title: '白银时代：拉赫玛尼诺夫与俄罗斯音乐的转型',
     subtitle: 'End of 19th - Early 20th Century',
@@ -1083,7 +1083,7 @@ export const musicHistoryData = [
 这一时期的经验表明：真正的艺术既扎根于深厚的民族文化传统，又能以开放的胸襟吸收人类文明的一切优秀成果。斯克里亚宾和拉赫玛尼诺夫虽然走了不同的艺术道路，但他们共同证明了：俄罗斯音乐既是民族的，也是世界的。`
   },
   {
-    id: '6',
+    id: 'silver-age',
     period: '20世纪',
     title: '苏维埃之声：肖斯塔科维奇与苏联音乐',
     subtitle: '20th Century',
@@ -1318,7 +1318,7 @@ export const musicHistoryData = [
 这一时期留给我们的启示是深刻的：艺术有其独立的价值，不应成为政治的附庸。`
   },
   {
-    id: '7',
+    id: 'soviet-era',
     period: '当代',
     title: '传承与新生：俄罗斯音乐的当代发展',
     subtitle: 'Contemporary Era',
