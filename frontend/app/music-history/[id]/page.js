@@ -135,7 +135,7 @@ export default function ArticlePage() {
             <span className="font-medium">返回时间轴</span>
           </Link>
           <span className="text-sm text-gray-400">
-            {article.id} / 7
+            {musicHistoryData.findIndex(item => item.id === article.id) + 1} / {musicHistoryData.length}
           </span>
         </div>
       </div>
@@ -263,42 +263,48 @@ export default function ArticlePage() {
         <div className="bg-white rounded-2xl shadow-card p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">探索更多时期</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {article.id !== '1' && (
-              <Link 
-                href={`/music-history/${String(parseInt(article.id) - 1)}`}
-                className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group"
-              >
-                <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center group-hover:bg-primary-200 transition-colors">
-                  <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </div>
-                <div className="text-left">
-                  <p className="text-sm text-gray-500">上一时期</p>
-                  <p className="font-medium text-gray-700">
-                    {musicHistoryData[parseInt(article.id) - 2]?.title}
-                  </p>
-                </div>
-              </Link>
-            )}
-            {article.id !== '7' && (
-              <Link 
-                href={`/music-history/${String(parseInt(article.id) + 1)}`}
-                className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group md:col-start-2"
-              >
-                <div className="w-10 h-10 rounded-full bg-accent-100 flex items-center justify-center group-hover:bg-accent-200 transition-colors">
-                  <svg className="w-5 h-5 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-                <div className="text-left">
-                  <p className="text-sm text-gray-500">下一时期</p>
-                  <p className="font-medium text-gray-700">
-                    {musicHistoryData[parseInt(article.id)]?.title}
-                  </p>
-                </div>
-              </Link>
-            )}
+            {(() => {
+              const currentIndex = musicHistoryData.findIndex(item => item.id === article.id);
+              const prevArticle = currentIndex > 0 ? musicHistoryData[currentIndex - 1] : null;
+              const nextArticle = currentIndex < musicHistoryData.length - 1 ? musicHistoryData[currentIndex + 1] : null;
+              
+              return (
+                <>
+                  {prevArticle && (
+                    <Link 
+                      href={`/music-history/${prevArticle.id}`}
+                      className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+                        <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </div>
+                      <div className="text-left">
+                        <p className="text-sm text-gray-500">上一时期</p>
+                        <p className="font-medium text-gray-700">{prevArticle.title}</p>
+                      </div>
+                    </Link>
+                  )}
+                  {nextArticle && (
+                    <Link 
+                      href={`/music-history/${nextArticle.id}`}
+                      className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group md:col-start-2"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-accent-100 flex items-center justify-center group-hover:bg-accent-200 transition-colors">
+                        <svg className="w-5 h-5 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                      <div className="text-left">
+                        <p className="text-sm text-gray-500">下一时期</p>
+                        <p className="font-medium text-gray-700">{nextArticle.title}</p>
+                      </div>
+                    </Link>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
       </div>
