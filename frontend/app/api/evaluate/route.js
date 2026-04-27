@@ -193,11 +193,11 @@ export async function POST(request) {
       )
     }
 
-    // 检查文件大小（限制50MB）
-    const maxSize = 50 * 1024 * 1024
+    // 检查文件大小（限制200MB）
+    const maxSize = 200 * 1024 * 1024
     if (audioFile.size > maxSize) {
       return NextResponse.json(
-        { success: false, error: '文件过大，请上传小于50MB的音视频文件' },
+        { success: false, error: '文件过大，请上传小于200MB的音视频文件' },
         { status: 400 }
       )
     }
@@ -246,4 +246,3 @@ async function analyzeWithCoze(audioBuffer, config) {
   
   throw new Error('扣子 Bot 配置未完成，请检查 API Key 和 Bot ID')
 }
-
