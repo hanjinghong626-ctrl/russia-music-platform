@@ -164,25 +164,7 @@ class VocalAnalyzer {
   }
 }
 
-// API配置 - 未来可扩展
-const API_CONFIG = {
-  // OpenAI API 配置（未来启用）
-  openai: {
-    enabled: false,
-    apiKey: process.env.OPENAI_API_KEY || '',
-    model: 'gpt-4o-mini'
-  },
-  // 扣子 Bot 配置（未来启用）
-  coze: {
-    enabled: false,
-    apiKey: process.env.COZE_API_KEY || '',
-    botId: process.env.COZE_BOT_ID || ''
-  },
-  // 本地分析（当前启用）
-  local: {
-    enabled: true
-  }
-}
+// 直接使用本地分析
 
 export async function POST(request) {
   try {
@@ -197,8 +179,8 @@ export async function POST(request) {
     }
 
     // 检查文件类型
-    const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp4', 'audio/x-m4a', 'audio/aac']
-    const allowedExtensions = ['.mp3', '.wav', '.m4a', '.aac']
+    const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp4', 'audio/x-m4a', 'audio/aac', 'audio/ogg', 'audio/x-flac', 'audio/x-caf', 'video/quicktime', 'video/mp4', 'video/x-m4v', 'video/3gpp']
+    const allowedExtensions = ['.mp3', '.wav', '.m4a', '.aac', '.ogg', '.flac', '.caf', '.mov', '.mp4', '.m4v', '.3gp']
     const fileName = audioFile.name.toLowerCase()
     
     const isValidType = allowedTypes.includes(audioFile.type) || 
@@ -206,7 +188,7 @@ export async function POST(request) {
     
     if (!isValidType) {
       return NextResponse.json(
-        { success: false, error: '不支持的文件格式，请上传 MP3、WAV 或 M4A 格式' },
+        { success: false, error: '不支持的文件格式，请上传 MP3、WAV、M4A、MOV 等常见音视频格式' },
         { status: 400 }
       )
     }
@@ -215,7 +197,7 @@ export async function POST(request) {
     const maxSize = 50 * 1024 * 1024
     if (audioFile.size > maxSize) {
       return NextResponse.json(
-        { success: false, error: '文件过大，请上传小于50MB的音频文件' },
+        { success: false, error: '文件过大，请上传小于50MB的音视频文件' },
         { status: 400 }
       )
     }
@@ -224,20 +206,9 @@ export async function POST(request) {
     const audioBuffer = await audioFile.arrayBuffer()
     const duration = Math.round(audioBuffer.byteLength / (44100 * 2)) // 估算时长
     
-    // 根据条件选择分析方式
-    let result
-    
-    if (API_CONFIG.openai.enabled && API_CONFIG.openai.apiKey) {
-      // OpenAI API 方式
-      result = await analyzeWithOpenAI(audioBuffer, API_CONFIG.openai)
-    } else if (API_CONFIG.coze.enabled && API_CONFIG.coze.apiKey) {
-      // 扣子 Bot 方式
-      result = await analyzeWithCoze(audioBuffer, API_CONFIG.coze)
-    } else {
-      // 本地分析（当前默认）
-      const analyzer = new VocalAnalyzer()
-      result = await analyzer.analyzeAudio({ duration })
-    }
+    // 本地分析
+    const analyzer = new VocalAnalyzer()
+    const result = await analyzer.analyzeAudio({ duration })
 
     return NextResponse.json({
       success: true,
