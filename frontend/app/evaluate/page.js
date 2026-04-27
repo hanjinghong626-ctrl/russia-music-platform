@@ -154,7 +154,7 @@ export default function EvaluatePage() {
                 <input 
                   type="file" 
                   className="hidden" 
-                  accept=".mp3,.wav,.m4a,.aac,.ogg,.flac,.caf,.mov,.mp4,.m4v,.3gp,audio/*,video/*" 
+                  accept="audio/*,video/*" 
                   onChange={handleUpload}
                   disabled={loading}
                 />
