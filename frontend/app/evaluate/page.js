@@ -15,18 +15,18 @@ export default function EvaluatePage() {
     if (!uploadedFile) return
 
     // 验证文件类型
-    const allowedExtensions = ['.mp3', '.wav', '.m4a', '.aac']
+    const allowedExtensions = ['.mp3', '.wav', '.m4a', '.aac', '.ogg', '.flac', '.caf', '.mov', '.mp4', '.m4v', '.3gp']
     const fileName = uploadedFile.name.toLowerCase()
     const isValidType = allowedExtensions.some(ext => fileName.endsWith(ext))
 
     if (!isValidType) {
-      setError('不支持的文件格式，请上传 MP3、WAV 或 M4A 格式')
+      setError('不支持的文件格式，请上传 MP3、WAV、M4A、MOV 等常见音视频格式')
       return
     }
 
     // 验证文件大小 (50MB)
     if (uploadedFile.size > 50 * 1024 * 1024) {
-      setError('文件过大，请上传小于50MB的音频文件')
+      setError('文件过大，请上传小于50MB的音视频文件')
       return
     }
 
@@ -146,15 +146,15 @@ export default function EvaluatePage() {
                     </>
                   ) : (
                     <>
-                      <p className="text-gray-600 mb-2">点击或拖拽上传音频文件</p>
-                      <p className="text-sm text-gray-400">支持 MP3、WAV、M4A 格式，最大 50MB</p>
+                      <p className="text-gray-600 mb-2">点击或拖拽上传音视频文件</p>
+                      <p className="text-sm text-gray-400">支持 MP3、WAV、M4A、MOV 等常见音视频格式，最大 50MB</p>
                     </>
                   )}
                 </div>
                 <input 
                   type="file" 
                   className="hidden" 
-                  accept=".mp3,.wav,.m4a,audio/*" 
+                  accept=".mp3,.wav,.m4a,.aac,.ogg,.flac,.caf,.mov,.mp4,.m4v,.3gp,audio/*,video/*" 
                   onChange={handleUpload}
                   disabled={loading}
                 />
