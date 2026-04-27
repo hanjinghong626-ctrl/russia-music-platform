@@ -154,7 +154,6 @@ export default function EvaluatePage() {
                 <input 
                   type="file" 
                   className="hidden" 
-                  accept="audio/*,video/*" 
                   onChange={handleUpload}
                   disabled={loading}
                 />
