@@ -7,28 +7,79 @@ export default function EvaluatePage() {
   const [file, setFile] = useState(null)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
+  const [error, setError] = useState(null)
+  const [uploadProgress, setUploadProgress] = useState(0)
 
   const handleUpload = async (e) => {
     const uploadedFile = e.target.files[0]
     if (!uploadedFile) return
+
+    // 验证文件类型
+    const allowedExtensions = ['.mp3', '.wav', '.m4a', '.aac']
+    const fileName = uploadedFile.name.toLowerCase()
+    const isValidType = allowedExtensions.some(ext => fileName.endsWith(ext))
+
+    if (!isValidType) {
+      setError('不支持的文件格式，请上传 MP3、WAV 或 M4A 格式')
+      return
+    }
+
+    // 验证文件大小 (50MB)
+    if (uploadedFile.size > 50 * 1024 * 1024) {
+      setError('文件过大，请上传小于50MB的音频文件')
+      return
+    }
+
     setFile(uploadedFile)
     setLoading(true)
     setResult(null)
+    setError(null)
+    setUploadProgress(0)
 
-    // 模拟分析
-    setTimeout(() => {
-      setResult({
-        overall: 85,
-        pitch: 88,
-        rhythm: 82,
-        timbre: 85,
-        strengths: ['音准稳定性良好', '节奏感较强', '音色饱满'],
-        suggestions: ['建议加强高音区练习', '注意气息控制', '可以尝试更多曲目风格'],
-        level: '中级',
-        recommendation: '建议申请柴可夫斯基音乐学院预科'
+    try {
+      const formData = new FormData()
+      formData.append('audio', uploadedFile)
+
+      // 模拟上传进度
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval)
+            return prev
+          }
+          return prev + 10
+        })
+      }, 200)
+
+      const response = await fetch('/api/evaluate', {
+        method: 'POST',
+        body: formData,
       })
+
+      clearInterval(progressInterval)
+      setUploadProgress(100)
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || '分析失败，请稍后重试')
+      }
+
+      setResult(data)
+    } catch (err) {
+      console.error('评估错误:', err)
+      setError(err.message || '分析过程出现错误，请稍后重试')
+      setResult(null)
+    } finally {
       setLoading(false)
-    }, 2000)
+    }
+  }
+
+  const resetEvaluation = () => {
+    setFile(null)
+    setResult(null)
+    setError(null)
+    setUploadProgress(0)
   }
 
   return (
@@ -63,18 +114,50 @@ export default function EvaluatePage() {
             <p className="text-gray-500">上传您的演唱音频，获取专业的AI水平分析</p>
           </div>
 
+          {/* 错误提示 */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-start gap-3">
+              <span className="text-red-500 text-xl">⚠️</span>
+              <div>
+                <p className="text-red-800 font-medium">上传失败</p>
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+              <button 
+                onClick={() => setError(null)}
+                className="ml-auto text-red-400 hover:text-red-600"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
           {/* 上传区域 */}
-          {!result && (
+          {!result && !error && (
             <div className="bg-white rounded-2xl p-8 shadow-card border border-gray-100 mb-8">
               <label className="block cursor-pointer">
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-12 text-center hover:border-primary-400 transition-colors">
                   <div className="w-16 h-16 mx-auto mb-4 bg-primary-50 rounded-full flex items-center justify-center">
                     <span className="text-3xl">📁</span>
                   </div>
-                  <p className="text-gray-600 mb-2">点击或拖拽上传音频文件</p>
-                  <p className="text-sm text-gray-400">支持 MP3、WAV、M4A 格式，最大 50MB</p>
+                  {file ? (
+                    <>
+                      <p className="text-primary-600 font-medium mb-2">{file.name}</p>
+                      <p className="text-sm text-gray-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-600 mb-2">点击或拖拽上传音频文件</p>
+                      <p className="text-sm text-gray-400">支持 MP3、WAV、M4A 格式，最大 50MB</p>
+                    </>
+                  )}
                 </div>
-                <input type="file" className="hidden" accept=".mp3,.wav,.m4a" onChange={handleUpload} />
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  accept=".mp3,.wav,.m4a,audio/*" 
+                  onChange={handleUpload}
+                  disabled={loading}
+                />
               </label>
             </div>
           )}
@@ -83,7 +166,26 @@ export default function EvaluatePage() {
           {loading && (
             <div className="bg-white rounded-2xl p-12 shadow-card border border-gray-100 text-center">
               <div className="w-16 h-16 mx-auto mb-4 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-              <p className="text-gray-600">正在分析中，请稍候...</p>
+              <p className="text-gray-600 mb-4">正在分析中，请稍候...</p>
+              
+              {/* 上传进度条 */}
+              <div className="max-w-xs mx-auto">
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">
+                  {uploadProgress < 100 ? '上传音频文件...' : 'AI分析中...'}
+                </p>
+              </div>
+
+              {file && (
+                <div className="mt-4 text-sm text-gray-500">
+                  已选择: {file.name}
+                </div>
+              )}
             </div>
           )}
 
@@ -95,6 +197,9 @@ export default function EvaluatePage() {
                 <p className="text-white/80 mb-2">综合评分</p>
                 <p className="text-6xl font-bold mb-2">{result.overall}</p>
                 <p className="text-white/60">分</p>
+                <div className="mt-4 inline-block px-4 py-1 bg-white/20 rounded-full text-sm">
+                  {result.level}
+                </div>
               </div>
 
               {/* 分项评分 */}
@@ -102,20 +207,51 @@ export default function EvaluatePage() {
                 <h3 className="font-bold text-gray-900 mb-4">分项评分</h3>
                 <div className="space-y-4">
                   {[
-                    { label: '音准', score: result.pitch, color: 'from-green-500 to-green-600' },
-                    { label: '节奏', score: result.rhythm, color: 'from-blue-500 to-blue-600' },
-                    { label: '音色', score: result.timbre, color: 'from-purple-500 to-purple-600' },
+                    { label: '音准', score: result.pitch, color: 'from-green-500 to-green-600', icon: '🎵' },
+                    { label: '节奏', score: result.rhythm, color: 'from-blue-500 to-blue-600', icon: '🥁' },
+                    { label: '音色', score: result.timbre, color: 'from-purple-500 to-purple-600', icon: '🎤' },
                   ].map((item) => (
                     <div key={item.label}>
                       <div className="flex justify-between mb-1">
-                        <span className="text-gray-600">{item.label}</span>
+                        <span className="text-gray-600 flex items-center gap-2">
+                          <span>{item.icon}</span>
+                          {item.label}
+                        </span>
                         <span className="font-semibold">{item.score}分</span>
                       </div>
                       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div className={`h-full bg-gradient-to-r ${item.color} rounded-full`} style={{ width: `${item.score}%` }} />
+                        <div 
+                          className={`h-full bg-gradient-to-r ${item.color} rounded-full transition-all duration-500`} 
+                          style={{ width: `${item.score}%` }} 
+                        />
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* 详细分析 */}
+              <div className="bg-white rounded-2xl p-6 shadow-card border border-gray-100">
+                <h3 className="font-bold text-gray-900 mb-4">详细分析</h3>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="p-4 bg-green-50 rounded-xl">
+                    <p className="font-medium text-green-800 mb-2">🎵 音准分析</p>
+                    <p className="text-sm text-green-700">
+                      {result.details?.pitch?.stability || '稳定性良好'}
+                    </p>
+                  </div>
+                  <div className="p-4 bg-blue-50 rounded-xl">
+                    <p className="font-medium text-blue-800 mb-2">🥁 节奏分析</p>
+                    <p className="text-sm text-blue-700">
+                      {result.details?.rhythm?.tempo || '节奏感稳定'}
+                    </p>
+                  </div>
+                  <div className="p-4 bg-purple-50 rounded-xl">
+                    <p className="font-medium text-purple-800 mb-2">🎤 音色分析</p>
+                    <p className="text-sm text-purple-700">
+                      {result.details?.timbre?.characteristics?.join('、') || '音色良好'}
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -126,8 +262,11 @@ export default function EvaluatePage() {
                     <span className="text-green-500">✓</span> 优势分析
                   </h3>
                   <ul className="space-y-2">
-                    {result.strengths.map((s, i) => (
-                      <li key={i} className="text-gray-600 text-sm">• {s}</li>
+                    {(result.strengths || []).map((s, i) => (
+                      <li key={i} className="text-gray-600 text-sm flex items-start gap-2">
+                        <span className="text-green-500 mt-1">•</span>
+                        {s}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -136,8 +275,11 @@ export default function EvaluatePage() {
                     <span className="text-amber-500">💡</span> 改进建议
                   </h3>
                   <ul className="space-y-2">
-                    {result.suggestions.map((s, i) => (
-                      <li key={i} className="text-gray-600 text-sm">• {s}</li>
+                    {(result.suggestions || []).map((s, i) => (
+                      <li key={i} className="text-gray-600 text-sm flex items-start gap-2">
+                        <span className="text-amber-500 mt-1">•</span>
+                        {s}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -146,7 +288,14 @@ export default function EvaluatePage() {
               {/* 留学建议 */}
               <div className="bg-gradient-to-r from-gold-50 to-amber-50 rounded-2xl p-6 border border-gold-200">
                 <h3 className="font-bold text-gray-900 mb-2">🎓 留学建议</h3>
-                <p className="text-gray-600">{result.recommendation}</p>
+                <p className="text-gray-700 font-medium mb-1">{result.recommendation}</p>
+                <p className="text-gray-600 text-sm mb-2">{result.school}</p>
+                <div className="mt-3 p-3 bg-white/60 rounded-lg">
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">准备建议：</span>
+                    {result.preparation}
+                  </p>
+                </div>
               </div>
 
               {/* 人工评估入口 */}
@@ -162,7 +311,11 @@ export default function EvaluatePage() {
               </div>
 
               {/* 重新评估 */}
-              <button onClick={() => { setResult(null); setFile(null) }} className="w-full py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors">
+              <button 
+                onClick={resetEvaluation} 
+                className="w-full py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+              >
+                <span>↻</span>
                 重新评估
               </button>
             </div>
@@ -171,7 +324,12 @@ export default function EvaluatePage() {
           {/* 提示 */}
           <div className="mt-8 p-4 bg-amber-50 rounded-xl border border-amber-200 flex items-start gap-3">
             <span className="text-amber-500 text-xl">💡</span>
-            <p className="text-sm text-amber-800">提示：AI分析仅供参考，如有疑问可申请人工专业评估</p>
+            <div className="text-sm text-amber-800">
+              <p className="font-medium mb-1">温馨提示：</p>
+              <p>• 建议上传30秒至2分钟的演唱片段以获得最佳分析效果</p>
+              <p>• 音频质量越好，分析结果越准确</p>
+              <p>• AI分析仅供参考，如有疑问可申请人工专业评估</p>
+            </div>
           </div>
         </div>
       </main>
