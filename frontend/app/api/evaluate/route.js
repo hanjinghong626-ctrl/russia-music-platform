@@ -271,13 +271,4 @@ async function analyzeWithOpenAI(audioBuffer, config) {
 // 扣子 Bot 分析（预留）
 async function analyzeWithCoze(audioBuffer, config) {
   // 此处需要实现扣子 Bot API 调用
-  // 参考: https://www.coze.cn/docs/api/reference
-  
-  throw new Error('扣子 Bot 配置未完成，请检查 API Key 和 Bot ID')
-}
 
-export const config = {
-  api: {
-    bodyParser: false, // 需要处理 FormData
-  },
-}
