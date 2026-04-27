@@ -24,9 +24,9 @@ export default function EvaluatePage() {
       return
     }
 
-    // 验证文件大小 (50MB)
-    if (uploadedFile.size > 50 * 1024 * 1024) {
-      setError('文件过大，请上传小于50MB的音视频文件')
+    // 验证文件大小 (200MB)
+    if (uploadedFile.size > 200 * 1024 * 1024) {
+      setError('文件过大，请上传小于200MB的音视频文件')
       return
     }
 
@@ -147,7 +147,7 @@ export default function EvaluatePage() {
                   ) : (
                     <>
                       <p className="text-gray-600 mb-2">点击或拖拽上传音视频文件</p>
-                      <p className="text-sm text-gray-400">支持 MP3、WAV、M4A、MOV 等常见音视频格式，最大 50MB</p>
+                      <p className="text-sm text-gray-400">支持 MP3、WAV、M4A、MOV 等常见音视频格式，最大 200MB</p>
                     </>
                   )}
                 </div>
