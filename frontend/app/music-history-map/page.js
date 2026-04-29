@@ -1,14 +1,33 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 
-// 时代数据
+// 主题色配置
+const themeColors = {
+  'orthodox': {
+    primary: '#8B7355',
+    accent: '#1E3A5F',
+    glow: '#D4A574'
+  },
+  'russian-soul': {
+    primary: '#D4AF37',
+    accent: '#8B0000',
+    glow: '#FFD700'
+  },
+  'steel-rose': {
+    primary: '#6B5B95',
+    accent: '#FF4444',
+    glow: '#9370DB'
+  }
+}
+
+// 时代数据 - 7个核心时期
 const eras = [
   {
     id: 'pre-18th',
     name: '东正教圣咏',
-    nameRu: ' Orthodox Chant',
+    nameRu: 'Orthodox Chant',
     period: '18世纪前',
     year: '988-1700',
     position: { x: 12, y: 42 },
@@ -19,7 +38,8 @@ const eras = [
     features: ['东正教圣咏', '兹纳缅内记谱法', '俄罗斯民歌'],
     color: '#8B7355',
     glowColor: '#D4A574',
-    icon: 'cross'
+    icon: 'cross',
+    themeKey: 'orthodox'
   },
   {
     id: '18th-century',
@@ -35,7 +55,8 @@ const eras = [
     features: ['意大利歌剧', '宫廷音乐', '贵族音乐教育'],
     color: '#4A7C59',
     glowColor: '#7CB68A',
-    icon: 'violin'
+    icon: 'violin',
+    themeKey: 'russian-soul'
   },
   {
     id: 'glinka-era',
@@ -51,7 +72,8 @@ const eras = [
     features: ['民族主义音乐', '俄罗斯歌剧', '交响幻想曲'],
     color: '#6B8E23',
     glowColor: '#9ACD32',
-    icon: 'score'
+    icon: 'score',
+    themeKey: 'russian-soul'
   },
   {
     id: 'mighty-handful',
@@ -67,7 +89,8 @@ const eras = [
     features: ['强力五人集团', '民族乐派', '标题音乐'],
     color: '#556B2F',
     glowColor: '#8FBC8F',
-    icon: 'group'
+    icon: 'group',
+    themeKey: 'russian-soul'
   },
   {
     id: 'tchaikovsky-era',
@@ -83,14 +106,15 @@ const eras = [
     features: ['浪漫主义', '芭蕾舞剧', '交响曲', '钢琴协奏曲'],
     color: '#8B4513',
     glowColor: '#CD853F',
-    icon: 'ballet'
+    icon: 'ballet',
+    themeKey: 'russian-soul'
   },
   {
     id: 'silver-age',
     name: '白银时代',
     nameRu: 'Silver Age',
     period: '19世纪末-20世纪初',
-    year: '1890-1920',
+    year: '1890-1917',
     position: { x: 42, y: 44 },
     city: '莫斯科',
     cityRu: 'Москва',
@@ -99,14 +123,15 @@ const eras = [
     features: ['晚期浪漫主义', '神秘主义', '原始主义'],
     color: '#708090',
     glowColor: '#B0C4DE',
-    icon: 'piano'
+    icon: 'piano',
+    themeKey: 'steel-rose'
   },
   {
     id: 'soviet-era',
     name: '苏联时期',
     nameRu: 'Soviet Era',
-    period: '20世纪',
-    year: '1920-1991',
+    period: '1917-1991',
+    year: '1917-1991',
     position: { x: 48, y: 46 },
     city: '莫斯科',
     cityRu: 'Москва',
@@ -115,7 +140,8 @@ const eras = [
     features: ['交响曲', '芭蕾舞剧', '电影音乐'],
     color: '#8B0000',
     glowColor: '#CD5C5C',
-    icon: 'symphony'
+    icon: 'symphony',
+    themeKey: 'steel-rose'
   },
   {
     id: 'contemporary',
@@ -131,7 +157,8 @@ const eras = [
     features: ['复风格技法', '音响探索', '多元化'],
     color: '#483D8B',
     glowColor: '#9370DB',
-    icon: 'modern'
+    icon: 'modern',
+    themeKey: 'steel-rose'
   }
 ]
 
@@ -147,6 +174,9 @@ const cities = [
   { name: '索契', nameRu: 'Сочи', x: 30, y: 56, type: 'major' },
   { name: '加里宁格勒', nameRu: 'Калининград', x: 8, y: 34, type: 'minor' },
 ]
+
+// 获取当前主题色
+const getThemeColor = (themeKey) => themeColors[themeKey] || themeColors['russian-soul']
 
 // 音乐图标组件
 function MusicIcon({ type, size = 20, color = 'currentColor' }) {
@@ -213,10 +243,79 @@ function MusicIcon({ type, size = 20, color = 'currentColor' }) {
   return icons[type] || icons.score
 }
 
-// 套娃装饰组件
-function Matryoshka({ x, y, size = 24 }) {
+// 音符形状的标记
+function NoteMarker({ x, y, size = 24, color = '#D4AF37', isActive = false, pulse = false }) {
   return (
-    <g transform={`translate(${x}, ${y})`} opacity="0.15">
+    <g transform={`translate(${x}, ${y})`}>
+      {/* 脉动光环 */}
+      {pulse && (
+        <circle 
+          cx="0" 
+          cy="0" 
+          r={size * 0.8} 
+          fill="none" 
+          stroke={color} 
+          strokeWidth="2"
+          className="pulse-ring"
+          style={{ transformOrigin: 'center' }}
+        />
+      )}
+      {/* 音符形状 SVG */}
+      <g transform={`scale(${size / 24})`}>
+        <ellipse cx="12" cy="18" rx="6" ry="4" fill={color} transform="rotate(-20 12 18)"/>
+        <rect x="16" y="4" width="2" height="14" fill={color}/>
+        <path d="M18 4 Q 22 8 20 12" stroke={color} strokeWidth="2" fill="none"/>
+      </g>
+      {/* 发光效果 */}
+      {isActive && (
+        <circle 
+          cx="0" 
+          cy="0" 
+          r={size * 0.6} 
+          fill={color} 
+          opacity="0.3"
+          className="glow-pulse"
+        />
+      )}
+    </g>
+  )
+}
+
+// 城市标记
+function CityMarker({ x, y, size = 20, color = '#D4AF37', isActive = false }) {
+  return (
+    <g transform={`translate(${x}, ${y})`}>
+      {/* 外层光环 */}
+      {isActive && (
+        <>
+          <circle cx="0" cy="0" r={size * 1.5} fill="none" stroke={color} strokeWidth="1" opacity="0.3" className="city-pulse"/>
+          <circle cx="0" cy="0" r={size * 2} fill="none" stroke={color} strokeWidth="0.5" opacity="0.15" className="city-pulse delay-1"/>
+        </>
+      )}
+      {/* 内层光点 */}
+      <circle 
+        cx="0" 
+        cy="0" 
+        r={size * 0.4} 
+        fill={color}
+        opacity={isActive ? 1 : 0.5}
+        className={isActive ? 'city-glow' : ''}
+      />
+      {/* 十字光晕 */}
+      <g opacity={isActive ? 0.6 : 0.3}>
+        <line x1={-size} y1="0" x2={-size * 0.5} y2="0" stroke={color} strokeWidth="0.5"/>
+        <line x1={size * 0.5} y1="0" x2={size} y2="0" stroke={color} strokeWidth="0.5"/>
+        <line x1="0" y1={-size} x2="0" y2={-size * 0.5} stroke={color} strokeWidth="0.5"/>
+        <line x1="0" y1={size * 0.5} x2="0" y2={size} stroke={color} strokeWidth="0.5"/>
+      </g>
+    </g>
+  )
+}
+
+// 套娃装饰组件
+function Matryoshka({ x, y, size = 24, opacity = 0.15 }) {
+  return (
+    <g transform={`translate(${x}, ${y})`} opacity={opacity}>
       <ellipse cx="0" cy="0" rx={size * 0.35} ry={size * 0.4} fill="#CD5C5C"/>
       <ellipse cx="0" cy={-size * 0.15} rx={size * 0.28} ry={size * 0.25} fill="#F08080"/>
       <circle cx="0" cy={-size * 0.35} r={size * 0.2} fill="#F4A460"/>
@@ -229,123 +328,272 @@ function Matryoshka({ x, y, size = 24 }) {
 }
 
 // 巴拉莱卡琴装饰组件
-function Balalaika({ x, y, size = 18 }) {
+function Balalaika({ x, y, size = 18, opacity = 0.12 }) {
   return (
-    <g transform={`translate(${x}, ${y})`} opacity="0.12">
+    <g transform={`translate(${x}, ${y})`} opacity={opacity}>
       <polygon points={`0,${-size * 0.8} ${size * 0.25},${size * 0.2} ${-size * 0.25},${size * 0.2}`} fill="#8B4513"/>
       <rect x={-size * 0.06} y={-size * 0.8} width={size * 0.12} height={size * 0.5} fill="#D2691E"/>
       <circle cx="0" cy={size * 0.35} r={size * 0.25} fill="#DEB887"/>
       <line x1="0" y1={-size * 0.3} x2="0" y2={-size * 0.8} stroke="#F5DEB3" strokeWidth="0.8"/>
-      <line x1={-size * 0.06} y1={-size * 0.3} x2={-size * 0.06} y2={-size * 0.8} stroke="#F5DEB3" strokeWidth="0.8"/>
-      <line x1={size * 0.06} y1={-size * 0.3} x2={size * 0.06} y2={-size * 0.8} stroke="#F5DEB3" strokeWidth="0.8"/>
     </g>
   )
 }
 
-// 教堂剪影装饰
-function ChurchSilhouette({ x, y, size = 20 }) {
+// 教堂剪影
+function ChurchSilhouette({ x, y, size = 25 }) {
   return (
     <g transform={`translate(${x}, ${y})`} opacity="0.1">
-      <polygon points={`0,${-size} ${size * 0.4},${-size * 0.6} ${size * 0.4},0 ${-size * 0.4},0 ${-size * 0.4},${-size * 0.6}`} fill="#4A4A4A"/>
-      <polygon points={`0,${-size * 1.2} ${size * 0.15},${-size} ${-size * 0.15},${-size}`} fill="#5A5A5A"/>
-      <circle cx="0" cy={-size * 1.15} r={size * 0.08} fill="#D4AF37"/>
-      <rect x={-size * 0.15} y={-size * 0.3} width={size * 0.3} height={size * 0.3} fill="#3A3A3A"/>
+      <path d={`
+        M 0 ${size * 0.6}
+        L ${-size * 0.4} ${size * 0.6}
+        L ${-size * 0.4} ${-size * 0.1}
+        L ${-size * 0.2} ${-size * 0.1}
+        L ${-size * 0.2} ${-size * 0.4}
+        L ${-size * 0.15} ${-size * 0.4}
+        L ${-size * 0.15} ${-size * 0.6}
+        L ${size * 0.15} ${-size * 0.6}
+        L ${size * 0.15} ${-size * 0.4}
+        L ${size * 0.2} ${-size * 0.4}
+        L ${size * 0.2} ${-size * 0.1}
+        L ${size * 0.4} ${-size * 0.1}
+        L ${size * 0.4} ${size * 0.6}
+        Z
+      `} fill="#8B4513"/>
+      <circle cx="0" cy={-size * 0.5} r={size * 0.08} fill="#8B4513"/>
+      <path d={`M 0 ${-size * 0.58} L ${-size * 0.05} ${-size * 0.7} L ${size * 0.05} ${-size * 0.7} Z`} fill="#8B4513"/>
     </g>
   )
 }
 
 // 白桦树装饰
-function BirchTree({ x, y, size = 15 }) {
+function BirchTree({ x, y, size = 18 }) {
   return (
     <g transform={`translate(${x}, ${y})`} opacity="0.1">
-      <rect x={-size * 0.05} y={0} width={size * 0.1} height={size * 0.6} fill="#F5F5DC"/>
-      <circle cx="0" cy={-size * 0.2} r={size * 0.35} fill="#228B22"/>
-      <circle cx={-size * 0.15} cy={-size * 0.1} r={size * 0.25} fill="#2E8B2E"/>
-      <circle cx={size * 0.15} cy={-size * 0.15} r={size * 0.28} fill="#3CB371"/>
+      <rect x={-size * 0.05} y="0" width={size * 0.1} height={size * 0.6} fill="#D2B48C"/>
+      <ellipse cx="0" cy={-size * 0.2} rx={size * 0.35} ry={size * 0.4} fill="#228B22"/>
+      <ellipse cx="0" cy={-size * 0.5} rx={size * 0.25} ry={size * 0.3} fill="#228B22"/>
     </g>
   )
 }
 
 // 五线谱装饰
 function MusicStaff({ x, y, width = 30 }) {
-  const lineSpacing = 2.5
   return (
     <g transform={`translate(${x}, ${y})`} opacity="0.08">
       {[0, 1, 2, 3, 4].map(i => (
-        <line key={i} x1="0" y1={i * lineSpacing} x2={width} y2={i * lineSpacing} stroke="#2F4F4F" strokeWidth="0.8"/>
+        <line key={i} x1="0" y1={i * 3} x2={width} y2={i * 3} stroke="#333" strokeWidth="0.5"/>
       ))}
-      <circle cx="5" cy="3" r="2" fill="#2F4F4F"/>
-      <circle cx="12" cy="6" r="2" fill="#2F4F4F"/>
-      <circle cx="20" cy="4" r="2" fill="#2F4F4F"/>
-      <circle cx="26" cy="2" r="2" fill="#2F4F4F"/>
     </g>
   )
 }
 
-// 音符飘浮装饰
+// 漂浮音符装饰
 function FloatingNote({ x, y, size = 10 }) {
   return (
-    <g transform={`translate(${x}, ${y})`} opacity="0.06">
-      <ellipse cx="0" cy={size * 0.3} rx={size * 0.3} ry={size * 0.25} fill="#2F4F4F"/>
-      <line x1={size * 0.25} y1={size * 0.1} x2={size * 0.25} y2={-size * 0.5} stroke="#2F4F4F" strokeWidth="1.2"/>
-      <path d={`M ${size * 0.25} ${-size * 0.5} Q ${size * 0.5} ${-size * 0.3} ${size * 0.25} ${-size * 0.1}`} fill="none" stroke="#2F4F4F" strokeWidth="1"/>
+    <g transform={`translate(${x}, ${y})`} opacity="0.1" className="floating-note">
+      <ellipse cx="0" cy="0" rx={size * 0.4} ry={size * 0.3} fill="#333" transform="rotate(-20)"/>
+      <rect x={size * 0.2} y={-size * 0.8} width={size * 0.1} height={size * 0.8} fill="#333"/>
     </g>
   )
 }
 
-// 时代节点组件
+// 俄罗斯地图 SVG 组件
+function RussianMapSVG() {
+  return (
+    <svg 
+      viewBox="0 0 100 70" 
+      className="absolute inset-0 w-full h-full"
+      style={{ opacity: 0.4 }}
+    >
+      <defs>
+        <linearGradient id="terrainGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#3D5A45"/>
+          <stop offset="30%" stopColor="#5D7052"/>
+          <stop offset="60%" stopColor="#8B7355"/>
+          <stop offset="80%" stopColor="#C9B896"/>
+          <stop offset="100%" stopColor="#D4C4A8"/>
+        </linearGradient>
+        <filter id="blur">
+          <feGaussianBlur stdDeviation="0.5"/>
+        </filter>
+      </defs>
+      
+      {/* 俄罗斯领土轮廓 - 简化的俄罗斯地图 */}
+      <path 
+        d={`
+          M 5 30
+          Q 8 25 15 28
+          Q 22 32 30 28
+          Q 38 24 45 28
+          Q 52 32 60 28
+          Q 68 24 75 28
+          Q 82 32 90 28
+          Q 95 30 98 35
+          Q 95 40 98 48
+          Q 92 52 85 50
+          Q 78 54 70 50
+          Q 62 46 55 50
+          Q 48 54 40 50
+          Q 32 46 25 50
+          Q 18 54 12 50
+          Q 5 46 3 40
+          Q 2 35 5 30
+          Z
+        `}
+        fill="url(#terrainGradient)"
+        stroke="rgba(100, 100, 100, 0.3)"
+        strokeWidth="0.3"
+        filter="url(#blur)"
+      />
+      
+      {/* 主要城市标记点 */}
+      {cities.map((city, idx) => (
+        <circle 
+          key={idx}
+          cx={city.x} 
+          cy={city.y} 
+          r="0.8" 
+          fill="#666"
+          opacity="0.5"
+        />
+      ))}
+      
+      {/* 国界线暗示 */}
+      <path 
+        d={`M 5 35 Q 20 30 40 35 Q 60 40 80 35 Q 95 32 98 38`}
+        fill="none"
+        stroke="rgba(80, 80, 80, 0.2)"
+        strokeWidth="0.3"
+        strokeDasharray="1,1"
+      />
+    </svg>
+  )
+}
+
+// 时期节点组件 - 升级版音符标记
 function EraNode({ era, index, isActive, onClick }) {
-  const [hovered, setHovered] = useState(false)
+  const theme = getThemeColor(era.themeKey)
+  const [showTooltip, setShowTooltip] = useState(false)
   
   return (
-    <g
-      transform={`translate(${era.position.x}, ${era.position.y})`}
-      style={{ cursor: 'pointer' }}
+    <g 
+      className={`era-node cursor-pointer transition-all duration-500 ${isActive ? 'z-20' : 'z-10'}`}
       onClick={() => onClick(era)}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+      style={{
+        transform: isActive ? 'scale(1.3)' : 'scale(1)',
+        transformOrigin: `${era.position.x}% ${era.position.y}%`
+      }}
     >
-      <circle
-        r={hovered ? 8 : 6}
-        fill={era.glowColor}
-        opacity={hovered ? 0.4 : 0.25}
-        style={{ transition: 'all 0.3s ease' }}
-      />
-      <circle
-        r={hovered ? 5 : 4}
-        fill={era.color}
-        stroke={era.glowColor}
-        strokeWidth={hovered ? 2 : 1.5}
-        style={{ transition: 'all 0.3s ease' }}
-      />
-      <text
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize={hovered ? 7 : 6}
-        fontWeight="bold"
-        fill="#fff"
-        style={{ transition: 'all 0.3s ease' }}
-      >
-        {index + 1}
-      </text>
+      {/* 外层脉动环 - 仅活跃时显示 */}
+      {isActive && (
+        <circle 
+          cx={era.position.x}
+          cy={era.position.y}
+          r="4"
+          fill="none"
+          stroke={era.glowColor}
+          strokeWidth="2"
+          opacity="0.5"
+          className="pulse-ring"
+        />
+      )}
       
-      {hovered && (
-        <g transform={`translate(0, -18)`}>
-          <rect
-            x={-24}
-            y={-8}
-            width={48}
-            height={16}
-            rx={4}
-            fill={era.color}
-            opacity={0.95}
+      {/* 音符形状主标记 */}
+      <g transform={`translate(${era.position.x}, ${era.position.y})`}>
+        {/* 发光背景 */}
+        <ellipse 
+          cx="0" 
+          cy="1" 
+          rx={isActive ? "2.5" : "2"} 
+          ry={isActive ? "1.8" : "1.5"} 
+          fill={era.glowColor}
+          opacity={isActive ? 0.6 : 0.3}
+          transform="rotate(-20)"
+        />
+        {/* 音符头部 */}
+        <ellipse 
+          cx="0" 
+          cy="1" 
+          rx={isActive ? "2" : "1.5"} 
+          ry={isActive ? "1.5" : "1.2"} 
+          fill={era.color}
+          transform="rotate(-20)"
+          style={{
+            filter: isActive ? `drop-shadow(0 0 6px ${era.glowColor})` : 'none'
+          }}
+        />
+        {/* 音符符干 */}
+        <rect 
+          x="0.8" 
+          y={isActive ? "-5" : "-4"} 
+          width="0.3" 
+          height="5" 
+          fill={era.color}
+          style={{
+            filter: isActive ? `drop-shadow(0 0 4px ${era.glowColor})` : 'none'
+          }}
+        />
+        {/* 音符钩 */}
+        <path 
+          d={`M 1.1 ${isActive ? "-5" : "-4"} Q 2.5 ${isActive ? "-3" : "-2.5"} 1.8 ${isActive ? "-1" : "-0.5"}`}
+          stroke={era.color}
+          strokeWidth="0.4"
+          fill="none"
+          style={{
+            filter: isActive ? `drop-shadow(0 0 3px ${era.glowColor})` : 'none'
+          }}
+        />
+      </g>
+      
+      {/* Tooltip - 毛玻璃效果 */}
+      {showTooltip && (
+        <g transform={`translate(${era.position.x + 5}, ${era.position.y - 8})`}>
+          <rect 
+            x="-12" 
+            y="-10" 
+            width="24" 
+            height="12" 
+            rx="4"
+            fill="rgba(20, 20, 30, 0.85)"
+            stroke={era.color}
+            strokeWidth="1"
+            className="tooltip-bg"
           />
-          <text
-            textAnchor="middle"
-            dominantBaseline="central"
-            fontSize={5}
-            fontWeight="bold"
-            fill="#fff"
+          <text 
+            x="0" 
+            y="-1" 
+            textAnchor="middle" 
+            fill="#fff" 
+            fontSize="3"
+            fontFamily="system-ui"
+          >
+            {era.name}
+          </text>
+        </g>
+      )}
+      
+      {/* 活跃时显示时期标签 */}
+      {isActive && (
+        <g transform={`translate(${era.position.x}, ${era.position.y + 6})`}>
+          <rect 
+            x={-era.name.length * 1.5} 
+            y="0" 
+            width={era.name.length * 3} 
+            height="5" 
+            rx="2"
+            fill={era.color}
+            opacity="0.9"
+          />
+          <text 
+            x="0" 
+            y="3.5" 
+            textAnchor="middle" 
+            fill="#fff" 
+            fontSize="2.5"
+            fontFamily="system-ui"
+            fontWeight="600"
           >
             {era.name}
           </text>
@@ -355,258 +603,128 @@ function EraNode({ era, index, isActive, onClick }) {
   )
 }
 
-// 俄罗斯3D地形地图SVG组件
-function RussianMapSVG() {
-  return (
-    <svg viewBox="0 0 100 70" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
-      <defs>
-        <linearGradient id="terrainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#4A6741"/>
-          <stop offset="20%" stopColor="#5D7052"/>
-          <stop offset="35%" stopColor="#7A8B5D"/>
-          <stop offset="50%" stopColor="#9B8B6D"/>
-          <stop offset="70%" stopColor="#B8A078"/>
-          <stop offset="85%" stopColor="#C9B896"/>
-          <stop offset="100%" stopColor="#D4C4A8"/>
-        </linearGradient>
-        
-        <linearGradient id="europeTerrain" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#3D5A45"/>
-          <stop offset="40%" stopColor="#4A6741"/>
-          <stop offset="70%" stopColor="#5D7052"/>
-          <stop offset="100%" stopColor="#6B8052"/>
-        </linearGradient>
-        
-        <linearGradient id="siberiaTerrain" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#7A8B5D"/>
-          <stop offset="50%" stopColor="#9B8B6D"/>
-          <stop offset="100%" stopColor="#B8A078"/>
-        </linearGradient>
-        
-        <linearGradient id="farEastTerrain" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#C9B896"/>
-          <stop offset="100%" stopColor="#D4C4A8"/>
-        </linearGradient>
-        
-        <filter id="terrainShadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="1" stdDeviation="1.5" floodColor="#2D2D2D" floodOpacity="0.4"/>
-        </filter>
-        
-        <filter id="cityGlow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="1" result="blur"/>
-          <feMerge>
-            <feMergeNode in="blur"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-        
-        <pattern id="mountainPattern" patternUnits="userSpaceOnUse" width="8" height="4">
-          <path d="M0 4 L2 0 L4 3 L6 0 L8 4" fill="none" stroke="#6B6B5A" strokeWidth="0.3" opacity="0.5"/>
-        </pattern>
-        
-        <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#A8C8D8"/>
-          <stop offset="50%" stopColor="#8BB8C8"/>
-          <stop offset="100%" stopColor="#A8C8D8"/>
-        </linearGradient>
-        
-        <linearGradient id="edgeHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.3"/>
-          <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.1"/>
-          <stop offset="100%" stopColor="#000000" stopOpacity="0.1"/>
-        </linearGradient>
-        
-        <radialGradient id="cityPulse" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#FFD700" stopOpacity="0.9"/>
-          <stop offset="50%" stopColor="#FFA500" stopOpacity="0.4"/>
-          <stop offset="100%" stopColor="#FF8C00" stopOpacity="0"/>
-        </radialGradient>
-      </defs>
-      
-      <rect x="0" y="0" width="100" height="70" fill="#E8E8E8"/>
-      
-      <ellipse cx="5" cy="38" rx="4" ry="3" fill="url(#waterGradient)" opacity="0.6"/>
-      <ellipse cx="10" cy="50" rx="3" ry="2" fill="url(#waterGradient)" opacity="0.5"/>
-      
-      <g filter="url(#terrainShadow)">
-        <path 
-          d="M 5 18 Q 8 16, 12 17 Q 16 18, 18 20 Q 22 22, 26 24 Q 30 26, 32 28 Q 34 30, 33 34 Q 32 38, 30 40 Q 28 42, 26 44 Q 24 46, 22 48 Q 20 50, 18 52 Q 16 54, 14 54 Q 12 54, 10 52 Q 8 50, 7 46 Q 6 42, 5 38 Q 4 34, 4 30 Q 4 26, 5 22 Q 5 20, 5 18 Z"
-          fill="url(#europeTerrain)"
-          stroke="#4A6741"
-          strokeWidth="0.8"
-          opacity="0.95"
-        />
-        
-        <path 
-          d="M 5 18 Q 8 16, 12 17 Q 16 18, 18 20 Q 22 22, 26 24"
-          fill="none"
-          stroke="rgba(255,255,255,0.3)"
-          strokeWidth="0.5"
-        />
-        
-        <path 
-          d="M 28 48 Q 32 46, 34 48 Q 36 52, 34 56 Q 32 58, 30 56 Q 28 54, 28 48 Z"
-          fill="#5D7052"
-          stroke="#4A6741"
-          strokeWidth="0.5"
-          opacity="0.9"
-        />
-        
-        <g opacity="0.85">
-          <path 
-            d="M 36 24 Q 40 22, 44 24 Q 48 26, 52 28 Q 54 30, 52 34 Q 50 36, 48 34 Q 46 32, 44 34 Q 42 36, 40 38 Q 38 36, 36 34 Q 34 32, 36 28 Q 36 26, 36 24 Z"
-            fill="#7A8B5D"
-            stroke="#6B7B4D"
-            strokeWidth="0.6"
-          />
-          <path 
-            d="M 38 26 L 40 24 L 42 26 L 44 23 L 46 26 L 48 24 L 50 26"
-            fill="none"
-            stroke="#8A8A7A"
-            strokeWidth="0.3"
-          />
-        </g>
-        
-        <path 
-          d="M 52 18 Q 58 16, 65 18 Q 72 20, 78 22 Q 84 24, 88 26 Q 92 28, 94 30 Q 96 32, 95 36 Q 94 40, 92 44 Q 90 48, 88 50 Q 86 52, 84 54 Q 82 56, 80 58 Q 78 60, 76 62 Q 74 64, 72 64 Q 70 64, 68 62 Q 66 60, 64 58 Q 62 56, 60 54 Q 58 52, 56 50 Q 54 48, 52 46 Q 50 44, 48 42 Q 46 40, 44 38 Q 42 36, 40 34 Q 38 32, 36 30 Q 38 26, 40 24 Q 44 20, 48 18 Q 50 17, 52 18 Z"
-          fill="url(#siberiaTerrain)"
-          stroke="#8B7B5D"
-          strokeWidth="0.7"
-          opacity="0.9"
-        />
-        
-        <path 
-          d="M 52 18 Q 58 16, 65 18 Q 72 20, 78 22 Q 84 24, 88 26 Q 92 28, 94 30"
-          fill="none"
-          stroke="rgba(255,255,255,0.25)"
-          strokeWidth="0.4"
-        />
-        
-        <path 
-          d="M 88 26 Q 92 24, 95 26 Q 98 28, 99 32 Q 100 36, 99 40 Q 98 44, 96 48 Q 94 52, 92 54 Q 90 56, 88 58 Q 86 60, 84 60 Q 82 58, 84 54 Q 86 50, 88 46 Q 90 42, 90 38 Q 90 34, 88 30 Q 88 28, 88 26 Z"
-          fill="url(#farEastTerrain)"
-          stroke="#B8A878"
-          strokeWidth="0.6"
-          opacity="0.85"
-        />
-        
-        <path 
-          d="M 92 38 Q 96 36, 99 38 Q 100 42, 99 46 Q 97 48, 94 46 Q 92 44, 92 40 Q 92 38, 92 38 Z"
-          fill="#C9B896"
-          stroke="#B8A878"
-          strokeWidth="0.4"
-          opacity="0.85"
-        />
-        
-        <path 
-          d="M 94 30 Q 98 28, 100 30 Q 100 34, 98 36 Q 95 36, 94 34 Q 94 32, 94 30 Z"
-          fill="#C9B896"
-          stroke="#B8A878"
-          strokeWidth="0.4"
-          opacity="0.85"
-        />
-        
-        <path 
-          d="M 86 58 Q 90 56, 94 58 Q 96 62, 94 66 Q 90 68, 86 66 Q 84 62, 86 58 Z"
-          fill="#D4C4A8"
-          stroke="#C4B498"
-          strokeWidth="0.4"
-          opacity="0.85"
-        />
-      </g>
-      
-      <g opacity="0.4">
-        <path d="M 18 30 Q 22 38, 26 48 Q 30 56, 28 62" fill="none" stroke="#6BA3B8" strokeWidth="0.8" strokeLinecap="round"/>
-        <path d="M 40 28 Q 45 38, 50 50 Q 54 58, 52 66" fill="none" stroke="#6BA3B8" strokeWidth="0.7" strokeLinecap="round"/>
-        <path d="M 60 24 Q 65 36, 70 50 Q 74 60, 72 68" fill="none" stroke="#6BA3B8" strokeWidth="0.6" strokeLinecap="round"/>
-        <path d="M 80 30 Q 84 42, 86 56 Q 87 64, 85 70" fill="none" stroke="#6BA3B8" strokeWidth="0.5" strokeLinecap="round"/>
-      </g>
-      
-      {cities.map((city, idx) => (
-        <g key={idx} transform={`translate(${city.x}, ${city.y})`}>
-          <circle r={city.type === 'major' ? 2.5 : 1.5} fill="url(#cityPulse)" opacity="0.6"/>
-          <circle r={city.type === 'major' ? 1.2 : 0.8} fill="#2D2D2D" stroke="#FFD700" strokeWidth={city.type === 'major' ? 0.4 : 0.3}/>
-          <text 
-            y={city.type === 'major' ? -4 : -3}
-            textAnchor="middle"
-            fontSize={city.type === 'major' ? 2.2 : 1.8}
-            fontWeight={city.type === 'major' ? 'bold' : 'normal'}
-            fill="#2D2D2D"
-          >
-            {city.name}
-          </text>
-          <text 
-            y={city.type === 'major' ? -1.5 : -0.5}
-            textAnchor="middle"
-            fontSize={city.type === 'major' ? 1.5 : 1.2}
-            fill="#4A4A4A"
-            opacity="0.7"
-          >
-            {city.nameRu}
-          </text>
-        </g>
-      ))}
-      
-      <g transform="translate(45, 31)" opacity="0.6">
-        <text textAnchor="middle" fontSize="2" fill="#5A5A5A" fontStyle="italic">Урал</text>
-        <path d="M -3 1 L 0 -1 L 3 1" fill="none" stroke="#6B6B5A" strokeWidth="0.3"/>
-      </g>
-    </svg>
-  )
-}
-
-// 详情弹窗组件
+// 详细弹窗组件 - 升级版作曲家卡片
 function DetailModal({ era, onClose }) {
+  const theme = getThemeColor(era.themeKey)
+  const modalRef = useRef(null)
+  
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (modalRef.current && !modalRef.current.contains(e.target)) {
+        onClose()
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [onClose])
+  
+  // 经典语录
+  const quotes = {
+    'pre-18th': '"音乐是灵魂的语言"',
+    '18th-century': '"向西学习，向东传承"',
+    'glinka-era': '"创造民族的音乐，这就是我的使命"',
+    'mighty-handful': '"我们不是学者，我们是俄罗斯人"',
+    'tchaikovsky-era': '"音乐是最纯粹的人类情感"',
+    'silver-age': '"在音乐中，我寻找无限"',
+    'soviet-era': '"音乐应当震撼人心"',
+    'contemporary': '"打破边界，探索未知"'
+  }
+  
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(4px)' }}
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* 背景遮罩 */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}/>
+      
+      {/* 弹窗主体 */}
       <div 
-        className="relative w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl"
-        style={{ background: 'linear-gradient(145deg, #f8f8f8 0%, #e8e8e8 50%, #d8d8d8 100%)', border: '1px solid rgba(200, 200, 200, 0.5)' }}
-        onClick={e => e.stopPropagation()}
+        ref={modalRef}
+        className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl shadow-2xl animate-modal-in"
+        style={{
+          background: 'linear-gradient(180deg, rgba(30, 30, 40, 0.98) 0%, rgba(20, 20, 30, 0.98) 100%)',
+          border: `1px solid ${era.glowColor}40`
+        }}
       >
-        <div className="h-2" style={{ background: `linear-gradient(90deg, ${era.color}, ${era.glowColor})` }}/>
+        {/* 顶部金色装饰线 */}
+        <div 
+          className="sticky top-0 h-1 rounded-t-2xl"
+          style={{ background: `linear-gradient(90deg, transparent, ${era.glowColor}, ${era.color}, ${era.glowColor}, transparent)` }}
+        />
         
+        {/* 关闭按钮 */}
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg z-10"
+          style={{ 
+            background: `${era.color}20`,
+            border: `1px solid ${era.glowColor}50`
+          }}
         >
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
-          </svg>
+          <span style={{ color: era.glowColor }} className="text-xl font-light hover:glow-text">×</span>
         </button>
         
-        <div className="p-8">
-          <div className="flex items-center gap-6 mb-6">
+        {/* 内容区域 */}
+        <div className="p-6 md:p-8">
+          {/* 头部信息 */}
+          <div className="flex items-start gap-4 mb-6">
             <div 
-              className="w-20 h-20 rounded-xl flex items-center justify-center shadow-lg"
+              className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0"
               style={{ background: `linear-gradient(135deg, ${era.glowColor} 0%, ${era.color} 100%)` }}
             >
               <MusicIcon type={era.icon} size={40} color="#fff"/>
             </div>
             <div>
-              <h2 className="text-4xl font-bold mb-2" style={{ color: era.color }}>{era.name}</h2>
-              <p className="text-gray-500 text-lg">{era.nameRu}</p>
-              <p className="text-gray-400 text-sm mt-1">{era.period} · {era.year}</p>
+              <h2 
+                className="text-3xl font-bold mb-1"
+                style={{ 
+                  color: era.glowColor,
+                  fontFamily: "'Playfair Display', 'Georgia', serif"
+                }}
+              >
+                {era.name}
+              </h2>
+              <p className="text-gray-400 text-lg">{era.nameRu}</p>
+              <p className="text-gray-500 text-sm mt-1">{era.period} · {era.year}</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-2 mb-6 p-3 rounded-lg" style={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
-            <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+          {/* 城市信息 */}
+          <div 
+            className="flex items-center gap-2 mb-6 p-3 rounded-lg"
+            style={{ backgroundColor: `${era.color}15` }}
+          >
+            <svg className="w-5 h-5" fill={era.glowColor} viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/>
             </svg>
-            <span className="text-gray-700 font-medium">{era.city}</span>
+            <span style={{ color: era.glowColor }} className="font-medium">{era.city}</span>
             <span className="text-gray-400">({era.cityRu})</span>
           </div>
           
-          <p className="text-gray-600 leading-relaxed text-lg mb-6">{era.description}</p>
+          {/* 时期描述 */}
+          <p className="text-gray-300 leading-relaxed text-lg mb-6">
+            {era.description}
+          </p>
           
+          {/* 经典语录 - 引用样式 */}
+          {quotes[era.id] && (
+            <div 
+              className="relative mb-6 p-4 rounded-lg"
+              style={{ 
+                background: `${era.color}10`,
+                borderLeft: `3px solid ${era.glowColor}`
+              }}
+            >
+              <p className="text-gray-300 italic text-base">
+                {quotes[era.id]}
+              </p>
+            </div>
+          )}
+          
+          {/* 代表作曲家 */}
           <div className="mb-5">
-            <h3 className="text-sm uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: era.color }}>
+            <h3 
+              className="text-sm uppercase tracking-wider mb-3 flex items-center gap-2"
+              style={{ color: era.glowColor }}
+            >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
               </svg>
@@ -616,8 +734,12 @@ function DetailModal({ era, onClose }) {
               {era.composers.map((composer, idx) => (
                 <span 
                   key={idx} 
-                  className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105"
-                  style={{ backgroundColor: `${era.color}15`, border: `1px solid ${era.color}40`, color: era.color }}
+                  className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 hover:shadow-md"
+                  style={{ 
+                    backgroundColor: `${era.color}20`, 
+                    border: `1px solid ${era.glowColor}40`, 
+                    color: era.glowColor 
+                  }}
                 >
                   {composer}
                 </span>
@@ -625,8 +747,12 @@ function DetailModal({ era, onClose }) {
             </div>
           </div>
           
+          {/* 音乐特征 */}
           <div className="mb-6">
-            <h3 className="text-sm uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: era.color }}>
+            <h3 
+              className="text-sm uppercase tracking-wider mb-3 flex items-center gap-2"
+              style={{ color: era.glowColor }}
+            >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
               </svg>
@@ -634,16 +760,29 @@ function DetailModal({ era, onClose }) {
             </h3>
             <div className="flex flex-wrap gap-2">
               {era.features.map((feature, idx) => (
-                <span key={idx} className="px-3 py-1.5 rounded-lg text-sm bg-gray-200 text-gray-600 border border-gray-300">
+                <span 
+                  key={idx} 
+                  className="px-3 py-1.5 rounded-lg text-sm flex items-center gap-1.5"
+                  style={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#ccc'
+                  }}
+                >
+                  <span style={{ color: era.glowColor }}>♪</span>
                   {feature}
                 </span>
               ))}
             </div>
           </div>
           
+          {/* 底部金色装饰分隔线 */}
+          <div className="h-px my-6" style={{ background: `linear-gradient(to right, transparent, ${era.glowColor}40, transparent)` }}/>
+          
+          {/* 查看完整文章链接 */}
           <Link 
             href={`/music-history/${era.id}`} 
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-md"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg"
             style={{ background: `linear-gradient(135deg, ${era.color} 0%, ${era.glowColor} 100%)`, color: '#fff' }}
           >
             查看完整文章
@@ -652,53 +791,163 @@ function DetailModal({ era, onClose }) {
             </svg>
           </Link>
         </div>
-        
-        <div className="h-1" style={{ background: `linear-gradient(to right, transparent, ${era.glowColor}, transparent)` }}/>
       </div>
     </div>
   )
 }
 
-// 底部时间轴组件
+// 时间轴组件 - 升级版
 function Timeline({ eras, activeEra, onEraClick }) {
+  const scrollContainerRef = useRef(null)
+  const theme = activeEra ? getThemeColor(activeEra.themeKey) : themeColors['russian-soul']
+  
+  // iPad触控滚动优化
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+    
+    let isDown = false
+    let startX
+    let scrollLeft
+    
+    const mouseDown = (e) => {
+      isDown = true
+      container.classList.add('cursor-grabbing')
+      startX = e.pageX - container.offsetLeft
+      scrollLeft = container.scrollLeft
+    }
+    
+    const mouseLeave = () => {
+      isDown = false
+      container.classList.remove('cursor-grabbing')
+    }
+    
+    const mouseUp = () => {
+      isDown = false
+      container.classList.remove('cursor-grabbing')
+    }
+    
+    const mouseMove = (e) => {
+      if (!isDown) return
+      e.preventDefault()
+      const x = e.pageX - container.offsetLeft
+      const walk = (x - startX) * 2
+      container.scrollLeft = scrollLeft - walk
+    }
+    
+    container.addEventListener('mousedown', mouseDown)
+    container.addEventListener('mouseleave', mouseLeave)
+    container.addEventListener('mouseup', mouseUp)
+    container.addEventListener('mousemove', mouseMove)
+    
+    return () => {
+      container.removeEventListener('mousedown', mouseDown)
+      container.removeEventListener('mouseleave', mouseLeave)
+      container.removeEventListener('mouseup', mouseUp)
+      container.removeEventListener('mousemove', mouseMove)
+    }
+  }, [])
+  
   return (
     <div 
       className="relative py-6 px-4"
-      style={{ background: 'linear-gradient(to top, rgba(240, 240, 240, 0.95) 0%, rgba(250, 250, 250, 0.9) 100%)', borderTop: '1px solid rgba(150, 150, 150, 0.2)' }}
+      style={{ 
+        background: 'linear-gradient(to top, rgba(20, 20, 30, 0.95) 0%, rgba(30, 30, 40, 0.9) 100%)',
+        borderTop: `1px solid ${theme.glowColor}30`
+      }}
     >
+      {/* 顶部金色渐变线 */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-0.5"
+        style={{ background: `linear-gradient(90deg, transparent 0%, ${theme.glowColor} 50%, transparent 100%)` }}
+      />
+      
       <div className="max-w-6xl mx-auto">
-        <div className="relative h-1 mb-6">
-          <div className="absolute inset-0 rounded-full bg-gray-300"/>
-          <div className="absolute inset-0 flex items-center justify-between px-1">
+        {/* 时间轴主线条 - 金色渐变 */}
+        <div className="relative mb-8">
+          {/* 金色渐变底线 */}
+          <div 
+            className="absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2 rounded-full"
+            style={{ 
+              background: `linear-gradient(90deg, transparent 0%, ${theme.glowColor}40 10%, ${theme.glowColor} 50%, ${theme.glowColor}40 90%, transparent 100%)`
+            }}
+          />
+          
+          {/* 时期节点连接点 */}
+          <div className="absolute inset-0 flex items-center justify-between px-4">
             {eras.map((era, idx) => (
               <div 
-                key={era.id} 
-                className={`w-3 h-3 rounded-full transition-all duration-300 cursor-pointer ${activeEra?.id === era.id ? 'scale-150' : 'hover:scale-125'}`} 
-                style={{ backgroundColor: era.color, boxShadow: activeEra?.id === era.id ? `0 0 10px ${era.glowColor}` : 'none' }} 
+                key={era.id}
+                className={`relative transition-all duration-500 cursor-pointer group
+                  ${activeEra?.id === era.id ? 'scale-125' : 'hover:scale-110'}`}
                 onClick={() => onEraClick(era)}
-              />
+              >
+                {/* 金色连接点 */}
+                <div 
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300
+                    ${activeEra?.id === era.id ? 'shadow-lg' : 'group-hover:shadow-md'}`}
+                  style={{ 
+                    backgroundColor: activeEra?.id === era.id ? era.glowColor : `${era.glowColor}60`,
+                    boxShadow: activeEra?.id === era.id ? `0 0 12px ${era.glowColor}` : 'none'
+                  }}
+                />
+                {/* 点击区域扩大 */}
+                <div className="absolute inset-0 -m-3" />
+              </div>
             ))}
           </div>
         </div>
         
-        <div className="flex justify-between gap-1 overflow-x-auto pb-2">
+        {/* 时期标签 - 可滚动 */}
+        <div 
+          ref={scrollContainerRef}
+          className="flex justify-between gap-2 overflow-x-auto pb-4 cursor-grab active:cursor-grabbing scroll-smooth"
+          style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: `${theme.glowColor}40 transparent`
+          }}
+        >
           {eras.map((era, idx) => (
             <button 
               key={era.id} 
               onClick={() => onEraClick(era)} 
-              className={`flex-shrink-0 text-center transition-all duration-300 p-2 rounded-lg ${activeEra?.id === era.id ? 'scale-105' : 'opacity-60 hover:opacity-100'}`}
-              style={{ background: activeEra?.id === era.id ? `${era.color}20` : 'transparent' }}
+              className={`flex-shrink-0 text-center transition-all duration-500 p-3 rounded-xl min-w-[100px]
+                ${activeEra?.id === era.id ? 'translate-y-1 scale-105' : 'opacity-70 hover:opacity-100 hover:-translate-y-0.5'}`}
+              style={{ 
+                background: activeEra?.id === era.id ? `${era.color}25` : 'transparent',
+                border: activeEra?.id === era.id ? `1px solid ${era.glowColor}50` : '1px solid transparent'
+              }}
             >
               <div 
-                className="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-sm font-bold mb-2 transition-all duration-300" 
-                style={{ background: activeEra?.id === era.id ? `linear-gradient(135deg, ${era.glowColor}, ${era.color})` : `${era.color}40`, color: activeEra?.id === era.id ? '#fff' : era.color }}
+                className="w-10 h-10 mx-auto rounded-full flex items-center justify-center text-base font-bold mb-2 transition-all duration-300 shadow-md" 
+                style={{ 
+                  background: activeEra?.id === era.id ? `linear-gradient(135deg, ${era.glowColor}, ${era.color})` : `${era.color}40`,
+                  color: activeEra?.id === era.id ? '#fff' : era.glowColor,
+                  boxShadow: activeEra?.id === era.id ? `0 0 15px ${era.glowColor}60` : 'none'
+                }}
               >
                 {idx + 1}
               </div>
-              <p className="text-xs font-medium text-gray-700 whitespace-nowrap">{era.period}</p>
-              <p className="text-xs text-gray-400 whitespace-nowrap">{era.year}</p>
+              <p 
+                className="text-sm font-semibold whitespace-nowrap"
+                style={{ 
+                  color: activeEra?.id === era.id ? era.glowColor : '#9ca3af',
+                  fontFamily: "'Playfair Display', Georgia, serif"
+                }}
+              >
+                {era.name}
+              </p>
+              <p className="text-xs text-gray-500 whitespace-nowrap mt-0.5">{era.period}</p>
+              <p className="text-xs text-gray-600 whitespace-nowrap">{era.year}</p>
             </button>
           ))}
+        </div>
+        
+        {/* 底部装饰 */}
+        <div className="flex items-center justify-center gap-4 mt-2">
+          <div className="h-px w-16" style={{ background: `linear-gradient(to right, transparent, ${theme.glowColor}40)` }}/>
+          <span style={{ color: theme.glowColor, opacity: 0.6 }} className="text-xs">♪</span>
+          <div className="h-px w-16" style={{ background: `linear-gradient(to left, transparent, ${theme.glowColor}40)` }}/>
         </div>
       </div>
     </div>
@@ -706,22 +955,30 @@ function Timeline({ eras, activeEra, onEraClick }) {
 }
 
 // 图例组件
-function Legend() {
+function Legend({ activeEra }) {
+  const theme = activeEra ? getThemeColor(activeEra.themeKey) : themeColors['russian-soul']
+  
   return (
-    <div className="absolute bottom-4 left-4 p-3 rounded-lg z-20" style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', border: '1px solid rgba(200, 200, 200, 0.5)' }}>
-      <h4 className="text-xs font-bold text-gray-600 mb-2">地形渐变</h4>
+    <div 
+      className="absolute bottom-4 left-4 p-3 rounded-lg z-20 backdrop-blur-md"
+      style={{ 
+        backgroundColor: 'rgba(20, 20, 30, 0.85)',
+        border: `1px solid ${theme.glowColor}30`
+      }}
+    >
+      <h4 className="text-xs font-bold mb-2" style={{ color: theme.glowColor }}>地形渐变</h4>
       <div className="flex items-center gap-1">
         <div className="w-20 h-3 rounded" style={{ background: 'linear-gradient(to right, #3D5A45, #5D7052, #9B8B6D, #C9B896, #D4C4A8)' }}/>
       </div>
       <div className="flex justify-between mt-1">
-        <span className="text-xs text-gray-500">欧洲</span>
-        <span className="text-xs text-gray-500">远东</span>
+        <span className="text-xs text-gray-400">欧洲</span>
+        <span className="text-xs text-gray-400">远东</span>
       </div>
     </div>
   )
 }
 
-// 主页面组件
+// 主页面组件 - 升级版
 export default function MusicHistoryMapPage() {
   const [selectedEra, setSelectedEra] = useState(null)
   const [mounted, setMounted] = useState(false)
@@ -730,10 +987,25 @@ export default function MusicHistoryMapPage() {
     setMounted(true)
   }, [])
   
+  const theme = selectedEra ? getThemeColor(selectedEra.themeKey) : themeColors['russian-soul']
+  
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#E0E0E0' }}>
+    <div 
+      className="min-h-screen flex flex-col"
+      style={{ backgroundColor: '#14141e' }}
+    >
+      {/* 粒子效果背景 */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="particle particle-1" style={{ borderColor: theme.glowColor }}/>
+        <div className="particle particle-2" style={{ borderColor: theme.glowColor }}/>
+        <div className="particle particle-3" style={{ borderColor: theme.glowColor }}/>
+        <div className="particle particle-4" style={{ borderColor: theme.glowColor }}/>
+        <div className="particle particle-5" style={{ borderColor: theme.glowColor }}/>
+      </div>
+      
+      {/* 装饰元素 */}
       <div className="fixed top-4 left-4 z-10">
-        <Matryoshka x={0} y={0} size={30}/>
+        <Matryoshka x={0} y={0} size={30} opacity={0.2}/>
       </div>
       <div className="fixed top-8 right-8 z-10">
         <ChurchSilhouette x={0} y={0} size={25}/>
@@ -745,51 +1017,86 @@ export default function MusicHistoryMapPage() {
         <MusicStaff x={0} y={0} width={35}/>
       </div>
       
-      <header className="relative z-10 pt-8 pb-6 px-4">
+      {/* 顶部导航栏 */}
+      <header 
+        className="relative z-10 pt-8 pb-6 px-4"
+        style={{ borderBottom: `1px solid ${theme.glowColor}20` }}
+      >
         <div className="max-w-6xl mx-auto text-center">
+          {/* 装饰线 */}
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="h-px w-24 bg-gradient-to-r from-transparent to-gray-400"/>
-            <svg className="w-6 h-6 text-gray-600" viewBox="0 0 24 24" fill="currentColor">
+            <div className="h-px w-24" style={{ background: `linear-gradient(to right, transparent, ${theme.glowColor})` }}/>
+            <svg 
+              className="w-6 h-6 transition-all duration-500 hover:rotate-180" 
+              viewBox="0 0 24 24" 
+              fill={theme.glowColor}
+            >
               <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
             </svg>
-            <div className="h-px w-24 bg-gradient-to-l from-transparent to-gray-400"/>
+            <div className="h-px w-24" style={{ background: `linear-gradient(to left, transparent, ${theme.glowColor})` }}/>
           </div>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tracking-tight text-gray-800">
+          <h1 
+            className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tracking-tight"
+            style={{ 
+              color: theme.glowColor,
+              fontFamily: "'Playfair Display', Georgia, serif",
+              textShadow: `0 0 40px ${theme.glowColor}30`
+            }}
+          >
             俄罗斯音乐史地图
           </h1>
           
-          <p className="text-lg md:text-xl mb-4 text-gray-600">
+          <p className="text-lg md:text-xl mb-4" style={{ color: theme.primary + 'cc' }}>
             从东正教圣咏到当代多元发展
           </p>
           
-          <p className="text-sm text-gray-500">
+          <p className="text-sm" style={{ color: theme.glowColor + '88' }}>
             История русской музыки
           </p>
           
+          {/* 底部装饰 */}
           <div className="flex items-center justify-center gap-2 mt-4">
-            <div className="w-2 h-2 rounded-full bg-gray-400"/>
-            <div className="w-20 h-px bg-gray-300"/>
-            <div className="w-3 h-3 rounded-full bg-gray-500"/>
-            <div className="w-20 h-px bg-gray-300"/>
-            <div className="w-2 h-2 rounded-full bg-gray-400"/>
+            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: theme.glowColor, opacity: 0.5 }}/>
+            <div className="w-20 h-px" style={{ backgroundColor: theme.glowColor, opacity: 0.3 }}/>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.glowColor, opacity: 0.7 }}/>
+            <div className="w-20 h-px" style={{ backgroundColor: theme.glowColor, opacity: 0.3 }}/>
+            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: theme.glowColor, opacity: 0.5 }}/>
           </div>
         </div>
       </header>
       
+      {/* 主内容区域 */}
       <main className="flex-1 relative z-10 px-4 py-2">
         <div className="max-w-6xl mx-auto h-full">
           <div className="relative h-full">
             <div 
               className={`relative rounded-2xl overflow-hidden h-full transition-all duration-1000 ${mounted ? 'opacity-100 scale-100' : 'opacity-0 scale-98'}`}
-              style={{ background: 'linear-gradient(145deg, #f5f5f5 0%, #e8e8e8 50%, #dcdcdc 100%)', border: '1px solid rgba(180, 180, 180, 0.5)', boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1), 0 0 60px rgba(0, 0, 0, 0.05)' }}
+              style={{ 
+                background: 'linear-gradient(145deg, #1a1a24 0%, #14141e 50%, #101018 100%)',
+                border: `1px solid ${theme.glowColor}20`,
+                boxShadow: `0 10px 40px rgba(0, 0, 0, 0.3), 0 0 60px ${theme.glowColor}10, inset 0 0 100px rgba(0, 0, 0, 0.2)`
+              }}
             >
-              <div className="absolute inset-2 rounded-xl pointer-events-none" style={{ border: '1px solid rgba(150, 150, 150, 0.2)' }}/>
+              {/* 暗角效果 */}
+              <div 
+                className="absolute inset-0 pointer-events-none z-10"
+                style={{
+                  boxShadow: 'inset 0 0 150px rgba(0, 0, 0, 0.5), inset 0 0 80px rgba(0, 0, 0, 0.3)'
+                }}
+              />
               
-              <Matryoshka x={20} y={75} size={25}/>
-              <Matryoshka x={85} y={80} size={18}/>
-              <Balalaika x={15} y={25} size={20}/>
-              <Balalaika x={88} y={22} size={14}/>
+              {/* 内部边框装饰 */}
+              <div 
+                className="absolute inset-2 rounded-xl pointer-events-none"
+                style={{ border: `1px solid ${theme.glowColor}10` }}
+              />
+              
+              {/* 装饰元素 */}
+              <Matryoshka x={20} y={75} size={25} opacity={0.15}/>
+              <Matryoshka x={85} y={80} size={18} opacity={0.12}/>
+              <Balalaika x={15} y={25} size={20} opacity={0.1}/>
+              <Balalaika x={88} y={22} size={14} opacity={0.08}/>
               <ChurchSilhouette x={92} y={70} size={22}/>
               <BirchTree x={8} y={60} size={18}/>
               <BirchTree x={75} y={15} size={15}/>
@@ -799,10 +1106,30 @@ export default function MusicHistoryMapPage() {
               <FloatingNote x={70} y={18} size={8}/>
               <FloatingNote x={45} y={12} size={9}/>
               
+              {/* 地图涟漪动画 - 初始化时 */}
+              {mounted && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="ripple-origin" style={{ backgroundColor: theme.glowColor }}/>
+                </div>
+              )}
+              
               <div className="relative p-4 md:p-6 lg:p-8 h-full flex flex-col">
                 <div className="relative flex-1 min-h-[400px] md:min-h-[450px]">
                   <RussianMapSVG />
                   
+                  {/* 城市标记 */}
+                  {cities.map((city, idx) => (
+                    <CityMarker
+                      key={idx}
+                      x={city.x}
+                      y={city.y}
+                      size={city.type === 'major' ? 18 : 12}
+                      color={theme.glowColor}
+                      isActive={selectedEra?.city === city.name}
+                    />
+                  ))}
+                  
+                  {/* 时期节点 */}
                   {mounted && eras.map((era, idx) => (
                     <EraNode 
                       key={era.id} 
@@ -813,34 +1140,234 @@ export default function MusicHistoryMapPage() {
                     />
                   ))}
                   
-                  <Legend />
+                  <Legend activeEra={selectedEra}/>
                 </div>
                 
-                <p className="text-center text-sm mt-4 text-gray-500">
+                <p className="text-center text-sm mt-4" style={{ color: theme.glowColor + '88' }}>
                   点击地图上的节点探索俄罗斯音乐史的各个时期
                 </p>
               </div>
               
-              <div className="h-0.5" style={{ background: 'linear-gradient(to right, transparent, rgba(150, 150, 150, 0.3), transparent)' }}/>
+              {/* 底部装饰线 */}
+              <div 
+                className="h-px"
+                style={{ background: `linear-gradient(to right, transparent, ${theme.glowColor}30, transparent)` }}
+              />
             </div>
           </div>
         </div>
       </main>
       
+      {/* 时间轴 */}
       <footer className="relative z-10">
         <Timeline eras={eras} activeEra={selectedEra} onEraClick={setSelectedEra}/>
       </footer>
       
-      {selectedEra && <DetailModal era={selectedEra} onClose={() => setSelectedEra(null)}/>}
+      {/* 详情弹窗 */}
+      {selectedEra && <DetailModal era={selectedEra} onClose={() => setSelectedEra(null)} />}
       
+      {/* 全局样式 */}
       <style jsx>{`
+        /* 渐入动画 */
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* 模态框动画 */
+        @keyframes modalIn {
+          from { 
+            opacity: 0; 
+            transform: scale(0.95) translateY(20px);
+          }
+          to { 
+            opacity: 1; 
+            transform: scale(1) translateY(0);
+          }
+        }
+        .animate-modal-in { animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        /* 脉动环动画 */
+        @keyframes pulseRing {
+          0% {
+            transform: scale(0.8);
+            opacity: 0.8;
+          }
+          100% {
+            transform: scale(2.5);
+            opacity: 0;
+          }
+        }
+        .pulse-ring {
+          animation: pulseRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        
+        /* 城市标记脉动 */
+        @keyframes cityPulse {
+          0%, 100% {
+            opacity: 0.3;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.6;
+            transform: scale(1.2);
+          }
+        }
+        .city-pulse {
+          animation: cityPulse 3s ease-in-out infinite;
+        }
+        .city-pulse.delay-1 {
+          animation-delay: 1.5s;
+        }
+        
+        /* 城市光晕 */
+        @keyframes cityGlow {
+          0%, 100% {
+            filter: drop-shadow(0 0 4px currentColor);
+          }
+          50% {
+            filter: drop-shadow(0 0 10px currentColor);
+          }
+        }
+        .city-glow {
+          animation: cityGlow 2s ease-in-out infinite;
+        }
+        
+        /* 浮动音符动画 */
+        @keyframes floatNote {
+          0%, 100% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 0.1;
+          }
+          50% {
+            transform: translateY(-10px) rotate(5deg);
+            opacity: 0.2;
+          }
+        }
+        .floating-note {
+          animation: floatNote 4s ease-in-out infinite;
+        }
+        
+        /* 发光文字 */
+        @keyframes glowText {
+          0%, 100% {
+            text-shadow: 0 0 5px currentColor;
+          }
+          50% {
+            text-shadow: 0 0 15px currentColor, 0 0 25px currentColor;
+          }
+        }
+        .glow-text:hover {
+          animation: glowText 1s ease-in-out infinite;
+        }
+        
+        /* 涟漪动画 */
+        @keyframes rippleOut {
+          0% {
+            transform: scale(0);
+            opacity: 0.3;
+          }
+          100% {
+            transform: scale(15);
+            opacity: 0;
+          }
+        }
+        .ripple-origin {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          animation: rippleOut 2s ease-out forwards;
+        }
+        
+        /* Tooltip 背景动画 */
+        @keyframes tooltipIn {
+          from {
+            opacity: 0;
+            transform: translateY(5px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .tooltip-bg {
+          animation: tooltipIn 0.2s ease-out forwards;
+        }
+        
+        /* 隐藏滚动条 */
+        .scrollbar-hide::-webkit-scrollbar { 
+          display: none; 
+        }
+        .scrollbar-hide { 
+          -ms-overflow-style: none; 
+          scrollbar-width: none; 
+        }
+        
+        /* 粒子效果 */
+        .particle {
+          position: absolute;
+          width: 4px;
+          height: 4px;
+          border-radius: 50%;
+          border: 1px solid;
+          opacity: 0.15;
+          animation: float 20s linear infinite;
+        }
+        
+        .particle-1 {
+          left: 10%;
+          top: 20%;
+          animation-duration: 25s;
+        }
+        .particle-2 {
+          left: 30%;
+          top: 60%;
+          animation-duration: 30s;
+          animation-delay: 5s;
+        }
+        .particle-3 {
+          left: 50%;
+          top: 40%;
+          animation-duration: 20s;
+          animation-delay: 10s;
+        }
+        .particle-4 {
+          left: 70%;
+          top: 80%;
+          animation-duration: 35s;
+          animation-delay: 15s;
+        }
+        .particle-5 {
+          left: 90%;
+          top: 30%;
+          animation-duration: 28s;
+          animation-delay: 8s;
+        }
+        
+        @keyframes float {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+          25% {
+            transform: translate(100px, 50px) rotate(90deg);
+          }
+          50% {
+            transform: translate(50px, 100px) rotate(180deg);
+          }
+          75% {
+            transform: translate(-50px, 50px) rotate(270deg);
+          }
+          100% {
+            transform: translate(0, 0) rotate(360deg);
+          }
+        }
+        
+        /* 加载动画 */
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
       `}</style>
     </div>
   )
