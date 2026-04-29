@@ -79,61 +79,6 @@ export default function MusicHistoryPage() {
         composer={selectedComposer}
         onClose={handleComposerClose}
       />
-
-      <style jsx global>{`
-        /* Google Fonts */
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+SC:wght@300;400;500;600&family=Noto+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Serif+SC:wght@400;500;600;700&display=swap');
-        
-        /* CSS Variables */
-        :root {
-          --color-primary: #D4AF37;
-          --color-primary-light: #F4E4BA;
-          --color-primary-dark: #8B7355;
-          --color-secondary-blue: #1E3A5F;
-          --color-secondary-red: #8B0000;
-          --color-accent-passion: #FF4444;
-          --color-accent-romance: #E8B4B8;
-          --color-accent-mystic: #6B5B95;
-          --color-bg-deep: #0A0E17;
-          --color-bg-card: #141B2D;
-          --color-bg-overlay: rgba(10, 14, 23, 0.95);
-          --color-text-primary: #F5F5F5;
-          --color-text-secondary: #B8C5D6;
-          --color-text-muted: #6B7B8C;
-        }
-
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-
-        body {
-          font-family: 'Noto Sans SC', sans-serif;
-          background: var(--color-bg-deep);
-          color: var(--color-text-primary);
-          overflow: hidden;
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-          width: 6px;
-          height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-          background: rgba(212, 175, 55, 0.3);
-          border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-          background: rgba(212, 175, 55, 0.5);
-        }
-      `}</style>
     </div>
   );
 }
