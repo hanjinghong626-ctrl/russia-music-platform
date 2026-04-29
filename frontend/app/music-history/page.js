@@ -178,6 +178,219 @@ const cities = [
 // 获取当前主题色
 const getThemeColor = (themeKey) => themeColors[themeKey] || themeColors['russian-soul']
 
+// =============================================
+// 俄罗斯文化艺术符号 SVG 装饰组件
+// =============================================
+
+// 1. 洋葱穹顶装饰 (Купол) - 东正教标志
+function KupolDome({ x, y, size = 24, color = '#D4AF37', opacity = 0.2 }) {
+  return (
+    <g transform={`translate(${x}, ${y})`} opacity={opacity}>
+      <path 
+        d={`M ${size * 0.3} ${size * 0.6} Q ${size * 0.3} ${size * 0.15} ${size * 0.5} ${size * 0.05} Q ${size * 0.7} ${size * 0.15} ${size * 0.7} ${size * 0.6}`} 
+        stroke={color} 
+        fill="none" 
+        strokeWidth="1.5"
+      />
+      <line x1={size * 0.5} y1={size * 0.05} x2={size * 0.5} y2={-size * 0.05} stroke={color} strokeWidth="1.5"/>
+      <circle cx={size * 0.5} cy={-size * 0.05} r={size * 0.08} fill={color}/>
+      <line x1={size * 0.3} y1={size * 0.6} x2={size * 0.7} y2={size * 0.6} stroke={color} strokeWidth="1"/>
+    </g>
+  )
+}
+
+// 2. 赫赫洛马花饰 (Хохлома) - 俄罗斯民间艺术
+function KhokhlomaFlower({ x, y, size = 20, color = '#D4AF37', opacity = 0.25 }) {
+  return (
+    <g transform={`translate(${x}, ${y})`} opacity={opacity}>
+      {/* 金色花瓣 */}
+      <path d={`M ${size * 0.5} ${size * 0.2} Q ${size * 0.7} ${size * 0.4} ${size * 0.5} ${size * 0.6} Q ${size * 0.3} ${size * 0.4} ${size * 0.5} ${size * 0.2}`} fill={color}/>
+      <path d={`M ${size * 0.2} ${size * 0.4} Q ${size * 0.4} ${size * 0.6} ${size * 0.6} ${size * 0.5} Q ${size * 0.4} ${size * 0.3} ${size * 0.2} ${size * 0.4}`} fill={color}/>
+      <path d={`M ${size * 0.8} ${size * 0.4} Q ${size * 0.6} ${size * 0.6} ${size * 0.4} ${size * 0.5} Q ${size * 0.6} ${size * 0.3} ${size * 0.8} ${size * 0.4}`} fill={color}/>
+      {/* 红色花心 */}
+      <circle cx={size * 0.5} cy={size * 0.4} r={size * 0.12} fill="#8B0000" opacity="0.8"/>
+      {/* 中心点 */}
+      <circle cx={size * 0.5} cy={size * 0.4} r={size * 0.05} fill={color}/>
+    </g>
+  )
+}
+
+// 3. 东正教十字 (Orthodox Cross)
+function OrthodoxCross({ x, y, size = 18, color = '#D4AF37', opacity = 0.25 }) {
+  return (
+    <g transform={`translate(${x}, ${y})`} opacity={opacity}>
+      <line x1={size * 0.5} y1={size * 0.1} x2={size * 0.5} y2={size * 0.9} stroke={color} strokeWidth="2"/>
+      <line x1={size * 0.2} y1={size * 0.35} x2={size * 0.8} y2={size * 0.35} stroke={color} strokeWidth="2"/>
+      <line x1={size * 0.35} y1={size * 0.25} x2={size * 0.65} y2={size * 0.25} stroke={color} strokeWidth="1.5"/>
+    </g>
+  )
+}
+
+// 4. 法贝热蛋形框 (Faberge Egg Frame)
+function FabergeEgg({ x, y, size = 30, color = '#D4AF37', opacity = 0.2 }) {
+  return (
+    <g transform={`translate(${x}, ${y})`} opacity={opacity}>
+      <ellipse cx={size * 0.5} cy={size * 0.55} rx={size * 0.35} ry={size * 0.42} stroke={color} fill="none" strokeWidth="1.5"/>
+      <path d={`M ${size * 0.25} ${size * 0.2} Q ${size * 0.5} ${size * 0.02} ${size * 0.75} ${size * 0.2}`} stroke={color} fill="none" strokeWidth="1.5"/>
+      <circle cx={size * 0.5} cy={size * 0.05} r={size * 0.06} fill={color}/>
+      {/* 蛋面装饰 */}
+      <ellipse cx={size * 0.5} cy={size * 0.55} rx={size * 0.2} ry={size * 0.25} stroke={color} fill="none" strokeWidth="0.5" opacity="0.5"/>
+    </g>
+  )
+}
+
+// 5. 俄罗斯卷草纹分隔线 (Russian Vine Pattern)
+function RussianVineLine({ x, y, width = 60, height = 8, color = '#D4AF37', opacity = 0.2 }) {
+  return (
+    <g transform={`translate(${x}, ${y})`} opacity={opacity}>
+      <path 
+        d={`M 0 ${height * 0.5} Q ${width * 0.1} ${-height * 0.3} ${width * 0.2} ${height * 0.5} Q ${width * 0.3} ${height * 1.3} ${width * 0.4} ${height * 0.5} Q ${width * 0.5} ${-height * 0.3} ${width * 0.6} ${height * 0.5} Q ${width * 0.7} ${height * 1.3} ${width * 0.8} ${height * 0.5} Q ${width * 0.9} ${-height * 0.3} ${width} ${height * 0.5}`} 
+        stroke={color} 
+        fill="none" 
+        strokeWidth="1"
+      />
+      <circle cx={width * 0.2} cy={height * 0.5} r={1.5} fill={color}/>
+      <circle cx={width * 0.5} cy={height * 0.5} r={1.5} fill={color}/>
+      <circle cx={width * 0.8} cy={height * 0.5} r={1.5} fill={color}/>
+    </g>
+  )
+}
+
+// 6. 俄罗斯蕾丝角花 (Russian Lace Corner)
+function RussianLaceCorner({ x, y, size = 40, color = '#D4AF37', opacity = 0.15, position = 'top-left' }) {
+  const transforms = {
+    'top-left': `translate(${x}, ${y})`,
+    'top-right': `translate(${x + size}, ${y}) scale(-1, 1)`,
+    'bottom-left': `translate(${x}, ${y + size}) scale(1, -1)`,
+    'bottom-right': `translate(${x + size}, ${y + size}) scale(-1, -1)`
+  }
+  
+  return (
+    <g transform={transforms[position]} opacity={opacity}>
+      <path d={`M 0 0 Q ${size * 0.3} ${size * 0.1} ${size * 0.5} 0 Q ${size * 0.7} ${size * 0.1} ${size} 0`} stroke={color} fill="none" strokeWidth="1"/>
+      <path d={`M 0 0 Q ${size * 0.1} ${size * 0.3} 0 ${size * 0.5} Q ${size * 0.1} ${size * 0.7} 0 ${size}`} stroke={color} fill="none" strokeWidth="1"/>
+      <circle cx={size * 0.3} cy={size * 0.15} r={2} fill={color}/>
+      <circle cx={size * 0.15} cy={size * 0.3} r={2} fill={color}/>
+      <path d={`M ${size * 0.1} ${size * 0.1} L ${size * 0.4} ${size * 0.4}`} stroke={color} strokeWidth="0.5"/>
+      <circle cx={size * 0.5} cy={size * 0.08} r={1.5} fill={color}/>
+      <circle cx={size * 0.08} cy={size * 0.5} r={1.5} fill={color}/>
+    </g>
+  )
+}
+
+// 7. 赫赫洛马波浪装饰线 (Kokhloma Wave Border)
+function KhokhlomaWaveBorder({ width = 200, color = '#D4AF37', accent = '#8B0000', opacity = 0.25 }) {
+  return (
+    <svg width={width} height="12" style={{ opacity }}>
+      <defs>
+        <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="transparent"/>
+          <stop offset="20%" stopColor={color}/>
+          <stop offset="50%" stopColor={accent}/>
+          <stop offset="80%" stopColor={color}/>
+          <stop offset="100%" stopColor="transparent"/>
+        </linearGradient>
+      </defs>
+      <path 
+        d={`M 0 6 Q ${width * 0.1} 0 ${width * 0.2} 6 Q ${width * 0.3} 12 ${width * 0.4} 6 Q ${width * 0.5} 0 ${width * 0.6} 6 Q ${width * 0.7} 12 ${width * 0.8} 6 Q ${width * 0.9} 0 ${width} 6`} 
+        stroke="url(#waveGrad)" 
+        fill="none" 
+        strokeWidth="2"
+      />
+    </svg>
+  )
+}
+
+// 8. 东正教穹顶天际线剪影 (Orthodox Skyline)
+function OrthodoxSkyline({ width = 150, height = 30, color = '#D4AF37', opacity = 0.12 }) {
+  return (
+    <svg width={width} height={height} style={{ opacity }}>
+      {/* 多个穹顶剪影 */}
+      <g fill={color}>
+        {/* 左起第一个小穹顶 */}
+        <path d={`M 5 ${height} L 5 ${height * 0.6} Q 10 ${height * 0.3} 15 ${height * 0.6} L 15 ${height} Z`}/>
+        <line x1="10" y1={height * 0.3} x2="10" y2={height * 0.15} stroke={color} strokeWidth="1"/>
+        <circle cx="10" cy={height * 0.12} r="2" fill={color}/>
+        
+        {/* 中间大穹顶 */}
+        <path d={`M 40 ${height} L 40 ${height * 0.5} Q 55 ${height * 0.15} 70 ${height * 0.5} L 70 ${height} Z`}/>
+        <line x1="55" y1={height * 0.15} x2="55" y2={height * 0.05} stroke={color} strokeWidth="1.5"/>
+        <circle cx="55" cy={height * 0.03} r="2.5" fill={color}/>
+        
+        {/* 右侧小穹顶 */}
+        <path d={`M 85 ${height} L 85 ${height * 0.65} Q 95 ${height * 0.4} 105 ${height * 0.65} L 105 ${height} Z`}/>
+        <line x1="95" y1={height * 0.4} x2="95" y2={height * 0.3} stroke={color} strokeWidth="1"/>
+        <circle cx="95" cy={height * 0.28} r="1.5" fill={color}/>
+        
+        {/* 最右侧塔尖 */}
+        <path d={`M 120 ${height} L 120 ${height * 0.7} L 125 ${height * 0.7} L 125 ${height * 0.4} L 130 ${height * 0.4} L 130 ${height * 0.7} L 135 ${height * 0.7} L 135 ${height} Z`}/>
+        <polygon points="127.5,0 125,40 130,40" fill={color}/>
+      </g>
+    </svg>
+  )
+}
+
+// 9. 斯拉夫装饰分隔线 (Slavic Decorative Divider)
+function SlavicDivider({ width = 120, color = '#D4AF37', opacity = 0.2 }) {
+  return (
+    <svg width={width} height="20" style={{ opacity }}>
+      <g fill={color}>
+        {/* 中心菱形 */}
+        <polygon points={`${width/2},2 ${width/2 + 6},10 ${width/2},18 ${width/2 - 6},10`} stroke={color} strokeWidth="1" fill="none"/>
+        <circle cx={width/2} cy="10" r="2" fill={color}/>
+        
+        {/* 左右装饰线 */}
+        <line x1="0" y1="10" x2={width/2 - 10} y2="10" stroke={color} strokeWidth="1"/>
+        <line x1={width/2 + 10} y1="10" x2={width} y2="10" stroke={color} strokeWidth="1"/>
+        
+        {/* 左右小菱形 */}
+        <polygon points={`10,10 14,7 18,10 14,13`} fill={color}/>
+        <polygon points={`${width-10},10 ${width-6},7 ${width-2},10 ${width-6},13`} fill={color}/>
+        
+        {/* 小圆点 */}
+        <circle cx="5" cy="10" r="1" fill={color}/>
+        <circle cx={width - 5} cy="10" r="1" fill={color}/>
+      </g>
+    </svg>
+  )
+}
+
+// 10. 穹顶形状暗角装饰 (Cupola Vignette)
+function CupolaVignette({ theme }) {
+  return (
+    <>
+      {/* 左上角穹顶暗角 */}
+      <div 
+        className="absolute top-0 left-0 w-32 h-32 pointer-events-none z-10"
+        style={{
+          background: `radial-gradient(ellipse at top left, transparent 60%, rgba(20, 20, 30, 0.6) 100%)`
+        }}
+      />
+      {/* 右上角穹顶暗角 */}
+      <div 
+        className="absolute top-0 right-0 w-32 h-32 pointer-events-none z-10"
+        style={{
+          background: `radial-gradient(ellipse at top right, transparent 60%, rgba(20, 20, 30, 0.6) 100%)`
+        }}
+      />
+      {/* 左下角穹顶暗角 */}
+      <div 
+        className="absolute bottom-0 left-0 w-32 h-32 pointer-events-none z-10"
+        style={{
+          background: `radial-gradient(ellipse at bottom left, transparent 60%, rgba(20, 20, 30, 0.6) 100%)`
+        }}
+      />
+      {/* 右下角穹顶暗角 */}
+      <div 
+        className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none z-10"
+        style={{
+          background: `radial-gradient(ellipse at bottom right, transparent 60%, rgba(20, 20, 30, 0.6) 100%)`
+        }}
+      />
+    </>
+  )
+}
+
 // 音乐图标组件
 function MusicIcon({ type, size = 20, color = 'currentColor' }) {
   const icons = {
@@ -350,7 +563,7 @@ function ChurchSilhouette({ x, y, size = 25 }) {
         L ${-size * 0.2} ${-size * 0.1}
         L ${-size * 0.2} ${-size * 0.4}
         L ${-size * 0.15} ${-size * 0.4}
-        L ${-size * 0.15} ${-size * 0.6}
+        L ${-size * 0.15} ${size * 0.6}
         L ${size * 0.15} ${-size * 0.6}
         L ${size * 0.15} ${-size * 0.4}
         L ${size * 0.2} ${-size * 0.4}
@@ -470,7 +683,7 @@ function RussianMapSVG() {
   )
 }
 
-// 时期节点组件 - 升级版音符标记
+// 时期节点组件 - 升级版洋葱穹顶标记
 function EraNode({ era, index, isActive, onClick }) {
   const theme = getThemeColor(era.themeKey)
   const [showTooltip, setShowTooltip] = useState(false)
@@ -486,64 +699,60 @@ function EraNode({ era, index, isActive, onClick }) {
         transformOrigin: `${era.position.x}% ${era.position.y}%`
       }}
     >
-      {/* 外层脉动环 - 仅活跃时显示 */}
+      {/* 外层金色涟漪 - 活跃状态 */}
       {isActive && (
-        <circle 
-          cx={era.position.x}
-          cy={era.position.y}
-          r="4"
-          fill="none"
-          stroke={era.glowColor}
-          strokeWidth="2"
-          opacity="0.5"
-          className="pulse-ring"
-        />
+        <>
+          <circle 
+            cx={era.position.x}
+            cy={era.position.y}
+            r="5"
+            fill="none"
+            stroke={era.glowColor}
+            strokeWidth="1.5"
+            opacity="0.4"
+            className="pulse-ring"
+          />
+          <circle 
+            cx={era.position.x}
+            cy={era.position.y}
+            r="7"
+            fill="none"
+            stroke={era.glowColor}
+            strokeWidth="1"
+            opacity="0.2"
+            className="pulse-ring"
+            style={{ animationDelay: '0.5s' }}
+          />
+        </>
       )}
       
-      {/* 音符形状主标记 */}
+      {/* 洋葱穹顶形状主标记 */}
       <g transform={`translate(${era.position.x}, ${era.position.y})`}>
-        {/* 发光背景 */}
-        <ellipse 
-          cx="0" 
-          cy="1" 
-          rx={isActive ? "2.5" : "2"} 
-          ry={isActive ? "1.8" : "1.5"} 
-          fill={era.glowColor}
-          opacity={isActive ? 0.6 : 0.3}
-          transform="rotate(-20)"
-        />
-        {/* 音符头部 */}
-        <ellipse 
-          cx="0" 
-          cy="1" 
-          rx={isActive ? "2" : "1.5"} 
-          ry={isActive ? "1.5" : "1.2"} 
-          fill={era.color}
-          transform="rotate(-20)"
-          style={{
-            filter: isActive ? `drop-shadow(0 0 6px ${era.glowColor})` : 'none'
-          }}
-        />
-        {/* 音符符干 */}
+        {/* 穹顶底部 */}
         <rect 
-          x="0.8" 
-          y={isActive ? "-5" : "-4"} 
-          width="0.3" 
-          height="5" 
+          x="-2" 
+          y="0" 
+          width="4" 
+          height="3" 
           fill={era.color}
-          style={{
-            filter: isActive ? `drop-shadow(0 0 4px ${era.glowColor})` : 'none'
-          }}
+          style={{ filter: isActive ? `drop-shadow(0 0 4px ${era.glowColor})` : 'none' }}
         />
-        {/* 音符钩 */}
+        {/* 穹顶主体 - 洋葱形状 */}
         <path 
-          d={`M 1.1 ${isActive ? "-5" : "-4"} Q 2.5 ${isActive ? "-3" : "-2.5"} 1.8 ${isActive ? "-1" : "-0.5"}`}
-          stroke={era.color}
-          strokeWidth="0.4"
-          fill="none"
-          style={{
-            filter: isActive ? `drop-shadow(0 0 3px ${era.glowColor})` : 'none'
-          }}
+          d={`M -2 0 Q -2 -2 0 -4 Q 2 -2 2 0`} 
+          fill={era.color}
+          style={{ filter: isActive ? `drop-shadow(0 0 6px ${era.glowColor})` : 'none' }}
+        />
+        {/* 穹顶尖顶 */}
+        <line x1="0" y1="-4" x2="0" y2="-5" stroke={era.glowColor} strokeWidth="0.8"/>
+        <circle cx="0" cy="-5" r="0.6" fill={era.glowColor}/>
+        {/* 发光核心 */}
+        <circle 
+          cx="0" 
+          cy="-1" 
+          r="0.8" 
+          fill={era.glowColor}
+          opacity={isActive ? 1 : 0.6}
         />
       </g>
       
@@ -603,7 +812,7 @@ function EraNode({ era, index, isActive, onClick }) {
   )
 }
 
-// 详细弹窗组件 - 升级版作曲家卡片
+// 详细弹窗组件 - 升级版俄罗斯艺术风格
 function DetailModal({ era, onClose }) {
   const theme = getThemeColor(era.themeKey)
   const modalRef = useRef(null)
@@ -635,7 +844,7 @@ function DetailModal({ era, onClose }) {
       {/* 背景遮罩 */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}/>
       
-      {/* 弹窗主体 */}
+      {/* 弹窗主体 - 赫赫洛马风格金色拱形装饰框 */}
       <div 
         ref={modalRef}
         className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl shadow-2xl animate-modal-in"
@@ -644,16 +853,39 @@ function DetailModal({ era, onClose }) {
           border: `1px solid ${era.glowColor}40`
         }}
       >
-        {/* 顶部金色装饰线 */}
-        <div 
-          className="sticky top-0 h-1 rounded-t-2xl"
-          style={{ background: `linear-gradient(90deg, transparent, ${era.glowColor}, ${era.color}, ${era.glowColor}, transparent)` }}
-        />
+        {/* 顶部金色拱形装饰框 */}
+        <div className="sticky top-0 z-10">
+          {/* 赫赫洛马风格金色拱门装饰 */}
+          <svg className="w-full h-8" viewBox="0 0 600 30" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="archGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="transparent"/>
+                <stop offset="15%" stopColor={era.glowColor}/>
+                <stop offset="50%" stopColor={era.color}/>
+                <stop offset="85%" stopColor={era.glowColor}/>
+                <stop offset="100%" stopColor="transparent"/>
+              </linearGradient>
+            </defs>
+            {/* 拱门装饰线 */}
+            <path d={`M 0 30 L 0 15 Q 50 0 100 5 Q 150 10 200 3 Q 250 -2 300 3 Q 350 8 400 3 Q 450 -2 500 5 Q 550 10 600 15 L 600 30`} 
+              stroke="url(#archGrad)" fill="none" strokeWidth="2"/>
+            {/* 穹顶装饰 */}
+            <circle cx="300" cy="5" r="4" fill={era.glowColor}/>
+            {/* 两侧小花饰 */}
+            <KhokhlomaFlower x={50} y={12} size={14} color={era.glowColor} opacity={0.6}/>
+            <KhokhlomaFlower x={550} y={12} size={14} color={era.glowColor} opacity={0.6}/>
+          </svg>
+        </div>
+        
+        {/* 顶部金红波浪装饰线 */}
+        <div className="absolute top-6 left-0 right-0 flex justify-center">
+          <KhokhlomaWaveBorder width={300} color={era.glowColor} accent="#8B0000" opacity={0.3}/>
+        </div>
         
         {/* 关闭按钮 */}
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg z-10"
+          className="absolute top-10 right-4 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg z-20"
           style={{ 
             background: `${era.color}20`,
             border: `1px solid ${era.glowColor}50`
@@ -664,15 +896,22 @@ function DetailModal({ era, onClose }) {
         
         {/* 内容区域 */}
         <div className="p-6 md:p-8">
-          {/* 头部信息 */}
+          {/* 头部信息 - 法贝热蛋形肖像框 */}
           <div className="flex items-start gap-4 mb-6">
-            <div 
-              className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0"
-              style={{ background: `linear-gradient(135deg, ${era.glowColor} 0%, ${era.color} 100%)` }}
-            >
-              <MusicIcon type={era.icon} size={40} color="#fff"/>
+            {/* 法贝热蛋形框包裹的头像 */}
+            <div className="relative flex-shrink-0">
+              <FabergeEgg x={0} y={0} size={70} color={era.glowColor} opacity={0.4}/>
+              <div 
+                className="absolute top-2 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
+                style={{ 
+                  background: `linear-gradient(135deg, ${era.glowColor} 0%, ${era.color} 100%)`,
+                  boxShadow: `0 0 20px ${era.glowColor}40`
+                }}
+              >
+                <MusicIcon type={era.icon} size={32} color="#fff"/>
+              </div>
             </div>
-            <div>
+            <div className="flex-1 pl-2">
               <h2 
                 className="text-3xl font-bold mb-1"
                 style={{ 
@@ -684,6 +923,10 @@ function DetailModal({ era, onClose }) {
               </h2>
               <p className="text-gray-400 text-lg">{era.nameRu}</p>
               <p className="text-gray-500 text-sm mt-1">{era.period} · {era.year}</p>
+              {/* 斯拉夫装饰分隔线 */}
+              <div className="mt-2">
+                <SlavicDivider width={150} color={era.glowColor} opacity={0.25}/>
+              </div>
             </div>
           </div>
           
@@ -692,7 +935,9 @@ function DetailModal({ era, onClose }) {
             className="flex items-center gap-2 mb-6 p-3 rounded-lg"
             style={{ backgroundColor: `${era.color}15` }}
           >
-            <svg className="w-5 h-5" fill={era.glowColor} viewBox="0 0 20 20">
+            {/* 小穹顶图标 */}
+            <KupolDome x={0} y={0} size={16} color={era.glowColor} opacity={0.6}/>
+            <svg className="w-5 h-5" fill={era.glowColor} viewBox="0 0 20 20" style={{ marginLeft: '4px' }}>
               <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/>
             </svg>
             <span style={{ color: era.glowColor }} className="font-medium">{era.city}</span>
@@ -713,41 +958,42 @@ function DetailModal({ era, onClose }) {
                 borderLeft: `3px solid ${era.glowColor}`
               }}
             >
-              <p className="text-gray-300 italic text-base">
+              {/* 引用装饰 */}
+              <OrthodoxCross x={8} y={8} size={14} color={era.glowColor} opacity={0.3}/>
+              <p className="text-gray-300 italic text-base pl-6">
                 {quotes[era.id]}
               </p>
             </div>
           )}
           
-          {/* 代表作曲家 */}
+          {/* 代表作曲家 - 洋葱穹顶图标装饰 */}
           <div className="mb-5">
             <h3 
               className="text-sm uppercase tracking-wider mb-3 flex items-center gap-2"
               style={{ color: era.glowColor }}
             >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
-              </svg>
+              <KupolDome x={0} y={0} size={14} color={era.glowColor} opacity={0.8}/>
               代表作曲家
             </h3>
             <div className="flex flex-wrap gap-2">
               {era.composers.map((composer, idx) => (
                 <span 
                   key={idx} 
-                  className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 hover:shadow-md"
+                  className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 hover:shadow-md flex items-center gap-2"
                   style={{ 
                     backgroundColor: `${era.color}20`, 
                     border: `1px solid ${era.glowColor}40`, 
                     color: era.glowColor 
                   }}
                 >
+                  <KupolDome x={0} y={0} size={10} color={era.glowColor} opacity={0.7}/>
                   {composer}
                 </span>
               ))}
             </div>
           </div>
           
-          {/* 音乐特征 */}
+          {/* 音乐特征 - 金色音符穹顶装饰 */}
           <div className="mb-6">
             <h3 
               className="text-sm uppercase tracking-wider mb-3 flex items-center gap-2"
@@ -776,8 +1022,10 @@ function DetailModal({ era, onClose }) {
             </div>
           </div>
           
-          {/* 底部金色装饰分隔线 */}
-          <div className="h-px my-6" style={{ background: `linear-gradient(to right, transparent, ${era.glowColor}40, transparent)` }}/>
+          {/* 底部卷草纹装饰分隔线 */}
+          <div className="my-6 flex justify-center">
+            <RussianVineLine width={200} height={10} color={era.glowColor} opacity={0.2}/>
+          </div>
           
           {/* 查看完整文章链接 */}
           <Link 
@@ -796,7 +1044,7 @@ function DetailModal({ era, onClose }) {
   )
 }
 
-// 时间轴组件 - 升级版
+// 时间轴组件 - 升级版穹顶节点
 function Timeline({ eras, activeEra, onEraClick }) {
   const scrollContainerRef = useRef(null)
   const theme = activeEra ? getThemeColor(activeEra.themeKey) : themeColors['russian-soul']
@@ -856,6 +1104,11 @@ function Timeline({ eras, activeEra, onEraClick }) {
         borderTop: `1px solid ${theme.glowColor}30`
       }}
     >
+      {/* 顶部东正教穹顶天际线装饰 */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2">
+        <OrthodoxSkyline width={200} height={25} color={theme.glowColor} opacity={0.1}/>
+      </div>
+      
       {/* 顶部金色渐变线 */}
       <div 
         className="absolute top-0 left-0 right-0 h-0.5"
@@ -863,7 +1116,12 @@ function Timeline({ eras, activeEra, onEraClick }) {
       />
       
       <div className="max-w-6xl mx-auto">
-        {/* 时间轴主线条 - 金色渐变 */}
+        {/* 法贝热蛋形分隔装饰 */}
+        <div className="flex justify-center mb-6">
+          <FabergeEgg x={0} y={0} size={25} color={theme.glowColor} opacity={0.2}/>
+        </div>
+        
+        {/* 时间轴主线条 - 俄罗斯卷草纹风格 */}
         <div className="relative mb-8">
           {/* 金色渐变底线 */}
           <div 
@@ -873,7 +1131,7 @@ function Timeline({ eras, activeEra, onEraClick }) {
             }}
           />
           
-          {/* 时期节点连接点 */}
+          {/* 时期节点连接点 - 洋葱穹顶形状 */}
           <div className="absolute inset-0 flex items-center justify-between px-4">
             {eras.map((era, idx) => (
               <div 
@@ -882,15 +1140,21 @@ function Timeline({ eras, activeEra, onEraClick }) {
                   ${activeEra?.id === era.id ? 'scale-125' : 'hover:scale-110'}`}
                 onClick={() => onEraClick(era)}
               >
-                {/* 金色连接点 */}
-                <div 
-                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300
-                    ${activeEra?.id === era.id ? 'shadow-lg' : 'group-hover:shadow-md'}`}
-                  style={{ 
-                    backgroundColor: activeEra?.id === era.id ? era.glowColor : `${era.glowColor}60`,
-                    boxShadow: activeEra?.id === era.id ? `0 0 12px ${era.glowColor}` : 'none'
-                  }}
-                />
+                {/* 洋葱穹顶节点 */}
+                <g>
+                  <rect x="-1.5" y="0" width="3" height="2" fill={activeEra?.id === era.id ? era.glowColor : `${era.glowColor}50`}/>
+                  <path 
+                    d={`M -1.5 0 Q -1.5 -1.5 0 -3 Q 1.5 -1.5 1.5 0`} 
+                    fill={activeEra?.id === era.id ? era.glowColor : `${era.glowColor}50`}
+                  />
+                  <circle cx="0" cy="-3" r="0.5" fill={activeEra?.id === era.id ? era.glowColor : `${era.glowColor}50`}/>
+                  {/* 发光效果 */}
+                  {activeEra?.id === era.id && (
+                    <>
+                      <circle cx="0" cy="0" r="2.5" fill="none" stroke={era.glowColor} strokeWidth="0.5" opacity="0.4" className="pulse-ring"/>
+                    </>
+                  )}
+                </g>
                 {/* 点击区域扩大 */}
                 <div className="absolute inset-0 -m-3" />
               </div>
@@ -918,15 +1182,19 @@ function Timeline({ eras, activeEra, onEraClick }) {
                 border: activeEra?.id === era.id ? `1px solid ${era.glowColor}50` : '1px solid transparent'
               }}
             >
-              <div 
-                className="w-10 h-10 mx-auto rounded-full flex items-center justify-center text-base font-bold mb-2 transition-all duration-300 shadow-md" 
-                style={{ 
-                  background: activeEra?.id === era.id ? `linear-gradient(135deg, ${era.glowColor}, ${era.color})` : `${era.color}40`,
-                  color: activeEra?.id === era.id ? '#fff' : era.glowColor,
-                  boxShadow: activeEra?.id === era.id ? `0 0 15px ${era.glowColor}60` : 'none'
-                }}
-              >
-                {idx + 1}
+              {/* 穹顶图标 */}
+              <div className="relative w-10 h-10 mx-auto mb-2">
+                <KupolDome x={20} y={20} size={14} color={activeEra?.id === era.id ? era.glowColor : `${era.glowColor}50`} opacity={activeEra?.id === era.id ? 1 : 0.6}/>
+                <div 
+                  className="absolute inset-0 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 shadow-md" 
+                  style={{ 
+                    background: activeEra?.id === era.id ? `linear-gradient(135deg, ${era.glowColor}, ${era.color})` : `${era.color}40`,
+                    color: activeEra?.id === era.id ? '#fff' : era.glowColor,
+                    boxShadow: activeEra?.id === era.id ? `0 0 15px ${era.glowColor}60` : 'none'
+                  }}
+                >
+                  {idx + 1}
+                </div>
               </div>
               <p 
                 className="text-sm font-semibold whitespace-nowrap"
@@ -938,23 +1206,28 @@ function Timeline({ eras, activeEra, onEraClick }) {
                 {era.name}
               </p>
               <p className="text-xs text-gray-500 whitespace-nowrap mt-0.5">{era.period}</p>
-              <p className="text-xs text-gray-600 whitespace-nowrap">{era.year}</p>
+              {/* 俄语装饰字母 */}
+              <p className="text-xs text-gray-600" style={{ opacity: activeEra?.id === era.id ? 0.8 : 0.4 }}>
+                {era.nameRu.substring(0, 3)}
+              </p>
             </button>
           ))}
         </div>
         
-        {/* 底部装饰 */}
+        {/* 底部装饰 - 赫赫洛马花饰 */}
         <div className="flex items-center justify-center gap-4 mt-2">
+          <KhokhlomaFlower x={0} y={0} size={12} color={theme.glowColor} opacity={0.4}/>
           <div className="h-px w-16" style={{ background: `linear-gradient(to right, transparent, ${theme.glowColor}40)` }}/>
           <span style={{ color: theme.glowColor, opacity: 0.6 }} className="text-xs">♪</span>
           <div className="h-px w-16" style={{ background: `linear-gradient(to left, transparent, ${theme.glowColor}40)` }}/>
+          <KhokhlomaFlower x={0} y={0} size={12} color={theme.glowColor} opacity={0.4}/>
         </div>
       </div>
     </div>
   )
 }
 
-// 图例组件
+// 图例组件 - 升级版穹顶图标
 function Legend({ activeEra }) {
   const theme = activeEra ? getThemeColor(activeEra.themeKey) : themeColors['russian-soul']
   
@@ -966,7 +1239,12 @@ function Legend({ activeEra }) {
         border: `1px solid ${theme.glowColor}30`
       }}
     >
-      <h4 className="text-xs font-bold mb-2" style={{ color: theme.glowColor }}>地形渐变</h4>
+      {/* 斯拉夫装饰标题 */}
+      <div className="flex items-center gap-2 mb-2">
+        <SlavicDivider width={40} color={theme.glowColor} opacity={0.3}/>
+        <h4 className="text-xs font-bold" style={{ color: theme.glowColor }}>地形渐变</h4>
+        <SlavicDivider width={40} color={theme.glowColor} opacity={0.3}/>
+      </div>
       <div className="flex items-center gap-1">
         <div className="w-20 h-3 rounded" style={{ background: 'linear-gradient(to right, #3D5A45, #5D7052, #9B8B6D, #C9B896, #D4C4A8)' }}/>
       </div>
@@ -978,7 +1256,7 @@ function Legend({ activeEra }) {
   )
 }
 
-// 主页面组件 - 升级版
+// 主页面组件 - 俄罗斯艺术文化符号全面升级版
 export default function MusicHistoryMapPage() {
   const [selectedEra, setSelectedEra] = useState(null)
   const [mounted, setMounted] = useState(false)
@@ -991,7 +1269,7 @@ export default function MusicHistoryMapPage() {
   
   return (
     <div 
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col relative overflow-hidden"
       style={{ backgroundColor: '#14141e' }}
     >
       {/* 粒子效果背景 */}
@@ -1003,29 +1281,27 @@ export default function MusicHistoryMapPage() {
         <div className="particle particle-5" style={{ borderColor: theme.glowColor }}/>
       </div>
       
-      {/* 装饰元素 */}
-      <div className="fixed top-4 left-4 z-10">
-        <Matryoshka x={0} y={0} size={30} opacity={0.2}/>
-      </div>
-      <div className="fixed top-8 right-8 z-10">
-        <ChurchSilhouette x={0} y={0} size={25}/>
-      </div>
-      <div className="fixed top-16 left-20 z-10">
-        <FloatingNote x={0} y={0} size={12}/>
-      </div>
-      <div className="fixed top-4 right-20 z-10">
-        <MusicStaff x={0} y={0} width={35}/>
-      </div>
+      {/* 四角俄罗斯蕾丝角花装饰 */}
+      <RussianLaceCorner x={0} y={0} size={60} color={theme.glowColor} opacity={0.12} position="top-left"/>
+      <RussianLaceCorner x={0} y={0} size={60} color={theme.glowColor} opacity={0.12} position="top-right"/>
+      <RussianLaceCorner x={0} y={0} size={60} color={theme.glowColor} opacity={0.12} position="bottom-left"/>
+      <RussianLaceCorner x={0} y={0} size={60} color={theme.glowColor} opacity={0.12} position="bottom-right"/>
       
-      {/* 顶部导航栏 */}
+      {/* 顶部导航栏 - 赫赫洛马波浪装饰 */}
       <header 
         className="relative z-10 pt-8 pb-6 px-4"
         style={{ borderBottom: `1px solid ${theme.glowColor}20` }}
       >
+        {/* 顶部东正教穹顶天际线剪影 */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2">
+          <OrthodoxSkyline width={180} height={20} color={theme.glowColor} opacity={0.08}/>
+        </div>
+        
         <div className="max-w-6xl mx-auto text-center">
-          {/* 装饰线 */}
+          {/* 顶部装饰 - 赫赫洛马花饰 + 音符 */}
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="h-px w-24" style={{ background: `linear-gradient(to right, transparent, ${theme.glowColor})` }}/>
+            <div className="h-px w-20" style={{ background: `linear-gradient(to right, transparent, ${theme.glowColor})` }}/>
+            <KhokhlomaFlower x={0} y={0} size={16} color={theme.glowColor} opacity={0.5}/>
             <svg 
               className="w-6 h-6 transition-all duration-500 hover:rotate-180" 
               viewBox="0 0 24 24" 
@@ -1033,9 +1309,11 @@ export default function MusicHistoryMapPage() {
             >
               <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
             </svg>
-            <div className="h-px w-24" style={{ background: `linear-gradient(to left, transparent, ${theme.glowColor})` }}/>
+            <KhokhlomaFlower x={0} y={0} size={16} color={theme.glowColor} opacity={0.5}/>
+            <div className="h-px w-20" style={{ background: `linear-gradient(to left, transparent, ${theme.glowColor})` }}/>
           </div>
           
+          {/* 标题 - 斯拉夫装饰线 */}
           <h1 
             className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tracking-tight"
             style={{ 
@@ -1047,7 +1325,12 @@ export default function MusicHistoryMapPage() {
             俄罗斯音乐史地图
           </h1>
           
-          <p className="text-lg md:text-xl mb-4" style={{ color: theme.primary + 'cc' }}>
+          {/* 标题下方斯拉夫装饰线 */}
+          <div className="flex justify-center mb-4">
+            <SlavicDivider width={200} color={theme.glowColor} opacity={0.2}/>
+          </div>
+          
+          <p className="text-lg md:text-xl mb-2" style={{ color: theme.primary + 'cc' }}>
             从东正教圣咏到当代多元发展
           </p>
           
@@ -1055,13 +1338,9 @@ export default function MusicHistoryMapPage() {
             История русской музыки
           </p>
           
-          {/* 底部装饰 */}
-          <div className="flex items-center justify-center gap-2 mt-4">
-            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: theme.glowColor, opacity: 0.5 }}/>
-            <div className="w-20 h-px" style={{ backgroundColor: theme.glowColor, opacity: 0.3 }}/>
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.glowColor, opacity: 0.7 }}/>
-            <div className="w-20 h-px" style={{ backgroundColor: theme.glowColor, opacity: 0.3 }}/>
-            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: theme.glowColor, opacity: 0.5 }}/>
+          {/* 底部赫赫洛马波浪装饰线 */}
+          <div className="flex justify-center mt-4">
+            <KhokhlomaWaveBorder width={280} color={theme.glowColor} accent="#8B0000" opacity={0.25}/>
           </div>
         </div>
       </header>
@@ -1078,19 +1357,19 @@ export default function MusicHistoryMapPage() {
                 boxShadow: `0 10px 40px rgba(0, 0, 0, 0.3), 0 0 60px ${theme.glowColor}10, inset 0 0 100px rgba(0, 0, 0, 0.2)`
               }}
             >
-              {/* 暗角效果 */}
-              <div 
-                className="absolute inset-0 pointer-events-none z-10"
-                style={{
-                  boxShadow: 'inset 0 0 150px rgba(0, 0, 0, 0.5), inset 0 0 80px rgba(0, 0, 0, 0.3)'
-                }}
-              />
+              {/* 穹顶形状暗角效果 */}
+              <CupolaVignette theme={theme}/>
               
-              {/* 内部边框装饰 */}
+              {/* 内部边框装饰 - 俄罗斯蕾丝风格 */}
               <div 
                 className="absolute inset-2 rounded-xl pointer-events-none"
                 style={{ border: `1px solid ${theme.glowColor}10` }}
               />
+              
+              {/* 地图区域顶部穹顶天际线装饰 */}
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10">
+                <OrthodoxSkyline width={150} height={18} color={theme.glowColor} opacity={0.06}/>
+              </div>
               
               {/* 装饰元素 */}
               <Matryoshka x={20} y={75} size={25} opacity={0.15}/>
@@ -1106,6 +1385,12 @@ export default function MusicHistoryMapPage() {
               <FloatingNote x={70} y={18} size={8}/>
               <FloatingNote x={45} y={12} size={9}/>
               
+              {/* 四角小穹顶装饰 */}
+              <KupolDome x={5} y={85} size={18} color={theme.glowColor} opacity={0.12}/>
+              <KupolDome x={95} y={85} size={18} color={theme.glowColor} opacity={0.12}/>
+              <KupolDome x={5} y={18} size={16} color={theme.glowColor} opacity={0.1}/>
+              <KupolDome x={95} y={18} size={16} color={theme.glowColor} opacity={0.1}/>
+              
               {/* 地图涟漪动画 - 初始化时 */}
               {mounted && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -1115,7 +1400,7 @@ export default function MusicHistoryMapPage() {
               
               <div className="relative p-4 md:p-6 lg:p-8 h-full flex flex-col">
                 <div className="relative flex-1 min-h-[400px] md:min-h-[450px]">
-                  <RussianMapSVG />
+                  <RussianMapSVG/>
                   
                   {/* 城市标记 */}
                   {cities.map((city, idx) => (
@@ -1129,7 +1414,7 @@ export default function MusicHistoryMapPage() {
                     />
                   ))}
                   
-                  {/* 时期节点 */}
+                  {/* 时期节点 - 洋葱穹顶形状 */}
                   {mounted && eras.map((era, idx) => (
                     <EraNode 
                       key={era.id} 
@@ -1143,22 +1428,27 @@ export default function MusicHistoryMapPage() {
                   <Legend activeEra={selectedEra}/>
                 </div>
                 
-                <p className="text-center text-sm mt-4" style={{ color: theme.glowColor + '88' }}>
-                  点击地图上的节点探索俄罗斯音乐史的各个时期
-                </p>
+                {/* 底部提示 - 音符符号装饰 */}
+                <div className="flex items-center justify-center gap-2 mt-4">
+                  <OrthodoxCross x={0} y={0} size={12} color={theme.glowColor} opacity={0.3}/>
+                  <p className="text-center text-sm" style={{ color: theme.glowColor + '88' }}>
+                    ♪ 点击地图上的节点探索俄罗斯音乐史的各个时期
+                  </p>
+                  <OrthodoxCross x={0} y={0} size={12} color={theme.glowColor} opacity={0.3}/>
+                </div>
               </div>
               
-              {/* 底部装饰线 */}
-              <div 
-                className="h-px"
-                style={{ background: `linear-gradient(to right, transparent, ${theme.glowColor}30, transparent)` }}
-              />
+              {/* 底部俄罗斯卷草纹装饰线 */}
+              <div className="h-px" style={{ background: `linear-gradient(to right, transparent, ${theme.glowColor}30, transparent)` }}/>
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
+                <RussianVineLine width={100} height={6} color={theme.glowColor} opacity={0.15}/>
+              </div>
             </div>
           </div>
         </div>
       </main>
       
-      {/* 时间轴 */}
+      {/* 时间轴 - 底部穹顶装饰 */}
       <footer className="relative z-10">
         <Timeline eras={eras} activeEra={selectedEra} onEraClick={setSelectedEra}/>
       </footer>
@@ -1372,4 +1662,3 @@ export default function MusicHistoryMapPage() {
     </div>
   )
 }
-
