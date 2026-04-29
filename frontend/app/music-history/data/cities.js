@@ -57,7 +57,7 @@ export const cities = [
     id: 'tula',
     name: '图拉',
     nameRu: 'Тула',
-    coordinates: [54.196, lng: 37.618],
+    coordinates: [54.196, 37.618],
     description: '达尔戈梅日斯基出生地。',
     relatedComposers: ['dargomijsky'],
     importance: 2
@@ -66,7 +66,7 @@ export const cities = [
     id: 'nn',
     name: '下诺夫哥罗德',
     nameRu: 'Нижний Новгород',
-    coordinates: [56.328, lng: 44.002],
+    coordinates: [56.328, 44.002],
     description: '巴拉基列夫出生地，伏尔加河沿岸重要城市。',
     relatedComposers: ['balakirev'],
     importance: 3
@@ -75,7 +75,7 @@ export const cities = [
     id: 'tikhvin',
     name: '季赫温',
     nameRu: 'Тихвин',
-    coordinates: [59.636, lng: 32.291],
+    coordinates: [59.636, 32.291],
     description: '里姆斯基-科萨科夫出生地。',
     relatedComposers: ['rimsky-korsakov'],
     importance: 3
@@ -93,7 +93,7 @@ export const cities = [
     id: 'tzvetkovo',
     name: '奥涅格',
     nameRu: 'Онег',
-    coordinates: [58.5, lng: 33.1],
+    coordinates: [58.5, 33.1],
     description: '拉赫玛尼诺夫出生地。',
     relatedComposers: ['rachmaninoff'],
     importance: 3
@@ -102,7 +102,7 @@ export const cities = [
     id: 'leningrad oblast',
     name: '奥拉宁鲍姆',
     nameRu: 'Ораниенбаум',
-    coordinates: [59.811, lng: 29.832],
+    coordinates: [59.811, 29.832],
     description: '斯特拉文斯基出生地，彼得堡郊区。',
     relatedComposers: ['stravinsky'],
     importance: 3
@@ -111,7 +111,7 @@ export const cities = [
     id: 'sumy',
     name: '松佐夫卡',
     nameRu: 'Сонцевка',
-    coordinates: [51.523, lng: 33.147],
+    coordinates: [51.523, 33.147],
     description: '普罗科菲耶夫出生地，乌克兰苏梅州。',
     relatedComposers: ['prokofiev'],
     importance: 3
@@ -120,7 +120,7 @@ export const cities = [
     id: 'tbilisi',
     name: '第比利斯',
     nameRu: 'Тбилиси',
-    coordinates: [41.693, lng: 44.801],
+    coordinates: [41.693, 44.801],
     description: '哈恰图良出生地，格鲁吉亚首都。',
     relatedComposers: ['khachaturian'],
     importance: 3
@@ -129,7 +129,7 @@ export const cities = [
     id: 'voronezh',
     name: '维霍夫斯克',
     nameRu: 'Вы́ховск',
-    coordinates: [45.037, lng: 41.975],
+    coordinates: [45.037, 41.975],
     description: '安东·鲁宾斯坦出生地。',
     relatedComposers: ['rubinstein-anton'],
     importance: 3
@@ -138,7 +138,7 @@ export const cities = [
     id: 'vilnius',
     name: '维尔纽斯',
     nameRu: 'Вильнюс',
-    coordinates: [54.687, lng: 25.279],
+    coordinates: [54.687, 25.279],
     description: '居伊出生地，立陶宛首都。',
     relatedComposers: ['cui'],
     importance: 2
