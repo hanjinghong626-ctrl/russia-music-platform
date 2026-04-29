@@ -105,9 +105,9 @@ export default async function HomePage() {
                 <span>🎤</span>
                 AI评估
               </Link>
-              <Link href="/music-history-map" className="text-gray-600 hover:text-primary-700 transition-colors font-medium flex items-center gap-1">
-                <span>📜</span>
-                音乐史
+              <Link href="/music-history" className="text-gray-600 hover:text-primary-700 transition-colors font-medium flex items-center gap-1">
+                <span>🗺️</span>
+                音乐史交互地图
               </Link>
             </div>
           </div>
