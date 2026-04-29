@@ -2,11 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 导入 Google Fonts - Playfair Display */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
+
 /* 字体设置 */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #14141e;
+  color: #e5e5e5;
 }
 
 /* 俄罗斯花纹装饰样式 */
@@ -25,9 +30,9 @@ body {
   background-size: contain;
 }
 
-/* 渐变文字 */
+/* 渐变文字 - 金色交响风格 */
 .gradient-text {
-  background: linear-gradient(135deg, #7f1d1d 0%, #b91c1c 50%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #B8860B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -40,7 +45,7 @@ body {
 
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(185, 28, 28, 0.15);
+  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.15);
 }
 
 /* 按钮悬浮效果 */
@@ -63,6 +68,18 @@ body {
 
 .btn-elegant:hover::before {
   left: 100%;
+}
+
+/* 金色渐变边框 */
+.border-golden {
+  border-image: linear-gradient(
+    to right,
+    #D4AF37 0%,
+    #FFD700 25%,
+    #B8860B 50%,
+    #FFD700 75%,
+    #D4AF37 100%
+  ) 1;
 }
 
 /* 俄式边框装饰 */
@@ -112,7 +129,7 @@ body {
   content: '';
   position: absolute;
   inset: -2px;
-  background: linear-gradient(135deg, #b91c1c, #1d4ed8, #d97706);
+  background: linear-gradient(135deg, #D4AF37, #FFD700, #B8860B);
   border-radius: inherit;
   z-index: -1;
   opacity: 0;
@@ -139,24 +156,24 @@ body {
   animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }
 
-/* 滚动条美化 */
+/* 滚动条美化 - 金色主题 */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(30, 30, 40, 0.8);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #b91c1c, #991b1b);
+  background: linear-gradient(180deg, #D4AF37, #B8860B);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #991b1b, #7f1d1d);
+  background: linear-gradient(180deg, #FFD700, #D4AF37);
 }
 
 /* Tab 切换动画 */
@@ -170,7 +187,7 @@ body {
   content: '✦';
   position: absolute;
   font-size: 12px;
-  color: #d97706;
+  color: #D4AF37;
 }
 
 .corner-decoration::before {
@@ -183,7 +200,7 @@ body {
   right: 8px;
 }
 
-/* 标题下划线装饰 */
+/* 标题下划线装饰 - 金色 */
 .title-underline {
   position: relative;
   display: inline-block;
@@ -197,7 +214,7 @@ body {
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, #b91c1c, #d97706);
+  background: linear-gradient(90deg, #D4AF37, #FFD700, #B8860B);
   border-radius: 2px;
 }
 
@@ -206,5 +223,159 @@ body {
   .text-responsive {
     font-size: 1.875rem;
     line-height: 2.25rem;
+  }
+}
+
+/* ===== 视觉调优新增样式 ===== */
+
+/* 深色毛玻璃效果 */
+.glass-dark {
+  background: rgba(20, 20, 30, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* 金色发光效果 */
+.gold-glow {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.gold-glow-intense {
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.5), 0 0 60px rgba(212, 175, 55, 0.2);
+}
+
+/* 音符符号装饰 */
+.note-symbol::before {
+  content: '♪';
+  color: #D4AF37;
+  margin-right: 8px;
+}
+
+/* 金色下划线装饰 */
+.gold-underline {
+  position: relative;
+}
+
+.gold-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #D4AF37, #FFD700);
+}
+
+/* 引用样式 - 左侧金色竖线 */
+.quote-style {
+  border-left: 3px solid #D4AF37;
+  padding-left: 16px;
+  font-style: italic;
+}
+
+/* 暗角效果 - 增强沉浸感 */
+.vignette {
+  box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.5), inset 0 0 80px rgba(0, 0, 0, 0.3);
+}
+
+/* 淡入动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* 浮动动画 */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* 脉动动画 */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* 金色渐变动画 */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-gold {
+  background: linear-gradient(
+    90deg,
+    #D4AF37 0%,
+    #FFD700 25%,
+    #D4AF37 50%,
+    #FFD700 75%,
+    #D4AF37 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+
+/* iPad触控优化 */
+@media (pointer: coarse) {
+  button, .cursor-pointer {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* 触摸滚动优化 */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* 选中高亮 */
+::selection {
+  background: rgba(212, 175, 55, 0.3);
+  color: #fff;
+}
+
+/* Focus 状态样式 */
+:focus-visible {
+  outline: 2px solid #D4AF37;
+  outline-offset: 2px;
+}
+
+/* 暗色主题优化 */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #14141e;
+    color: #e5e5e5;
   }
 }
