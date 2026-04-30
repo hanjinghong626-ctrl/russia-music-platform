@@ -742,7 +742,7 @@ export default function MusicHistoryMapPage() {
               {/* Leaflet 地图容器 */}
               <div className="relative p-4 md:p-6 lg:p-8 h-full flex flex-col z-0">
                 <div 
-                  className="relative flex-1 min-h-[400px] md:min-h-[450px] rounded-xl overflow-hidden"
+                  className="relative rounded-xl overflow-hidden" style={{ height: "500px", minHeight: "400px" }}
                   style={{
                     border: `1px solid ${theme.glowColor}15`,
                     boxShadow: `inset 0 0 30px rgba(0, 0, 0, 0.3)`
