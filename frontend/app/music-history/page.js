@@ -62,6 +62,8 @@ export default function MusicHistoryPage() {
         />
         
         <div className="map-container">
+          {/* 穹顶暗角效果 */}
+          <div className="cupola-vignette"></div>
           <MapComponent
             activePeriod={activePeriod}
             onComposerSelect={handleComposerSelect}
