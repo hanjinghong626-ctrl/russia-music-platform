@@ -15,6 +15,14 @@
   --color-text-primary: #F5F5F5;
   --color-text-secondary: #B8C5D6;
   --color-text-muted: #6B7B8C;
+
+  /* Imperial Winter Night */
+  --imperial-gold: #C9A84C;
+  --imperial-gold-light: #E8D5A0;
+  --imperial-gold-dark: #8B7340;
+  --ice-blue: #7EB8D4;
+  --winter-night: #080C14;
+  --cast-iron: #2A2D35;
 }
 
 * {
@@ -238,3 +246,18 @@ html {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
+
+/* Imperial decorative layer */
+.imperial-corner{position:fixed;width:120px;height:120px;pointer-events:none;z-index:50;opacity:0;animation:fadeInCorner 1.5s ease-out forwards}
+.imperial-corner svg{width:100%;height:100%}
+.imperial-corner.top-left{top:0;left:0;animation-delay:.3s}
+.imperial-corner.top-right{top:0;right:0;transform:scaleX(-1);animation-delay:.5s}
+.imperial-corner.bottom-left{bottom:0;left:0;transform:scaleY(-1);animation-delay:.7s}
+.imperial-corner.bottom-right{bottom:0;right:0;transform:scale(-1,-1);animation-delay:.9s}
+@keyframes fadeInCorner{from{opacity:0}to{opacity:.08}}
+.baroque-divider{display:flex;align-items:center;justify-content:center;gap:6px;margin:8px auto;opacity:.2}
+.baroque-divider .scroll-l,.baroque-divider .scroll-r{width:60px;height:1px;background:linear-gradient(to right,transparent,var(--imperial-gold))}
+.baroque-divider .scroll-r{background:linear-gradient(to left,transparent,var(--imperial-gold))}
+.baroque-divider .fleuron{width:8px;height:8px;background:var(--imperial-gold);transform:rotate(45deg);opacity:.6}
+.cupola-vignette{position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse 80% 70% at 50% 35%,transparent 30%,rgba(0,0,0,.5) 100%),linear-gradient(180deg,rgba(8,12,20,.3) 0%,transparent 15%,transparent 85%,rgba(8,12,20,.4) 100%)}
+.faberge-node{border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:linear-gradient(135deg,var(--imperial-gold-light) 0%,var(--imperial-gold) 40%,var(--imperial-gold-dark) 100%);box-shadow:0 0 8px rgba(201,168,76,.4),inset 0 1px 2px rgba(255,255,255,.3)}
