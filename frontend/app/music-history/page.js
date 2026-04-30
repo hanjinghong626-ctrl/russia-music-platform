@@ -989,25 +989,6 @@ export default function MusicHistoryMapPage() {
   
   const theme = selectedEra ? getThemeColor(selectedEra.themeKey) : themeColors['russian-soul']
   
-  // 斯拉夫菱形装饰线SVG
-  const SlavicDiamondSVG = () => (
-    <svg 
-      className="absolute pointer-events-none" 
-      style={{ width: '200px', height: '20px', opacity: 0.15, left: '50%', transform: 'translateX(-50%)' }}
-      viewBox="0 0 200 20"
-    >
-      <g fill="none" stroke={theme.glowColor} strokeWidth="1">
-        <line x1="0" y1="10" x2="200" y2="10" />
-        <polygon points="30,10 35,5 40,10 35,15" fill={theme.glowColor} opacity="0.3" />
-        <polygon points="60,10 65,5 70,10 65,15" fill={theme.glowColor} opacity="0.3" />
-        <polygon points="90,10 95,5 100,10 95,15" fill={theme.glowColor} opacity="0.3" />
-        <polygon points="120,10 125,5 130,10 125,15" fill={theme.glowColor} opacity="0.3" />
-        <polygon points="150,10 155,5 160,10 155,15" fill={theme.glowColor} opacity="0.3" />
-        <polygon points="180,10 185,5 190,10 185,15" fill={theme.glowColor} opacity="0.3" />
-      </g>
-    </svg>
-  )
-  
   return (
     <div 
       className="min-h-screen flex flex-col"
@@ -1022,53 +1003,7 @@ export default function MusicHistoryMapPage() {
         <div className="particle particle-5" style={{ borderColor: theme.glowColor }}/>
       </div>
       
-      {/* 蕾丝角花装饰 */}
-      {/* 蕾丝角花装饰 - 左上 */}
-      <svg className="fixed pointer-events-none" style={{ top: 0, left: 0, width: '60px', height: '60px', opacity: 0.1, zIndex: 5 }}>
-        <g fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.5">
-          <circle cx="20" cy="20" r="12" />
-          <circle cx="20" cy="20" r="8" />
-          <circle cx="20" cy="20" r="4" />
-          <path d="M 35 10 Q 45 10 50 20" />
-          <path d="M 10 35 Q 10 45 20 50" />
-          <path d="M 12 12 Q 16 16 12 20" />
-          <path d="M 28 12 Q 32 16 28 20" />
-        </g>
-      </svg>
-      {/* 蕾丝角花装饰 - 右上 */}
-      <svg className="fixed pointer-events-none" style={{ top: 0, right: 0, width: '60px', height: '60px', opacity: 0.1, zIndex: 5 }}>
-        <g fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.5">
-          <circle cx="40" cy="20" r="12" />
-          <circle cx="40" cy="20" r="8" />
-          <circle cx="40" cy="20" r="4" />
-          <path d="M 25 10 Q 15 10 10 20" />
-          <path d="M 50 35 Q 50 45 40 50" />
-          <path d="M 32 12 Q 28 16 32 20" />
-          <path d="M 48 12 Q 52 16 48 20" />
-        </g>
-      </svg>
-      {/* 蕾丝角花装饰 - 左下 */}
-      <svg className="fixed pointer-events-none" style={{ bottom: 0, left: 0, width: '60px', height: '60px', opacity: 0.1, zIndex: 5 }}>
-        <g fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.5">
-          <circle cx="20" cy="40" r="12" />
-          <circle cx="20" cy="40" r="8" />
-          <circle cx="20" cy="40" r="4" />
-          <path d="M 35 50 Q 45 50 50 40" />
-          <path d="M 10 25 Q 10 15 20 10" />
-        </g>
-      </svg>
-      {/* 蕾丝角花装饰 - 右下 */}
-      <svg className="fixed pointer-events-none" style={{ bottom: 0, right: 0, width: '60px', height: '60px', opacity: 0.1, zIndex: 5 }}>
-        <g fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.5">
-          <circle cx="40" cy="40" r="12" />
-          <circle cx="40" cy="40" r="8" />
-          <circle cx="40" cy="40" r="4" />
-          <path d="M 25 50 Q 15 50 10 40" />
-          <path d="M 50 25 Q 50 15 40 10" />
-        </g>
-      </svg>
-
-      {/* 原有装饰元素 */}
+      {/* 装饰元素 */}
       <div className="fixed top-4 left-4 z-10">
         <Matryoshka x={0} y={0} size={30} opacity={0.2}/>
       </div>
@@ -1100,8 +1035,6 @@ export default function MusicHistoryMapPage() {
             </svg>
             <div className="h-px w-24" style={{ background: `linear-gradient(to left, transparent, ${theme.glowColor})` }}/>
           </div>
-          
-          <SlavicDiamondSVG />
           
           <h1 
             className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tracking-tight"
@@ -1145,21 +1078,7 @@ export default function MusicHistoryMapPage() {
                 boxShadow: `0 10px 40px rgba(0, 0, 0, 0.3), 0 0 60px ${theme.glowColor}10, inset 0 0 100px rgba(0, 0, 0, 0.2)`
               }}
             >
-              {/* 洋葱穹顶暗角效果 */}
-              <div 
-                className="absolute inset-0 pointer-events-none z-10"
-                style={{
-                  background: `
-                    radial-gradient(ellipse 80% 60% at 50% 50%, transparent 40%, rgba(0,0,0,0.15) 100%),
-                    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 50%, rgba(0,0,0,0.2) 100%),
-                    radial-gradient(ellipse 100% 80% at 0% 0%, rgba(0,0,0,0.12) 0%, transparent 50%),
-                    radial-gradient(ellipse 100% 80% at 100% 0%, rgba(0,0,0,0.12) 0%, transparent 50%),
-                    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(0,0,0,0.1) 0%, transparent 50%)
-                  `
-                }}
-              />
-              
-              {/* 原有暗角效果 */}
+              {/* 暗角效果 */}
               <div 
                 className="absolute inset-0 pointer-events-none z-10"
                 style={{
@@ -1249,15 +1168,6 @@ export default function MusicHistoryMapPage() {
       
       {/* 全局样式 */}
       <style jsx>{`
-        /* 俄罗斯文化CSS变量 */
-        :root {
-          --color-bg-deep: #0A0E17;
-          --color-bg-card: rgba(20, 20, 32, 0.9);
-          --color-text-primary: #E8E0D4;
-          --color-text-muted: #6B7B8C;
-          --color-primary: #D4AF37;
-        }
-
         /* 渐入动画 */
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(20px); }
