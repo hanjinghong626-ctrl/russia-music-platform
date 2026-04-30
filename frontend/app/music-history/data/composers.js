@@ -3,25 +3,28 @@ export const composers = [
     id: 'glinka',
     name: '格林卡',
     nameRu: 'Михаил Иванович Глинка',
-    nameEn: 'Mikhail Ivanovich Glinka',
+    nameEn: 'Mikhail Glinka',
     birthYear: 1804,
     deathYear: 1857,
     period: 'national-foundation',
     school: '民族乐派奠基人',
-    genres: ['歌剧', '交响诗', '艺术歌曲'],
+    genres: ['歌剧', '管弦乐', '艺术歌曲'],
     birthPlace: { city: '新斯帕斯基', lat: 54.8, lng: 33.7 },
     mainCity: '圣彼得堡',
     coordinates: [54.8, 33.7],
     works: [
-      { title: '《伊凡·苏萨宁》', titleRu: 'Иван Сусанин', year: 1836 },
-      { title: '《鲁斯兰与柳德米拉》', titleRu: 'Руслан и Людмила', year: 1842 },
-      { title: '《卡玛林斯卡亚》', titleRu: 'Камаринская', year: 1847 }
+      { title: '《伊凡·苏萨宁》', titleRu: 'Иван Сусанин', year: 1836, genre: '歌剧' },
+      { title: '《鲁斯兰与柳德米拉》', titleRu: 'Руслан и Людмила', year: 1842, genre: '歌剧' },
+      { title: '《卡玛林斯卡亚》', titleRu: 'Камаринская', year: 1847, genre: '管弦乐幻想曲' },
+      { title: '《阿拉贡霍塔》', titleRu: 'Арагонская хота', year: 1845, genre: '管弦乐序曲' },
+      { title: '《马德里之夜》', titleRu: 'Ночь в Мадриде', year: 1851, genre: '管弦乐序曲' },
+      { title: '《我记得那美妙的瞬间》', titleRu: 'Я помню чудное мгновенье', year: 1840, genre: '艺术歌曲' }
     ],
     quote: '创造音乐的是人民，而我们艺术家，不过是将它编成曲子而已。',
-    description: '俄罗斯音乐之父，奠定民族音乐基础，将俄罗斯专业音乐赶上欧洲音乐强国水准。'
+    description: '俄罗斯音乐之父。其创作三种因素：扎根俄罗斯民间音乐、吸取城市音乐文化、借鉴西欧古典与浪漫乐派成果。以《伊凡·苏萨宁》开创民族歌剧，以《卡玛林斯卡亚》奠定管弦乐民族风格，将俄罗斯专业音乐赶上欧洲水准。'
   },
   {
-    id: 'dargomijsky',
+    id: 'dargomyzhsky',
     name: '达尔戈梅日斯基',
     nameRu: 'Александр Сергеевич Даргомыжский',
     nameEn: 'Alexander Dargomyzhsky',
@@ -30,15 +33,17 @@ export const composers = [
     period: 'national-foundation',
     school: '民族乐派',
     genres: ['歌剧', '艺术歌曲'],
-    birthPlace: { city: '图拉', lat: 54.196, lng: 37.618 },
+    birthPlace: { city: '圣彼得堡', lat: 59.934, lng: 30.335 },
     mainCity: '圣彼得堡',
-    coordinates: [54.196, 37.618],
+    coordinates: [59.934, 30.335],
     works: [
-      { title: '《水仙女》', titleRu: 'Русалка', year: 1855 },
-      { title: '《石客》', titleRu: 'Каменный гость', year: 1869 }
+      { title: '《水仙女》', titleRu: 'Русалка', year: 1855, genre: '歌剧' },
+      { title: '《石客》', titleRu: 'Каменный гость', year: 1869, genre: '歌剧（未完成）' },
+      { title: '《我愁》', titleRu: 'Мне грустно', year: 1864, genre: '艺术歌曲' },
+      { title: '《老乞丐之歌》', titleRu: 'Старый капрал', year: 1860, genre: '艺术歌曲' }
     ],
     quote: '我想要真实地、而不是杜撰地表现人的情感。',
-    description: '歌剧革新先驱，被穆索尔斯基称为"伟大音乐真理的导师"。'
+    description: '歌剧革新先驱，在格林卡与强力集团之间起桥梁作用。主张艺术真实，突出社会揭露与讽刺倾向，探索语言音调与音乐的紧密结合。被穆索尔斯基称为"伟大音乐真理的导师"。'
   },
   {
     id: 'balakirev',
@@ -54,12 +59,13 @@ export const composers = [
     mainCity: '圣彼得堡',
     coordinates: [56.328, 44.002],
     works: [
-      { title: '《塔玛拉》', titleRu: 'Тамара', year: 1882 },
-      { title: '《伊斯拉美》', titleRu: 'Исламей', year: 1869 },
-      { title: '《三首俄罗斯民歌主题序曲》', titleRu: 'Увертюра на темы русских народных песен', year: 1858 }
+      { title: '《塔玛拉》', titleRu: 'Тамара', year: 1882, genre: '交响诗' },
+      { title: '《伊斯拉美》', titleRu: 'Исламей', year: 1869, genre: '钢琴曲' },
+      { title: '《三首俄罗斯民歌主题序曲》', titleRu: 'Увертюра на темы русских народных песен', year: 1858, genre: '管弦乐' },
+      { title: '《俄罗斯交响曲》', titleRu: 'Русская симфония', year: 1908, genre: '交响曲' }
     ],
     quote: '音乐必须表现民族灵魂。',
-    description: '强力集团发起人和领导者，钢琴家、指挥家、作曲家。'
+    description: '强力集团的发起人和精神领袖，钢琴家、指挥家。创办免费音乐学校，团结穆索尔斯基、包罗丁、里姆斯基-科萨科夫、居伊形成创作集体，共同推进民族音乐事业。'
   },
   {
     id: 'mussorgsky',
@@ -70,18 +76,21 @@ export const composers = [
     deathYear: 1881,
     period: 'national-prosperity',
     school: '强力集团',
-    genres: ['歌剧', '交响音画', '艺术歌曲'],
-    birthPlace: { city: '普京', lat: 57.988, lng: 56.208 },
+    genres: ['歌剧', '交响音画', '钢琴曲', '艺术歌曲'],
+    birthPlace: { city: '卡列沃', lat: 56.083, lng: 32.75 },
     mainCity: '圣彼得堡',
-    coordinates: [57.988, 56.208],
+    coordinates: [56.083, 32.75],
     works: [
-      { title: '《包里斯·戈杜诺夫》', titleRu: 'Борис Годунов', year: 1872 },
-      { title: '《荒山之夜》', titleRu: 'Ночь на Лысой горе', year: 1867 },
-      { title: '《展览会上的图画》', titleRu: 'Картинки с выставки', year: 1874 },
-      { title: '《跳蚤之歌》', titleRu: 'Песня о блохе', year: 1879 }
+      { title: '《包里斯·戈杜诺夫》', titleRu: 'Борис Годунов', year: 1872, genre: '歌剧' },
+      { title: '《霍万斯基之乱》', titleRu: 'Хованщина', year: 1872, genre: '歌剧（未完成）' },
+      { title: '《荒山之夜》', titleRu: 'Ночь на Лысой горе', year: 1867, genre: '交响音画' },
+      { title: '《展览会上的图画》', titleRu: 'Картинки с выставки', year: 1874, genre: '钢琴组曲' },
+      { title: '《跳蚤之歌》', titleRu: 'Песня о блохе', year: 1879, genre: '艺术歌曲' },
+      { title: '《没有阳光》', titleRu: 'Без солнца', year: 1877, genre: '声乐套曲' },
+      { title: '《死之歌舞》', titleRu: 'Песни и пляски смерти', year: 1877, genre: '声乐套曲' }
     ],
     quote: '艺术的目的不是美，而是真实。',
-    description: '强力集团中最具革命性的作曲家，揭露社会黑暗的批判现实主义大师。'
+    description: '强力集团中最具革命性的作曲家，揭露社会黑暗的批判现实主义大师。大胆创新的音乐语言对德彪西、拉威尔、普罗科菲耶夫、肖斯塔科维奇等有深远影响。'
   },
   {
     id: 'borodin',
@@ -92,17 +101,20 @@ export const composers = [
     deathYear: 1887,
     period: 'national-prosperity',
     school: '强力集团',
-    genres: ['歌剧', '交响曲', '交响音画'],
+    genres: ['歌剧', '交响曲', '交响音画', '室内乐'],
     birthPlace: { city: '圣彼得堡', lat: 59.934, lng: 30.335 },
     mainCity: '圣彼得堡',
     coordinates: [59.934, 30.335],
     works: [
-      { title: '《伊戈尔大公》', titleRu: 'Князь Игорь', year: 1887 },
-      { title: '《第二"勇士"交响曲》', titleRu: 'Вторая симфония «Богатырская»', year: 1877 },
-      { title: '《在中亚细亚》', titleRu: 'В Средней Азии', year: 1880 }
+      { title: '《伊戈尔大公》', titleRu: 'Князь Игорь', year: 1890, genre: '歌剧' },
+      { title: '《第二"勇士"交响曲》', titleRu: 'Вторая симфония «Богатырская»', year: 1877, genre: '交响曲' },
+      { title: '《在中亚细亚》', titleRu: 'В Средней Азии', year: 1880, genre: '交响音画' },
+      { title: '《第一交响曲》', titleRu: 'Первая симфония', year: 1867, genre: '交响曲' },
+      { title: '《第二弦乐四重奏》', titleRu: 'Второй струнный квартет', year: 1881, genre: '室内乐' },
+      { title: '《睡公主》', titleRu: 'Спящая царевна', year: 1868, genre: '艺术歌曲' }
     ],
     quote: '我的一半属于科学，一半属于音乐。',
-    description: '军医、化学家、教授，被誉为"科学家中最懂音乐的"。'
+    description: '军医、化学家、教授，被誉为"科学家中最懂音乐的"。《伊戈尔大公》未完成即去世，由里姆斯基-科萨科夫和格拉祖诺夫续完。其"勇士"风格成为俄罗斯史诗性音乐的典范。'
   },
   {
     id: 'rimsky-korsakov',
@@ -118,13 +130,17 @@ export const composers = [
     mainCity: '圣彼得堡',
     coordinates: [59.636, 32.291],
     works: [
-      { title: '《舍赫拉查达》', titleRu: 'Шехеразада', year: 1888 },
-      { title: '《西班牙随想曲》', titleRu: 'Испанское каприччио', year: 1887 },
-      { title: '《雪姑娘》', titleRu: 'Снегурочка', year: 1882 },
-      { title: '《萨德科》', titleRu: 'Садко', year: 1898 }
+      { title: '《舍赫拉查达》', titleRu: 'Шехеразада', year: 1888, genre: '交响组曲' },
+      { title: '《西班牙随想曲》', titleRu: 'Испанское каприччио', year: 1887, genre: '管弦乐' },
+      { title: '《雪姑娘》', titleRu: 'Снегурочка', year: 1882, genre: '歌剧' },
+      { title: '《五月之夜》', titleRu: 'Майская ночь', year: 1880, genre: '歌剧' },
+      { title: '《萨德科》', titleRu: 'Садко', year: 1898, genre: '歌剧' },
+      { title: '《沙皇未婚妻》', titleRu: 'Царская невеста', year: 1899, genre: '歌剧' },
+      { title: '《萨旦王的故事》', titleRu: 'Сказка о царе Салтане', year: 1900, genre: '歌剧' },
+      { title: '《金鸡》', titleRu: 'Золотой петушок', year: 1908, genre: '歌剧' }
     ],
     quote: '音乐必须如实地描绘人民的生活和愿望。',
-    description: '强力集团成员，歌剧、交响乐大师，培养了格拉祖诺夫、斯特拉文斯基等。'
+    description: '强力集团中最全面的作曲家与教育家。15部歌剧涵盖俄罗斯民间传说与异域风情，管弦乐配器技法精湛。培养格拉祖诺夫、利亚多夫、斯特拉文斯基、米亚斯科夫斯基等一代作曲家。'
   },
   {
     id: 'cui',
@@ -140,34 +156,41 @@ export const composers = [
     mainCity: '圣彼得堡',
     coordinates: [54.687, 25.279],
     works: [
-      { title: '《威廉·拉特克利夫》', titleRu: 'Вильям Ратклифф', year: 1869 },
-      { title: '《勒米塔尔》', titleRu: 'Леандр', year: 1878 }
+      { title: '《威廉·拉特克利夫》', titleRu: 'Вильям Ратклифф', year: 1869, genre: '歌剧' },
+      { title: '《高加索的俘虏》', titleRu: 'Кавказский пленник', year: 1883, genre: '歌剧' }
     ],
     quote: '俄罗斯音乐必须走自己的道路。',
-    description: '军事工程师出身的音乐评论家，积极宣传俄罗斯民族乐派。'
+    description: '军事工程师出身的音乐评论家，27年评论活动积极宣传民族乐派。创作虽不如其他成员突出，但评论贡献对推广俄罗斯音乐意义重大。'
   },
   {
     id: 'tchaikovsky',
     name: '柴可夫斯基',
     nameRu: 'Пётр Ильич Чайковский',
-    nameEn: 'Pyotr Ilyich Tchaikovsky',
+    nameEn: 'Pyotr Tchaikovsky',
     birthYear: 1840,
     deathYear: 1893,
-    period: 'late-romantic',
+    period: 'national-prosperity',
     school: '浪漫主义',
     genres: ['交响曲', '舞剧', '歌剧', '协奏曲'],
     birthPlace: { city: '沃特金斯克', lat: 57.048, lng: 54.007 },
     mainCity: '莫斯科',
     coordinates: [57.048, 54.007],
     works: [
-      { title: '《第六"悲怆"交响曲》', titleRu: 'Шестая симфония «Патетическая»', year: 1893 },
-      { title: '《天鹅湖》', titleRu: 'Лебединое озеро', year: 1876 },
-      { title: '《胡桃夹子》', titleRu: 'Щелкунчик', year: 1892 },
-      { title: '《第一钢琴协奏曲》', titleRu: 'Первый фортепианный концерт', year: 1875 },
-      { title: '《叶甫根尼·奥涅金》', titleRu: 'Евгений Онегин', year: 1878 }
+      { title: '《第一交响曲"冬日的梦幻"》', titleRu: 'Первая симфония «Зимние грёзы»', year: 1866, genre: '交响曲' },
+      { title: '《第四交响曲》', titleRu: 'Четвёртая симфония', year: 1877, genre: '交响曲' },
+      { title: '《第五交响曲》', titleRu: 'Пятая симфония', year: 1888, genre: '交响曲' },
+      { title: '《第六"悲怆"交响曲》', titleRu: 'Шестая симфония «Патетическая»', year: 1893, genre: '交响曲' },
+      { title: '《天鹅湖》', titleRu: 'Лебединое озеро', year: 1876, genre: '舞剧' },
+      { title: '《睡美人》', titleRu: 'Спящая красавица', year: 1889, genre: '舞剧' },
+      { title: '《胡桃夹子》', titleRu: 'Щелкунчик', year: 1892, genre: '舞剧' },
+      { title: '《叶甫根尼·奥涅金》', titleRu: 'Евгений Онегин', year: 1878, genre: '歌剧' },
+      { title: '《黑桃皇后》', titleRu: 'Пиковая дама', year: 1890, genre: '歌剧' },
+      { title: '《第一钢琴协奏曲》', titleRu: 'Первый фортепианный концерт', year: 1875, genre: '协奏曲' },
+      { title: '《小提琴协奏曲》', titleRu: 'Скрипичный концерт', year: 1878, genre: '协奏曲' },
+      { title: '《1812序曲》', titleRu: 'Увертюра 1812 год', year: 1880, genre: '管弦乐' }
     ],
     quote: '我真诚地相信：我降生到这个世界不是为了艺术，而是为了家庭。',
-    description: '俄罗斯最伟大的作曲家之一，深刻抒情性与戏剧性结合的浪漫主义大师。'
+    description: '俄罗斯最伟大的作曲家之一，深刻抒情性与戏剧性结合的浪漫主义大师。创作题材广泛，从"命运"主题的交响曲到三部经典舞剧，旋律具有"活生生的、有表现力的、伸缩自如"的性格。虽与强力集团艺术主张不同，但同样具有崇高的历史地位。'
   },
   {
     id: 'rubinstein-anton',
@@ -179,15 +202,15 @@ export const composers = [
     period: 'national-prosperity',
     school: '学院派',
     genres: ['钢琴曲', '交响曲', '歌剧'],
-    birthPlace: { city: '维霍夫斯克', lat: 45.037, lng: 41.975 },
+    birthPlace: { city: '维霍夫斯克', lat: 48.0, lng: 37.8 },
     mainCity: '圣彼得堡',
-    coordinates: [45.037, 41.975],
+    coordinates: [48.0, 37.8],
     works: [
-      { title: '《第四"ocean"交响曲》', titleRu: 'Четвертая симфония «Океан»', year: 1868 },
-      { title: '《恶魔》', titleRu: 'Демон', year: 1875 }
+      { title: '《第四"海洋"交响曲》', titleRu: 'Четвёртая симфония «Океан»', year: 1868, genre: '交响曲' },
+      { title: '《恶魔》', titleRu: 'Демон', year: 1875, genre: '歌剧' }
     ],
     quote: '俄罗斯需要的是音乐家，不是匠人。',
-    description: '彼得堡音乐学院创始人，钢琴家、指挥家、作曲家。'
+    description: '1859年创建俄罗斯音乐协会，1862年创办彼得堡音乐学院任首任院长。钢琴家、指挥家、作曲家，与李斯特齐名的钢琴大师。为俄罗斯专业音乐教育奠定制度基础。'
   },
   {
     id: 'scriabin',
@@ -196,19 +219,22 @@ export const composers = [
     nameEn: 'Alexander Scriabin',
     birthYear: 1872,
     deathYear: 1915,
-    period: 'silver-age',
+    period: 'late-romantic',
     school: '白银时代',
     genres: ['交响曲', '钢琴曲', '交响诗'],
     birthPlace: { city: '莫斯科', lat: 55.756, lng: 37.617 },
     mainCity: '莫斯科',
     coordinates: [55.756, 37.617],
     works: [
-      { title: '《第三"神圣狂热"交响曲》', titleRu: 'Третья симфония «Божественная поэма»', year: 1904 },
-      { title: '《普罗米修斯》', titleRu: 'Прометей', year: 1910 },
-      { title: '《第五钢琴奏鸣曲》', titleRu: 'Пятая соната', year: 1907 }
+      { title: '《第二交响曲》', titleRu: 'Вторая симфония', year: 1901, genre: '交响曲' },
+      { title: '《第三"神圣狂热"交响曲》', titleRu: 'Третья симфония «Божественная поэма»', year: 1904, genre: '交响曲' },
+      { title: '《普罗米修斯》', titleRu: 'Прометей', year: 1910, genre: '交响诗（含色光）' },
+      { title: '《第五钢琴奏鸣曲》', titleRu: 'Пятая соната', year: 1907, genre: '钢琴曲' },
+      { title: '《第九钢琴奏鸣曲》', titleRu: 'Девятая соната', year: 1913, genre: '钢琴曲' },
+      { title: '《升D小调练习曲》', titleRu: 'Этюд ре-диез минор', year: 1894, genre: '钢琴曲' }
     ],
     quote: '我是宇宙的化身，音乐是我的语言。',
-    description: '神秘主义作曲家，独创性和声语言，白银时代的代表人物。'
+    description: '神秘主义作曲家，独创性和声语言（"神秘和弦"），白银时代最激进的探索者。《普罗米修斯》融入色光投影概念，预示多媒体艺术的诞生。对20世纪音乐和声发展有重大影响。'
   },
   {
     id: 'rachmaninoff',
@@ -217,41 +243,45 @@ export const composers = [
     nameEn: 'Sergei Rachmaninoff',
     birthYear: 1873,
     deathYear: 1943,
-    period: 'silver-age',
+    period: 'late-romantic',
     school: '白银时代',
-    genres: ['协奏曲', '交响曲', '前奏曲', '艺术歌曲'],
+    genres: ['协奏曲', '交响曲', '钢琴曲', '艺术歌曲'],
     birthPlace: { city: '奥涅格', lat: 58.5, lng: 33.1 },
     mainCity: '莫斯科',
     coordinates: [58.5, 33.1],
     works: [
-      { title: '《第二钢琴协奏曲》', titleRu: 'Второй фортепианный концерт', year: 1901 },
-      { title: '《第三钢琴协奏曲》', titleRu: 'Третий фортепианный концерт', year: 1909 },
-      { title: '《第二交响曲》', titleRu: 'Вторая симфония', year: 1908 },
-      { title: '《升C小调前奏曲》', titleRu: 'Прелюдия до-диез минор', year: 1892 }
+      { title: '《第二钢琴协奏曲》', titleRu: 'Второй фортепианный концерт', year: 1901, genre: '协奏曲' },
+      { title: '《第三钢琴协奏曲》', titleRu: 'Третий фортепианный концерт', year: 1909, genre: '协奏曲' },
+      { title: '《帕格尼尼主题狂想曲》', titleRu: 'Рапсодия на тему Паганини', year: 1934, genre: '协奏曲' },
+      { title: '《第二交响曲》', titleRu: 'Вторая симфония', year: 1908, genre: '交响曲' },
+      { title: '《第三交响曲》', titleRu: 'Третья симфония', year: 1936, genre: '交响曲' },
+      { title: '《升C小调前奏曲》', titleRu: 'Прелюдия до-диез минор', year: 1892, genre: '钢琴曲' },
+      { title: '《紫丁香》', titleRu: 'Сирень', year: 1902, genre: '艺术歌曲' }
     ],
     quote: '音乐是心灵对情感的直接表达。',
-    description: '最后的浪漫主义大师，深刻抒情性和悲剧性的旋律大师。'
+    description: '最后的浪漫主义大师，旋律优美感人的同时兼具深刻悲剧性。1897年第一交响曲首演失败后陷入创作危机，以第二钢琴协奏曲浴火重生。1917年后流亡海外，晚年作品风格愈加深沉内省。'
   },
   {
     id: 'glazunov',
     name: '格拉祖诺夫',
-    nameRu: 'Александр Глазунов',
+    nameRu: 'Александр Константинович Глазунов',
     nameEn: 'Alexander Glazunov',
     birthYear: 1865,
     deathYear: 1936,
-    period: 'silver-age',
-    school: '白银时代',
+    period: 'late-romantic',
+    school: '白里利亚耶夫小组',
     genres: ['交响曲', '舞剧', '协奏曲'],
     birthPlace: { city: '圣彼得堡', lat: 59.934, lng: 30.335 },
     mainCity: '圣彼得堡',
     coordinates: [59.934, 30.335],
     works: [
-      { title: '《第八交响曲》', titleRu: 'Восьмая симфония', year: 1900 },
-      { title: '《四季》', titleRu: 'Времена года', year: 1899 },
-      { title: '《斯金卡·拉萨》', titleRu: 'Степан Разин', year: 1885 }
+      { title: '《第八交响曲》', titleRu: 'Восьмая симфония', year: 1906, genre: '交响曲' },
+      { title: '《四季》', titleRu: 'Времена года', year: 1899, genre: '舞剧' },
+      { title: '《斯金卡·拉萨》', titleRu: 'Степан Разин', year: 1885, genre: '交响诗' },
+      { title: '《小提琴协奏曲》', titleRu: 'Концерт для скрипки', year: 1904, genre: '协奏曲' }
     ],
     quote: '音乐应该使人高尚和净化。',
-    description: '白银时代重要作曲家，接任里姆斯基-科萨科夫在音乐学院的教学。'
+    description: '白里利亚耶夫小组核心成员，里姆斯基-科萨科夫最杰出的学生。16岁写出第一交响曲，被誉为"小格林卡"。后接任圣彼得堡音乐学院院长，培养萧斯塔科维奇等。'
   },
   {
     id: 'stravinsky',
@@ -267,12 +297,14 @@ export const composers = [
     mainCity: '圣彼得堡',
     coordinates: [59.811, 29.832],
     works: [
-      { title: '《春之祭》', titleRu: 'Весна священная', year: 1913 },
-      { title: '《火鸟》', titleRu: 'Жар-птица', year: 1910 },
-      { title: '《彼得鲁什卡》', titleRu: 'Петрушка', year: 1911 }
+      { title: '《火鸟》', titleRu: 'Жар-птица', year: 1910, genre: '舞剧' },
+      { title: '《彼得鲁什卡》', titleRu: 'Петрушка', year: 1911, genre: '舞剧' },
+      { title: '《春之祭》', titleRu: 'Весна священная', year: 1913, genre: '舞剧' },
+      { title: '《浦契涅拉》', titleRu: 'Пульчинелла', year: 1920, genre: '舞剧' },
+      { title: '《诗篇交响曲》', titleRu: 'Симфония псалмов', year: 1930, genre: '交响曲' }
     ],
     quote: '音乐中唯一重要的是音符本身。',
-    description: '20世纪最具影响力的作曲家，从俄罗斯风格到新古典主义到序列主义。'
+    description: '20世纪最具影响力的作曲家。创作经历三个阶段：俄罗斯时期（民族风格，《火鸟》《春之祭》）、新古典主义时期（回归古典）、序列主义时期（十二音音乐）。《春之祭》节奏革新震惊世界，被誉为20世纪影响最大的作品之一。'
   },
   {
     id: 'prokofiev',
@@ -288,13 +320,16 @@ export const composers = [
     mainCity: '莫斯科',
     coordinates: [51.523, 33.147],
     works: [
-      { title: '《罗密欧与朱丽叶》', titleRu: 'Ромео и Джульетта', year: 1936 },
-      { title: '《彼得与狼》', titleRu: 'Пеpp и волк', year: 1936 },
-      { title: '《灰姑娘》', titleRu: 'Золушка', year: 1944 },
-      { title: '《战争与和平》', titleRu: 'Война и мир', year: 1946 }
+      { title: '《罗密欧与朱丽叶》', titleRu: 'Ромео и Джульетта', year: 1936, genre: '舞剧' },
+      { title: '《彼得与狼》', titleRu: 'Пётр и волк', year: 1936, genre: '交响童话' },
+      { title: '《灰姑娘》', titleRu: 'Золушка', year: 1944, genre: '舞剧' },
+      { title: '《战争与和平》', titleRu: 'Война и мир', year: 1946, genre: '歌剧' },
+      { title: '《第五交响曲》', titleRu: 'Пятая симфония', year: 1944, genre: '交响曲' },
+      { title: '《第三钢琴协奏曲》', titleRu: 'Третий фортепианный концерт', year: 1921, genre: '协奏曲' },
+      { title: '《古典交响曲》', titleRu: 'Классическая симфония', year: 1917, genre: '交响曲' }
     ],
     quote: '我的音乐风格是古典的、现代的，也是俄罗斯的。',
-    description: '苏联时期最伟大的作曲家之一，作品通俗易懂又技巧精湛。'
+    description: '苏联时期最伟大的作曲家之一。早期以尖锐的不协和音和节奏活力著称，1933年回国后创作趋向通俗明快。古典交响曲以新古典主义笔法致敬海顿，《彼得与狼》成为全世界儿童音乐入门经典。'
   },
   {
     id: 'shostakovich',
@@ -305,39 +340,43 @@ export const composers = [
     deathYear: 1976,
     period: 'soviet',
     school: '苏联派',
-    genres: ['交响曲', '歌剧', '电影配乐'],
+    genres: ['交响曲', '歌剧', '室内乐', '电影配乐'],
     birthPlace: { city: '圣彼得堡', lat: 59.934, lng: 30.335 },
     mainCity: '圣彼得堡',
     coordinates: [59.934, 30.335],
     works: [
-      { title: '《第五交响曲》', titleRu: 'Пятая симфония', year: 1937 },
-      { title: '《第七"列宁格勒"交响曲》', titleRu: 'Седьмая симфония «Ленинградская»', year: 1942 },
-      { title: '《第十交响曲》', titleRu: 'Десятая симфония', year: 1953 },
-      { title: '《姆钦斯克县的麦克白夫人》', titleRu: 'Леди Макбет Мценского уезда', year: 1932 }
+      { title: '《第五交响曲》', titleRu: 'Пятая симфония', year: 1937, genre: '交响曲' },
+      { title: '《第七"列宁格勒"交响曲》', titleRu: 'Седьмая симфония «Ленинградская»', year: 1942, genre: '交响曲' },
+      { title: '《第十交响曲》', titleRu: 'Десятая симфония', year: 1953, genre: '交响曲' },
+      { title: '《第八交响曲》', titleRu: 'Восьмая симфония', year: 1943, genre: '交响曲' },
+      { title: '《姆钦斯克县的麦克白夫人》', titleRu: 'Леди Макбет Мценского уезда', year: 1932, genre: '歌剧' },
+      { title: '《第一小提琴协奏曲》', titleRu: 'Первый скрипичный концерт', year: 1948, genre: '协奏曲' },
+      { title: '《第八弦乐四重奏》', titleRu: 'Восьмой струнный квартет', year: 1960, genre: '室内乐' }
     ],
     quote: '任何一位音乐家都应该记住，音乐的使命是服务于人民。',
-    description: '20世纪现实主义音乐大师，15部交响曲深刻反映苏联社会现实。'
+    description: '20世纪最伟大的交响曲作曲家之一，15部交响曲深刻反映苏联社会现实。1936年《真理报》批判事件后被迫公开检讨，1948年日丹诺夫运动中再次受难。其音乐在官方话语之下暗藏个人抗争，成为时代的隐秘书写。'
   },
   {
     id: 'khachaturian',
     name: '哈恰图良',
-    nameRu: 'Арам Хачатурян',
+    nameRu: 'Арам Ильич Хачатурян',
     nameEn: 'Aram Khachaturian',
     birthYear: 1903,
     deathYear: 1978,
     period: 'soviet',
     school: '苏联派',
-    genres: ['舞剧', '交响曲', '电影配乐'],
+    genres: ['舞剧', '交响曲', '协奏曲'],
     birthPlace: { city: '第比利斯', lat: 41.693, lng: 44.801 },
     mainCity: '莫斯科',
     coordinates: [41.693, 44.801],
     works: [
-      { title: '《加雅涅》', titleRu: 'Гаянэ', year: 1942 },
-      { title: '《马刀舞曲》', titleRu: 'Танец с саблями', year: 1942 },
-      { title: '《斯巴达克》', titleRu: 'Спартак', year: 1954 }
+      { title: '《加雅涅》', titleRu: 'Гаянэ', year: 1942, genre: '舞剧' },
+      { title: '《马刀舞曲》', titleRu: 'Танец с саблями', year: 1942, genre: '舞剧选段' },
+      { title: '《斯巴达克》', titleRu: 'Спартак', year: 1954, genre: '舞剧' },
+      { title: '《小提琴协奏曲》', titleRu: 'Концерт для скрипки', year: 1940, genre: '协奏曲' }
     ],
     quote: '我的音乐是东方与西方的融合。',
-    description: '苏联时期亚美尼亚裔作曲家，舞剧音乐和进行曲风格的代表人物。'
+    description: '苏联时期亚美尼亚裔作曲家，将高加索民间音乐色彩融入专业创作。马刀舞曲传遍全球，斯巴达克中柔板成为经典。1948年与肖斯塔科维奇、普罗科菲耶夫一同遭批判。'
   }
 ];
 
