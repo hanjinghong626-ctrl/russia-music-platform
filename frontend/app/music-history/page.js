@@ -145,6 +145,7 @@ const eras = [
     name: '苏联时期',
     nameRu: 'Soviet Era',
     period: '1917-1991',
+    year: '1917-1991',
     position: { x: 48, y: 46 },
     city: '莫斯科',
     cityRu: 'Москва',
