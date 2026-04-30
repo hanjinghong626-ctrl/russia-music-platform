@@ -1,4 +1,4 @@
-'use client'
+'use client'  // v2.1 - 俄罗斯文化装饰升级
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
