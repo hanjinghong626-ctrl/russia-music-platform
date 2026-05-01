@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import composersData from '@/data/composers.json'
+import composersData from '../../data/composers.json'
 
 // 时代数据
 const eras = [
