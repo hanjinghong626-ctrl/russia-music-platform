@@ -26,6 +26,7 @@ export const composers = [
     style: '将意大利歌剧技法与俄罗斯音乐元素相结合的开创者。创作了融合意大利复调技法与东正教音乐传统的教堂合唱作品。',
     styleRu: 'Пионер сочетания итальянской оперной техники с русскими музыкальными элементами.Создавал церковные хоровые произведения,соединяющие итальянскую полифонию с традициями православной музыки.',
     portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Berezovsky%2C_Maksim_Sozontovich.jpg/220px-Berezovsky%2C_Maksim_Sozontovich.jpg',
+  },
   {
     id: 'pashkevich',
     name: '帕什克维奇',
@@ -96,6 +97,7 @@ export const composers = [
     style: '俄罗斯浪漫曲的经典代表，旋律优美流畅，情感表达真挚。作品具有浓郁的俄罗斯民族特色，常用民间歌曲的旋律素材。',
     styleRu: 'Классический представитель русского романса,с красивыми плавными мелодиями и искренней эмоциональной подачей.Произведения отличаются ярким национальным колоритом,часто используют народные песенные旋律ы.',
     portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Gurilev.jpg/250px-Gurilev.jpg',
+  },
   {
     id: 'anton_rubinstein',
     name: '安东·鲁宾斯坦',
@@ -145,6 +147,7 @@ export const composers = [
     style: '杰出的钢琴演奏家和教育家，虽然创作不多，但在音乐教育和指挥方面影响深远。',
     styleRu: 'Выдающийся пианист и педагог,хотя сам создал немного произведений,но его влияние на музыкальное образование и дирижирование огромно.',
     portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Nikolai_Rubinstein_1872.jpg/250px-Nikolai_Rubinstein_1872.jpg',
+  },
   {
     id: 'balakirev',
     name: '巴拉基列夫',
@@ -222,6 +225,7 @@ export const composers = [
     style: '钢琴小品大师，作品精致完美。管弦乐色彩丰富，常以俄罗斯民间和神话故事为题材。风格优雅细腻。',
     styleRu: 'Мастер фортепианных миниатюр,произведения безупречны.Оркестровая музыка колоритна,часто на русские народные и сказочные темы.Стиль изящен и утончён.',
     portrait: 'https://s.coze.cn/image/BNqxfZxT5_k/',
+  },
   {
     id: 'taneev',
     name: '塔涅耶夫',
@@ -274,6 +278,7 @@ export const composers = [
     style: '交响乐大师，作品结构严谨完美。融合俄罗斯民族性与古典形式的完美平衡，风格庄重、乐观、健康。',
     styleRu: 'Мастер симфонии,произведения структурно безупречны.Идеальный баланс русского национального характера и классической формы,стиль торжественен,оптимистичен и здоров.',
     portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Repin_-_Portrait_of_Alexander_Glazunov.jpg/220px-Repin_-_Portrait_of_Alexander_Glazunov.jpg',
+  },
   {
     id: 'metner',
     name: '梅特纳',
@@ -428,6 +433,7 @@ export const composers = [
     style: '抒情而沉思的音乐风格，仿佛是对古典音乐的追忆和沉思。音乐语言细腻、内省，富有哲学意味。',
     styleRu: 'Лиричный и созерцательный стиль,как будто вспоминающий и размышляющий о классической музыке.Музыкальный язык тонок и интровертен,полон философии.',
     portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Valentinsilvestrov.JPG/250px-Valentinsilvestrov.JPG',
+  },
   {
     id: 'shchedrin',
     name: '谢德林',
@@ -454,6 +460,7 @@ export const composers = [
     style: '舞剧音乐大师，将俄罗斯民族音乐与现代作曲技法完美结合。节奏独特，旋律优美，配器色彩丰富。',
     styleRu: 'Мастер балетной музыки,соединяющий русскую народную музыку с современными композиторскими техниками.Ритмы уникальны,мелодии красивы,оркестровка колоритна.',
     portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Rodion_Shchedrin_%282017-12-16%29_02_%28cropped%29.jpg/250px-Rodion_Shchedrin_%282017-12-16%29_02_%28cropped%29.jpg',
+  },
   {
     id: 'sviridov',
     name: '斯维里多夫',
@@ -948,6 +955,7 @@ export const composers = [
     style: '俄罗斯浪漫曲大师，作品旋律优美，具有浓郁的俄罗斯民族情感。',
     styleRu: 'Мастер русского романса,произведения отличаются красивыми мелодиями и глубоким национальным чувством.',
     portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Alexander_Alyabyev.jpg/220px-Alexander_Alyabyev.jpg',
+  },
   {
     id: 'varlamov',
     name: '瓦尔拉莫夫',
@@ -1020,6 +1028,7 @@ export const composers = [
     style: '明朗乐观的苏联音乐风格，旋律优美流畅，具有人民性和教育意义。',
     styleRu: 'Светлый и оптимистичный стиль советской музыки,с красивыми плавными мелодиями,общедоступный и педагогический.',
     portrait: 'https://upload.wikimedia.org/wikipedia/en/thumb/e/e3/Dmitry_Kabalevsky%2C_Soviet_composer_and_teacher.jpg/250px-Dmitry_Kabalevsky%2C_Soviet_composer_and_teacher.jpg',
+  },
   {
     id: 'shebalin',
     name: '谢巴林',
@@ -1044,6 +1053,7 @@ export const composers = [
     style: '严谨而富于表现力的苏联音乐风格，作品具有深刻的思想性和艺术性。',
     styleRu: 'Строгий и выразительный стиль советской музыки,произведения отличаются глубокой идейностью и художественностью.',
     portrait: 'https://upload.wikimedia.org/wikipedia/en/7/7d/Vissarion_Yakovlevich_Shebalin.jpg',
+  },
   {
     id: 'weinberg',
     name: '魏因贝格',
@@ -1092,6 +1102,7 @@ export const composers = [
     style: '现代主义音乐风格，精密严谨的十二音技法，富有哲学深度。',
     styleRu: 'Модернистский стиль музыки,точная додекафония,философская глубина.',
     portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Edison_Denisov_1975_%C2%A9DmitriSmirnov.jpg/250px-Edison_Denisov_1975_%C2%A9DmitriSmirnov.jpg',
+  },
   {
     id: 'gliere',
     name: '格里埃尔',
@@ -1116,6 +1127,7 @@ export const composers = [
     style: '俄罗斯浪漫主义传统的继承者，作品色彩丰富，旋律优美，具有浓郁的民族特色。',
     styleRu: 'Наследник русских романтических традиций,произведения колоритны,с красивыми мелодиями и ярким национальным характером.',
     portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Reinhold_Gli%C3%A8re.jpg/250px-Reinhold_Gli%C3%A8re.jpg',
+  },
   {
     id: 'lyapunov',
     name: '利亚普诺夫',
@@ -1140,6 +1152,7 @@ export const composers = [
     style: '俄罗斯钢琴音乐的重要探索者，作品具有浓郁的俄罗斯民族色彩。',
     styleRu: 'Важный исследователь русской фортепианной музыки,произведения отличаются ярким национальным колоритом.',
     portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Lyapunov_old.jpg/250px-Lyapunov_old.jpg',
+  },
   {
     id: 'grechaninov',
     name: '格列恰尼诺夫',
@@ -1164,6 +1177,7 @@ export const composers = [
     style: '抒情优美的俄罗斯艺术歌曲风格，儿童音乐天真质朴，富有教育意义。',
     styleRu: 'Лирический и красивый стиль русского романса,детская музыка наивна и проста,с педагогическим значением.',
     portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Gretschaninov_A.T_postcard-1910.jpg/250px-Gretschaninov_A.T_postcard-1910.jpg',
+  },
   {
     id: 'shalyapin',
     name: '夏里亚宾',
@@ -1212,6 +1226,7 @@ export const composers = [
     style: '俄罗斯声乐学派的杰出代表，嗓音优美华丽，艺术感染力极强。',
     styleRu: 'Выдающийся представитель русской вокальной школы,красивый и изысканный голос,высокая художественная заразительность.',
     portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Sobinov_as_Lensky.jpg/250px-Sobinov_as_Lensky.jpg',
+  },
   {
     id: 'nezhdanova',
     name: '涅日丹诺娃',
