@@ -64,7 +64,11 @@ export default function ComposerCard({ composer, onClose }) {
 
         <div className="card-header">
           <div className="card-avatar">
-            <span className="card-initial">{composer.name.charAt(0)}</span>
+            {composer.portrait ? (
+              <img src={composer.portrait} alt={composer.name} className="card-portrait" />
+            ) : (
+              <span className="card-initial">{composer.name.charAt(0)}</span>
+            )}
             <div className="card-avatar-ring"></div>
           </div>
           <div className="card-titles">
