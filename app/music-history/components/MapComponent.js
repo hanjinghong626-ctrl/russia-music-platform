@@ -167,6 +167,14 @@ export default function MapComponent({
     opposition: true
   });
   const [selectedComposerId, setSelectedComposerId] = useState(null);
+  const selectedComposerIdRef = useRef(null);
+  const activeFiltersRef = useRef(activeFilters);
+  const relationshipModeRef = useRef(relationshipMode);
+
+  // Keep refs in sync with state
+  useEffect(() => { selectedComposerIdRef.current = selectedComposerId; }, [selectedComposerId]);
+  useEffect(() => { activeFiltersRef.current = activeFilters; }, [activeFilters]);
+  useEffect(() => { relationshipModeRef.current = relationshipMode; }, [relationshipMode]);
 
   // Initialize map
   useEffect(() => {
@@ -220,7 +228,6 @@ export default function MapComponent({
       .leaflet-control-attribution a { color: #B8C5D6 !important; }
       .relationship-line {
         transition: opacity 0.4s ease, stroke-width 0.2s ease;
-        pointer-events: none;
       }
       .arrow-head { background: transparent !important; border: none !important; }
       .relationship-tooltip {
@@ -251,7 +258,7 @@ export default function MapComponent({
       .rel-toggle-btn {
         position: absolute;
         top: 16px;
-        right: 16px;
+        right: 140px;
         z-index: 1001;
         background: rgba(20, 27, 45, 0.92);
         border: 1px solid rgba(212, 175, 55, 0.4);
@@ -285,7 +292,7 @@ export default function MapComponent({
       .relationship-panel {
         position: absolute;
         top: 58px;
-        right: 16px;
+        right: 140px;
         z-index: 1001;
         background: rgba(20, 27, 45, 0.95);
         border: 1px solid rgba(212, 175, 55, 0.3);
@@ -382,6 +389,8 @@ export default function MapComponent({
 
     relationshipLinesRef.current.forEach(layer => map.removeLayer(layer));
     relationshipLinesRef.current = [];
+
+    console.log('[RelNet] Drawing relationship lines, total:', relationships.length);
 
     relationships.forEach((rel, idx) => {
       const fromComposer = composerMapRef.current[rel.from];
@@ -483,7 +492,7 @@ export default function MapComponent({
 
       marker.on('click', () => {
         onComposerSelect(composer);
-        if (relationshipMode) {
+        if (relationshipModeRef.current) {
           handleRelationshipClick(composer.id);
         }
       });
@@ -519,6 +528,8 @@ export default function MapComponent({
     const map = mapInstanceRef.current;
     if (!map) return;
 
+    console.log('[RelNet] Click on composer:', composerId, 'lines in ref:', relationshipLinesRef.current.length);
+
     if (selectedComposerId === composerId) {
       setSelectedComposerId(null);
       resetHighlight();
@@ -551,13 +562,19 @@ export default function MapComponent({
       const passesFilter = activeFilters[rel.type];
 
       if (isRelevant && passesFilter) {
-        layer.setStyle({ opacity: 0.8, weight: 2.5 });
+        if (layer.setStyle) {
+          layer.setStyle({ opacity: 0.85, weight: 2.5 });
+        }
         if (layer._icon) layer._icon.style.opacity = '1';
+        if (layer.setOpacity) layer.setOpacity(1);
         layer.isHighlighted = true;
         layer.isVisible = true;
       } else {
-        layer.setStyle({ opacity: 0, weight: 2 });
+        if (layer.setStyle) {
+          layer.setStyle({ opacity: 0, weight: 2 });
+        }
         if (layer._icon) layer._icon.style.opacity = '0';
+        if (layer.setOpacity) layer.setOpacity(0);
         layer.isHighlighted = false;
         layer.isVisible = false;
       }
@@ -574,8 +591,11 @@ export default function MapComponent({
 
     relationshipLinesRef.current.forEach(layer => {
       if (!layer.relData) return;
-      layer.setStyle({ opacity: 0, weight: 2 });
+      if (layer.setStyle) {
+        layer.setStyle({ opacity: 0, weight: 2 });
+      }
       if (layer._icon) layer._icon.style.opacity = '0';
+      if (layer.setOpacity) layer.setOpacity(0);
       layer.isHighlighted = false;
       layer.isVisible = false;
     });
