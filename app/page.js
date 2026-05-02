@@ -68,6 +68,7 @@ export default async function HomePage() {
             <div className="flex items-center space-x-6">
               <Link href="/" className="text-gray-600 hover:text-gray-900">首页</Link>
               <Link href="/schools" className="text-gray-600 hover:text-gray-900">院校</Link>
+              <Link href="/music-history-map" className="text-gray-600 hover:text-gray-900">音乐史交互地图</Link>
               <Link href="/evaluate" className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
                 AI评估
               </Link>
@@ -91,6 +92,41 @@ export default async function HomePage() {
           >
             浏览院校
           </Link>
+        </div>
+      </section>
+
+      {/* 音乐史交互地图入口 */}
+      <section className="py-12 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50">
+        <div className="container mx-auto px-4">
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100">
+            <div className="md:flex items-center">
+              <div className="md:w-1/3 bg-gradient-to-br from-purple-600 to-indigo-700 p-8 flex flex-col justify-center items-center text-white min-h-[200px]">
+                <div className="text-6xl mb-4">🗺️</div>
+                <h3 className="text-xl font-bold text-center">音乐史交互地图</h3>
+              </div>
+              <div className="md:w-2/3 p-8">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-3">探索俄罗斯音乐发展脉络</h2>
+                    <p className="text-gray-600 mb-4">
+                      50位作曲家的交互式时空之旅，从格林卡到肖斯塔科维奇，跨越三个世纪的俄罗斯音乐史诗
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      <span className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full">🕐 8个历史时期</span>
+                      <span className="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded-full">🎵 50位作曲家</span>
+                      <span className="px-3 py-1 bg-pink-100 text-pink-700 text-sm rounded-full">📍 9座城市</span>
+                    </div>
+                  </div>
+                  <Link
+                    href="/music-history-map"
+                    className="flex-shrink-0 ml-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all font-medium shadow-md"
+                  >
+                    立即探索 →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
