@@ -319,15 +319,26 @@ export default function RelationshipNetwork({ onClose }) {
                   <circle r={radius - 3} />
                 </clipPath>
               </defs>
-              <image
-                href={composer.portrait}
-                width={(radius - 3) * 2}
-                height={(radius - 3) * 2}
+              <foreignObject
                 x={-(radius - 3)}
                 y={-(radius - 3)}
+                width={(radius - 3) * 2}
+                height={(radius - 3) * 2}
                 clipPath={`url(#clip-${id})`}
-                preserveAspectRatio="xMidYMid slice"
-              />
+              >
+                <img
+                  src={composer.portrait}
+                  alt={composer.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    borderRadius: '50%',
+                    display: 'block'
+                  }}
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              </foreignObject>
             </>
           ) : (
             <text
