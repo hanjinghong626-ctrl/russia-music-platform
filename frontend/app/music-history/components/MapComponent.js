@@ -528,11 +528,16 @@ export default function MapComponent({
     const map = mapInstanceRef.current;
     if (!map) return;
 
-    console.log('[RelNet] Click on composer:', composerId, 'lines in ref:', relationshipLinesRef.current.length);
+    console.log('[RelNet] Click on composer:', composerId, 'lines:', relationshipLinesRef.current.length);
 
-    if (selectedComposerId === composerId) {
+    if (selectedComposerIdRef.current === composerId) {
+      // Deselect - go back to showing all lines at low opacity
       setSelectedComposerId(null);
-      resetHighlight();
+      // Don't call resetHighlight - let the useEffect handle it
+      // Just reset marker styles
+      markersRef.current.forEach(marker => {
+        marker.setIcon(createCustomIcon(false, false, false));
+      });
       return;
     }
 
@@ -543,6 +548,8 @@ export default function MapComponent({
       if (rel.from === composerId) relatedIds.add(rel.to);
       if (rel.to === composerId) relatedIds.add(rel.from);
     });
+
+    console.log('[RelNet] Related IDs:', [...relatedIds]);
 
     markersRef.current.forEach(marker => {
       const cid = marker.composerId;
@@ -555,30 +562,8 @@ export default function MapComponent({
       }
     });
 
-    relationshipLinesRef.current.forEach(layer => {
-      if (!layer.relData) return;
-      const rel = layer.relData;
-      const isRelevant = rel.from === composerId || rel.to === composerId;
-      const passesFilter = activeFilters[rel.type];
-
-      if (isRelevant && passesFilter) {
-        if (layer.setStyle) {
-          layer.setStyle({ opacity: 0.85, weight: 2.5 });
-        }
-        if (layer._icon) layer._icon.style.opacity = '1';
-        if (layer.setOpacity) layer.setOpacity(1);
-        layer.isHighlighted = true;
-        layer.isVisible = true;
-      } else {
-        if (layer.setStyle) {
-          layer.setStyle({ opacity: 0, weight: 2 });
-        }
-        if (layer._icon) layer._icon.style.opacity = '0';
-        if (layer.setOpacity) layer.setOpacity(0);
-        layer.isHighlighted = false;
-        layer.isVisible = false;
-      }
-    });
+    // The useEffect with [relationshipMode, activeFilters, selectedComposerId] 
+    // will handle highlighting lines when selectedComposerId changes
   };
 
   const resetHighlight = () => {
@@ -588,17 +573,7 @@ export default function MapComponent({
     markersRef.current.forEach(marker => {
       marker.setIcon(createCustomIcon(false, false, false));
     });
-
-    relationshipLinesRef.current.forEach(layer => {
-      if (!layer.relData) return;
-      if (layer.setStyle) {
-        layer.setStyle({ opacity: 0, weight: 2 });
-      }
-      if (layer._icon) layer._icon.style.opacity = '0';
-      if (layer.setOpacity) layer.setOpacity(0);
-      layer.isHighlighted = false;
-      layer.isVisible = false;
-    });
+    // Line visibility is handled by the useEffect
   };
 
   const toggleRelationshipMode = () => {
@@ -609,6 +584,67 @@ export default function MapComponent({
       resetHighlight();
     }
   };
+
+  // Show/hide relationship lines based on mode and selection
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    if (!relationshipMode) {
+      // Hide all lines when mode is off
+      relationshipLinesRef.current.forEach(layer => {
+        if (!layer.relData) return;
+        if (layer.setStyle) layer.setStyle({ opacity: 0, weight: 2 });
+        if (layer._icon) layer._icon.style.opacity = '0';
+        if (layer.setOpacity) layer.setOpacity(0);
+      });
+      return;
+    }
+
+    if (selectedComposerId) {
+      // Highlight selected composer's relationships
+      const relatedIds = new Set();
+      relationships.forEach(rel => {
+        if (rel.from === selectedComposerId) relatedIds.add(rel.to);
+        if (rel.to === selectedComposerId) relatedIds.add(rel.from);
+      });
+
+      relationshipLinesRef.current.forEach(layer => {
+        if (!layer.relData) return;
+        const rel = layer.relData;
+        const isRelevant = rel.from === selectedComposerId || rel.to === selectedComposerId;
+        const passesFilter = activeFilters[rel.type];
+
+        if (isRelevant && passesFilter) {
+          if (layer.setStyle) layer.setStyle({ opacity: 0.85, weight: 2.5 });
+          if (layer._icon) layer._icon.style.opacity = '1';
+          if (layer.setOpacity) layer.setOpacity(1);
+          layer.isHighlighted = true;
+        } else {
+          if (layer.setStyle) layer.setStyle({ opacity: 0.03, weight: 1 });
+          if (layer._icon) layer._icon.style.opacity = '0.03';
+          if (layer.setOpacity) layer.setOpacity(0.03);
+          layer.isHighlighted = false;
+        }
+      });
+    } else {
+      // Show all lines at low opacity when no composer selected
+      relationshipLinesRef.current.forEach(layer => {
+        if (!layer.relData) return;
+        const passesFilter = activeFilters[layer.relData.type];
+        if (passesFilter) {
+          if (layer.setStyle) layer.setStyle({ opacity: 0.18, weight: 1.5 });
+          if (layer._icon) layer._icon.style.opacity = '0.25';
+          if (layer.setOpacity) layer.setOpacity(0.25);
+        } else {
+          if (layer.setStyle) layer.setStyle({ opacity: 0, weight: 1.5 });
+          if (layer._icon) layer._icon.style.opacity = '0';
+          if (layer.setOpacity) layer.setOpacity(0);
+        }
+        layer.isHighlighted = false;
+      });
+    }
+  }, [relationshipMode, activeFilters, selectedComposerId]);
 
   const handleFilterChange = (type) => {
     const newFilters = { ...activeFilters, [type]: !activeFilters[type] };
