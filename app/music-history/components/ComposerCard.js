@@ -65,7 +65,10 @@ export default function ComposerCard({ composer, onClose }) {
         <div className="card-header">
           <div className="card-avatar">
             {composer.portrait ? (
-              <img src={composer.portrait} alt={composer.name} className="card-portrait" />
+              <>
+                <img src={composer.portrait} alt={composer.name} className="card-portrait" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                <span className="card-initial" style={{display: 'none'}}>{composer.name.charAt(0)}</span>
+              </>
             ) : (
               <span className="card-initial">{composer.name.charAt(0)}</span>
             )}
