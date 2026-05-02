@@ -200,3 +200,42 @@
     display: none;
   }
 }
+
+/* Relationship Network Toggle Button */
+.rel-toggle-btn {
+  position: absolute;
+  top: 16px;
+  right: 140px;
+  z-index: 1001;
+  background: rgba(20, 27, 45, 0.92);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: #D4AF37;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s ease;
+}
+
+.rel-toggle-btn:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #D4AF37;
+}
+
+.rel-toggle-btn.active {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: #D4AF37;
+  color: #F4E4BA;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
+}
+
+.rel-toggle-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
