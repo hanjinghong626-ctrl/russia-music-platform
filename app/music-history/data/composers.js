@@ -236,7 +236,7 @@ export const composers = [
     deathYear: 1915,
     period: 'national-prosperity',
     school: '重要作曲家',
-    portrait: 'https://s.coze.cn/image/IssJ8TST75Q/',
+    portrait: 'https://s.coze.cn/image/RlP-qbqmJtw/',
     genres: ['歌剧', '教科书'],
     birthPlace: { city: '莫斯科', lat: 55.756, lng: 37.617 },
     mainCity: '莫斯科',
