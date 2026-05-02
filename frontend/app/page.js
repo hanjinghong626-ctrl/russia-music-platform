@@ -1,12 +1,10 @@
 import Link from 'next/link'
-
 // 首页服务端获取热门院校
 async function getFeaturedSchools() {
   const FEISHU_APP_ID = process.env.FEISHU_APP_ID || 'cli_a968b3c219b9dbd3'
   const FEISHU_APP_SECRET = process.env.FEISHU_APP_SECRET || 'JkpPVLK9IySp24RawJ4ASgfgKX8GjLGU'
   const FEISHU_APP_TOKEN = process.env.FEISHU_APP_TOKEN || 'CqwBbnJ5xa9SbTsRfGnc3Ar7nLh'
   const FEISHU_TABLE_ID = process.env.FEISHU_TABLE_ID || 'tblommDyseaVLP8Q'
-
   try {
     // 获取 token
     const tokenRes = await fetch('https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal', {
@@ -19,7 +17,6 @@ async function getFeaturedSchools() {
     })
     const tokenData = await tokenRes.json()
     const token = tokenData.tenant_access_token
-
     // 获取院校列表
     const res = await fetch(
       `https://open.feishu.cn/open-apis/bitable/v1/apps/${FEISHU_APP_TOKEN}/tables/${FEISHU_TABLE_ID}/records`,
@@ -34,7 +31,6 @@ async function getFeaturedSchools() {
     const data = await res.json()
     
     if (data.code !== 0) return []
-
     // 只取前3个
     return (data.data?.items || []).slice(0, 3).map((item, index) => {
       const fields = item.fields || {}
@@ -51,7 +47,6 @@ async function getFeaturedSchools() {
     return []
   }
 }
-
 // 俄罗斯花纹 SVG 装饰组件
 function RussianPattern() {
   return (
@@ -62,7 +57,6 @@ function RussianPattern() {
     </svg>
   )
 }
-
 // 音符装饰组件
 function MusicNotes() {
   return (
@@ -74,10 +68,8 @@ function MusicNotes() {
     </div>
   )
 }
-
 export default async function HomePage() {
   const featuredSchools = await getFeaturedSchools()
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 导航栏 */}
@@ -97,6 +89,7 @@ export default async function HomePage() {
               <Link href="/schools" className="text-gray-600 hover:text-primary-700 transition-colors font-medium">
                 院校
               </Link>
+              <Link href="/music-history" className="text-gray-600 hover:text-gray-900">音乐史交互地图</Link>
               <Link href="/schools-map" className="text-gray-600 hover:text-primary-700 transition-colors font-medium flex items-center gap-1">
                 <span>🗺️</span>
                 学院地图
@@ -105,15 +98,10 @@ export default async function HomePage() {
                 <span>🎤</span>
                 AI评估
               </Link>
-              <Link href="/music-history-map" className="text-gray-600 hover:text-primary-700 transition-colors font-medium flex items-center gap-1">
-                <span>📜</span>
-                音乐史
-              </Link>
             </div>
           </div>
         </div>
       </nav>
-
       {/* Hero区域 - 俄罗斯红蓝渐变 */}
       <section className="relative bg-hero-gradient text-white py-24 overflow-hidden">
         <MusicNotes />
@@ -158,7 +146,43 @@ export default async function HomePage() {
         {/* 底部装饰 */}
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent" />
       </section>
-
+      {/* 音乐史交互地图入口 */}
+      <section className="py-16 bg-gradient-to-br from-amber-50 to-yellow-50">
+        <div className="container mx-auto px-4">
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="md:flex">
+              <div className="md:w-2/5 bg-gradient-to-br from-amber-600 to-amber-800 p-8 flex flex-col justify-center items-center text-white">
+                <div className="text-7xl mb-4">🗺️</div>
+                <h3 className="text-2xl font-bold mb-2 text-center">音乐史交互地图</h3>
+                <p className="text-amber-200 text-sm text-center italic mb-6">
+                  Interactive Music History Map
+                </p>
+                <span className="px-4 py-2 bg-white/20 rounded-full text-sm">
+                  50位作曲家的时空之旅
+                </span>
+              </div>
+              <div className="md:w-3/5 p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">探索俄罗斯音乐发展脉络</h2>
+                <p className="text-gray-600 mb-6">
+                  从18世纪古典主义到苏联时期，50位俄罗斯作曲家在交互地图上呈现。按时期筛选、点击标记查看中俄双语详情，感受俄罗斯音乐史的壮阔画卷。
+                </p>
+                <div className="flex gap-3 flex-wrap mb-4">
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">5个历史时期</span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">50位作曲家</span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">中俄双语</span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">深色地图主题</span>
+                </div>
+                <Link
+                  href="/music-history"
+                  className="inline-block bg-amber-600 text-white px-8 py-3 rounded-lg hover:bg-amber-700 transition-colors font-medium shadow-lg"
+                >
+                  进入交互地图 →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       {/* 特点区域 */}
       <section id="features" className="py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -190,7 +214,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
       {/* 莫斯科柴可夫斯基音乐学院专题 - 俄罗斯元素 */}
       <section className="py-20 bg-gradient-to-br from-gray-50 via-white to-accent-50 relative overflow-hidden">
         <div className="absolute top-10 left-10 opacity-5">
@@ -292,7 +315,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
       {/* 院校预览 */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -371,7 +393,6 @@ export default async function HomePage() {
           )}
         </div>
       </section>
-
       {/* 页脚 - 俄罗斯元素 */}
       <footer className="bg-gradient-to-br from-gray-900 via-gray-900 to-accent-900 text-white py-14 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
