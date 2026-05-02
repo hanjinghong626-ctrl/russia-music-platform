@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import { composers } from '../data/composers';
 import { cities } from '../data/cities';
 import RelationshipNetwork from './RelationshipNetwork';
+import CityCard from './CityCard';
 import './MapComponent.css';
 
 // Custom gold marker icon
@@ -64,20 +65,46 @@ const createCustomIcon = (isActive = false, isHighlighted = false, isDimmed = fa
   });
 };
 
-// City marker icon
-const createCityIcon = (importance = 3) => {
-  const sizes = { 5: 28, 4: 22, 3: 18, 2: 14 };
-  const size = sizes[importance] || 18;
+// City marker icon with music note style
+const createCityIcon = () => {
+  const size = 36;
   
   return L.divIcon({
     className: 'city-marker',
     html: `
-      <div class="city-wrapper importance-${importance}" style="
+      <div class="city-marker-container" style="
         width: ${size}px;
         height: ${size}px;
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       ">
-        <div class="city-dot"></div>
-        <div class="city-ring"></div>
+        <div class="city-marker-bg" style="
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, #D4AF37 0%, #B8962E 100%);
+          border-radius: 50%;
+          box-shadow: 0 0 15px rgba(212, 175, 55, 0.5), 0 4px 12px rgba(0,0,0,0.3);
+          animation: city-marker-pulse 2s ease-in-out infinite;
+        "></div>
+        <div style="
+          position: relative;
+          z-index: 1;
+          font-size: 18px;
+          color: #0A0E17;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        ">🎵</div>
+        <div class="city-marker-ring" style="
+          position: absolute;
+          inset: -6px;
+          border: 2px solid rgba(212, 175, 55, 0.3);
+          border-radius: 50%;
+          animation: city-ring-expand 2s ease-out infinite;
+        "></div>
       </div>
     `,
     iconSize: [size, size],
@@ -99,6 +126,7 @@ export default function MapComponent({
   const composerMapRef = useRef({});
   
   const [relationshipMode, setRelationshipMode] = useState(false);
+  const [selectedCity, setSelectedCity] = useState(null);
 
   // Initialize map
   useEffect(() => {
@@ -133,6 +161,14 @@ export default function MapComponent({
         0%, 100% { transform: scale(1); opacity: 1; }
         50% { transform: scale(1.15); opacity: 0.8; }
       }
+      @keyframes city-marker-pulse {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5), 0 4px 12px rgba(0,0,0,0.3); }
+        50% { transform: scale(1.08); box-shadow: 0 0 25px rgba(212, 175, 55, 0.7), 0 4px 16px rgba(0,0,0,0.35); }
+      }
+      @keyframes city-ring-expand {
+        0% { transform: scale(1); opacity: 0.6; }
+        100% { transform: scale(1.8); opacity: 0; }
+      }
       .custom-marker { background: transparent !important; border: none !important; }
       .city-marker { background: transparent !important; border: none !important; }
       .leaflet-container { background: #0A0E17 !important; font-family: 'Noto Sans SC', sans-serif; }
@@ -159,10 +195,6 @@ export default function MapComponent({
         opacity: 0.12 !important;
         border-color: #3a3a3a !important;
       }
-      .city-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
-      .city-dot { width: 100%; height: 100%; border-radius: 50%; background: rgba(212, 175, 55, 0.3); }
-      .city-ring { position: absolute; inset: -4px; border-radius: 50%; border: 1px solid rgba(212, 175, 55, 0.2); animation: city-pulse 3s ease-in-out infinite; }
-      @keyframes city-pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.3); opacity: 0; } }
     `;
     document.head.appendChild(style);
 
@@ -172,6 +204,23 @@ export default function MapComponent({
       document.getElementById('rel-dynamic-styles')?.remove();
     };
   }, []);
+
+  // Handle city selection
+  const handleCitySelect = (city) => {
+    setSelectedCity(city);
+    if (onCitySelect) {
+      onCitySelect(city);
+    }
+  };
+
+  // Handle composer selection from city card
+  const handleComposerSelectFromCard = (composerId) => {
+    const composer = composers.find(c => c.id === composerId);
+    if (composer && onComposerSelect) {
+      onComposerSelect(composer);
+    }
+    setSelectedCity(null);
+  };
 
   // Update markers when period changes
   useEffect(() => {
@@ -214,27 +263,29 @@ export default function MapComponent({
       composerMapRef.current[composer.id] = marker;
     });
 
+    // Add city markers with special styling
     cities.forEach(city => {
       const cityMarker = L.marker(city.coordinates, {
-        icon: createCityIcon(city.importance)
+        icon: createCityIcon()
       });
 
       cityMarker.bindTooltip(`
         <div class="marker-tooltip city-tooltip">
-          <strong>${city.name}</strong><br/>
-          <span>${city.nameRu}</span>
+          <strong>🎵 ${city.name}</strong><br/>
+          <span>${city.nameRu}</span><br/>
+          <span style="font-size: 10px; opacity: 0.7;">点击查看音乐之城</span>
         </div>
       `, {
         className: 'custom-tooltip city',
         direction: 'top',
-        offset: [0, -10]
+        offset: [0, -18]
       });
 
-      cityMarker.on('click', () => onCitySelect(city));
+      cityMarker.on('click', () => handleCitySelect(city));
       cityMarker.addTo(map);
       cityMarkersRef.current.push(cityMarker);
     });
-  }, [activePeriod, onComposerSelect, onCitySelect]);
+  }, [activePeriod, onComposerSelect]);
 
   const toggleRelationshipMode = () => {
     setRelationshipMode(prev => !prev);
@@ -282,8 +333,18 @@ export default function MapComponent({
         <RelationshipNetwork onClose={() => setRelationshipMode(false)} />
       )}
 
+      {/* City Card Modal */}
+      {selectedCity && (
+        <CityCard 
+          city={selectedCity}
+          composers={composers}
+          onClose={() => setSelectedCity(null)}
+          onSelectComposer={handleComposerSelectFromCard}
+        />
+      )}
+
       <div className="map-instructions">
-        <span>点击标记查看作曲家详情 · 点击&quot;关系网&quot;按钮查看关系网络</span>
+        <span>点击标记查看作曲家详情 · 点击🎵查看城市详情 · 点击"关系网"按钮查看关系网络</span>
       </div>
     </div>
   );

@@ -1,0 +1,424 @@
+/* CityCard 3D浮雕风格卡片样式 */
+
+.city-card-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 20, 30, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.city-card {
+  position: relative;
+  display: flex;
+  width: 95%;
+  max-width: 1100px;
+  max-height: 90vh;
+  background: linear-gradient(145deg, #faf8f5 0%, #f5f0e8 100%);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(180, 160, 120, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform-style: preserve-3d;
+  perspective: 1200px;
+}
+
+/* 打开动画 */
+.city-card-overlay.entering .city-card {
+  animation: cardEnter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.city-card-overlay.exiting .city-card {
+  animation: cardExit 0.4s cubic-bezier(0.55, -0.2, 0.75, 0.45) forwards;
+}
+
+@keyframes cardEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotateY(-15deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotateY(0deg);
+  }
+}
+
+@keyframes cardExit {
+  0% {
+    opacity: 1;
+    transform: scale(1) rotateY(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3) rotateY(15deg);
+  }
+}
+
+/* 左侧图片区域 */
+.city-card-image-section {
+  flex: 0 0 55%;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e8e4dc 0%, #d4cfc5 100%);
+  padding: 20px;
+}
+
+.city-card-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 450px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 0 0 3px rgba(180, 155, 100, 0.4),
+    inset 0 0 60px rgba(255, 255, 255, 0.3);
+  animation: imageFloat 3s ease-in-out infinite;
+}
+
+@keyframes imageFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.city-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 图片层叠装饰 */
+.city-card-image-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 30%),
+    linear-gradient(0deg, rgba(0,0,0,0.1) 0%, transparent 30%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.city-card-image-wrapper::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid rgba(200, 180, 130, 0.5);
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+/* 右侧信息区域 */
+.city-card-info-section {
+  flex: 1;
+  padding: 32px 28px;
+  overflow-y: auto;
+  max-height: 90vh;
+  background: linear-gradient(180deg, #fdfcfa 0%, #f8f5f0 100%);
+  position: relative;
+}
+
+/* 视差层 */
+.city-card-info-section::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: linear-gradient(135deg, rgba(255,235,200,0.1) 0%, rgba(200,220,255,0.05) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.city-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* 城市名称 */
+.city-card-title {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(180, 155, 100, 0.3);
+}
+
+.city-card-title h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2c2416;
+  margin: 0 0 6px 0;
+  letter-spacing: 2px;
+}
+
+.city-card-title .name-ru {
+  font-size: 22px;
+  color: #5a4a32;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.city-card-title .name-en {
+  font-size: 16px;
+  color: #8a7a62;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+/* 城市描述 */
+.city-card-description {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #4a4035;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  border-left: 4px solid rgba(180, 155, 100, 0.5);
+}
+
+.city-card-description .desc-ru {
+  font-style: italic;
+  color: #6a5a45;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* 音乐地标 */
+.city-card-landmarks {
+  margin-bottom: 24px;
+}
+
+.city-card-landmarks h3 {
+  font-size: 16px;
+  color: #3a3020;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.city-card-landmarks h3::before {
+  content: '🎵';
+  font-size: 18px;
+}
+
+.landmark-item {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(180, 155, 100, 0.2);
+}
+
+.landmark-item:hover {
+  background: rgba(255, 248, 230, 0.9);
+  border-color: rgba(180, 155, 100, 0.5);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(180, 155, 100, 0.2);
+}
+
+.landmark-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2c2416;
+  margin-bottom: 2px;
+}
+
+.landmark-name-ru {
+  font-size: 13px;
+  color: #6a5a45;
+  margin-bottom: 4px;
+}
+
+.landmark-desc {
+  font-size: 13px;
+  color: #5a4a35;
+  line-height: 1.5;
+}
+
+/* 关联作曲家 */
+.city-card-composers h3 {
+  font-size: 16px;
+  color: #3a3020;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.city-card-composers h3::before {
+  content: '🏛️';
+  font-size: 18px;
+}
+
+.composers-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.composer-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #fff 0%, #f5f0e5 100%);
+  border: 1px solid rgba(180, 155, 100, 0.3);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 13px;
+  color: #3a3020;
+}
+
+.composer-chip:hover {
+  background: linear-gradient(135deg, #fff8e8 0%, #f0e8d5 100%);
+  border-color: rgba(180, 155, 100, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(180, 155, 100, 0.25);
+}
+
+.composer-chip .avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c9a86c 0%, #a08050 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.composer-chip .name {
+  white-space: nowrap;
+}
+
+/* 关闭按钮 */
+.city-card-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: rgba(60, 50, 35, 0.9);
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.3s ease;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.city-card-close:hover {
+  background: rgba(40, 30, 20, 1);
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 900px) {
+  .city-card {
+    flex-direction: column;
+    max-height: 95vh;
+  }
+  
+  .city-card-image-section {
+    flex: 0 0 280px;
+    padding: 15px;
+  }
+  
+  .city-card-image-wrapper {
+    min-height: 220px;
+  }
+  
+  .city-card-info-section {
+    padding: 20px 18px;
+    max-height: none;
+  }
+  
+  .city-card-title h2 {
+    font-size: 26px;
+  }
+  
+  .city-card-title .name-ru {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .city-card-overlay {
+    padding: 10px;
+  }
+  
+  .city-card {
+    border-radius: 12px;
+  }
+  
+  .city-card-image-section {
+    flex: 0 0 200px;
+    padding: 12px;
+  }
+  
+  .city-card-image-wrapper {
+    min-height: 180px;
+  }
+  
+  .city-card-info-section {
+    padding: 16px 14px;
+  }
+  
+  .city-card-title h2 {
+    font-size: 22px;
+  }
+  
+  .city-card-description {
+    font-size: 14px;
+    padding: 12px;
+  }
+  
+  .landmark-item {
+    padding: 10px 12px;
+  }
+  
+  .composer-chip {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .composer-chip .avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+}

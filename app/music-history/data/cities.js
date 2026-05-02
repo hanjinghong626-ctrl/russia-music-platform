@@ -1,148 +1,36 @@
 export const cities = [
   {
-    id: 'st-petersburg',
-    name: '圣彼得堡',
-    nameRu: 'Санкт-Петербург',
-    coordinates: [59.934, 30.335],
-    description: '俄罗斯音乐中心，彼得堡音乐学院所在地，强力集团活动中心。',
-    relatedComposers: ['glinka', 'mussorgsky', 'borodin', 'rimsky-korsakov', 'cui', 'anton_rubinstein', 'glazunov', 'stravinsky', 'shostakovich'],
-    importance: 5
-  },
-  {
     id: 'moscow',
     name: '莫斯科',
     nameRu: 'Москва',
-    coordinates: [55.756, 37.617],
-    description: '莫斯科音乐学院所在地，柴可夫斯基、拉赫玛尼诺夫、斯克里亚宾的主要活动中心。',
-    relatedComposers: ['tchaikovsky', 'scriabin', 'rachmaninoff', 'prokofiev', 'khachaturian'],
-    importance: 5
+    nameEn: 'Moscow',
+    description: '俄罗斯音乐文化的核心之城。莫斯科音乐学院培养了柴可夫斯基、斯克里亚宾、拉赫玛尼诺夫等大师；大剧院见证了无数歌剧与芭蕾的辉煌首演。',
+    descriptionRu: 'Сердце русской музыкальной культуры. Московская консерватория воспитала Чайковского, Скрябина, Рахманинова; Большой театр видел премьеры великих опер и балетов.',
+    image: '/cities/moscow.png',
+    musicLandmarks: [
+      { name: '莫斯科音乐学院', nameRu: 'Московская консерватория', desc: '1866年创立，俄罗斯最高音乐学府，柴可夫斯基曾在此任教' },
+      { name: '大剧院', nameRu: 'Большой театр', desc: '世界顶级歌剧芭蕾剧院，《叶甫盖尼·奥涅金》《天鹅湖》首演于此' },
+      { name: '柴可夫斯基音乐厅', nameRu: 'Концертный зал имени Чайковского', desc: '莫斯科爱乐乐团驻地，以卓越声学著称' },
+      { name: '格林卡音乐文化博物馆', nameRu: 'Всероссийское музейное объединение музыкальной культуры им. М.И.Глинки', desc: '收藏俄罗斯最丰富的音乐文物' }
+    ],
+    coords: [55.7558, 37.6173],
+    composers: ['tchaikovsky', 'scriabin', 'rakhmaninov', 'shostakovich', 'prokofiev', 'myaskovsky', 'nikolai_rubinstein']
   },
   {
-    id: 'kyiv',
-    name: '基辅',
-    nameRu: 'Киев',
-    coordinates: [50.450, 30.523],
-    description: '基辅罗斯首都，古俄罗斯音乐文化中心。',
-    relatedComposers: [],
-    importance: 3
-  },
-  {
-    id: 'votkinsk',
-    name: '沃特金斯克',
-    nameRu: 'Воткинск',
-    coordinates: [57.048, 54.007],
-    description: '柴可夫斯基出生地（1840年），乌拉尔地区工业城市。',
-    relatedComposers: ['tchaikovsky'],
-    importance: 4
-  },
-  {
-    id: 'novgorod',
-    name: '诺夫哥罗德',
-    nameRu: 'Новгород',
-    coordinates: [58.521, 31.271],
-    description: '古代罗斯重要城市，史诗歌曲（壮士歌）中心地带。',
-    relatedComposers: ['rachmaninoff'],
-    importance: 3
-  },
-  {
-    id: 'novospasskoe',
-    name: '新斯帕斯基',
-    nameRu: 'Новоспасское',
-    coordinates: [54.8, 33.7],
-    description: '格林卡出生地（1804年），图拉地区。',
-    relatedComposers: ['glinka'],
-    importance: 4
-  },
-  {
-    id: 'tula',
-    name: '图拉',
-    nameRu: 'Тула',
-    coordinates: [54.196, 37.618],
-    description: '达尔戈梅日斯基出生地。',
-    relatedComposers: ['dargomyzhsky'],
-    importance: 2
-  },
-  {
-    id: 'nn',
-    name: '下诺夫哥罗德',
-    nameRu: 'Нижний Новгород',
-    coordinates: [56.328, 44.002],
-    description: '巴拉基列夫出生地，伏尔加河沿岸重要城市。',
-    relatedComposers: ['balakirev'],
-    importance: 3
-  },
-  {
-    id: 'tikhvin',
-    name: '季赫温',
-    nameRu: 'Тихвин',
-    coordinates: [59.636, 32.291],
-    description: '里姆斯基-科萨科夫出生地。',
-    relatedComposers: ['rimsky_korsakov'],
-    importance: 3
-  },
-  {
-    id: 'orenburg',
-    name: '普京',
-    nameRu: 'Пугачёв',
-    coordinates: [57.988, 56.208],
-    description: '穆索尔斯基出生地。',
-    relatedComposers: ['mussorgsky'],
-    importance: 3
-  },
-  {
-    id: 'tzvetkovo',
-    name: '奥涅格',
-    nameRu: 'Онег',
-    coordinates: [58.5, 33.1],
-    description: '拉赫玛尼诺夫出生地。',
-    relatedComposers: ['rachmaninoff'],
-    importance: 3
-  },
-  {
-    id: 'leningrad_oblast',
-    name: '奥拉宁鲍姆',
-    nameRu: 'Ораниенбаум',
-    coordinates: [59.811, 29.832],
-    description: '斯特拉文斯基出生地，彼得堡郊区。',
-    relatedComposers: ['stravinsky'],
-    importance: 3
-  },
-  {
-    id: 'sumy',
-    name: '松佐夫卡',
-    nameRu: 'Сонцевка',
-    coordinates: [51.523, 33.147],
-    description: '普罗科菲耶夫出生地，乌克兰苏梅州。',
-    relatedComposers: ['prokofiev'],
-    importance: 3
-  },
-  {
-    id: 'tbilisi',
-    name: '第比利斯',
-    nameRu: 'Тбилиси',
-    coordinates: [41.693, 44.801],
-    description: '哈恰图良出生地，格鲁吉亚首都。',
-    relatedComposers: ['khachaturian'],
-    importance: 3
-  },
-  {
-    id: 'voronezh',
-    name: '维霍夫斯克',
-    nameRu: 'Вы́ховск',
-    coordinates: [45.037, 41.975],
-    description: '安东·鲁宾斯坦出生地。',
-    relatedComposers: ['anton_rubinstein'],
-    importance: 3
-  },
-  {
-    id: 'vilnius',
-    name: '维尔纽斯',
-    nameRu: 'Вильнюс',
-    coordinates: [54.687, 25.279],
-    description: '居伊出生地，立陶宛首都。',
-    relatedComposers: ['cui'],
-    importance: 2
+    id: 'stpetersburg',
+    name: '圣彼得堡',
+    nameRu: 'Санкт-Петербург',
+    nameEn: 'Saint Petersburg',
+    description: '俄罗斯音乐的摇篮。格林卡在此开创俄罗斯歌剧传统，强力集团在此改写音乐史，斯特拉文斯基从这里走向世界。白夜之城，音符流淌在涅瓦河畔。',
+    descriptionRu: 'Колыбель русской музыки. Глинка открыл русскую оперную традицию, Могучая кучка переписала историю музыки, Стравинский отсюда вышел на мировую арену.',
+    image: '/cities/stpetersburg.png',
+    musicLandmarks: [
+      { name: '马林斯基剧院', nameRu: 'Мариинский театр', desc: '俄罗斯歌剧与芭蕾的圣殿，《鲍里斯·戈杜诺夫》《火鸟》首演于此' },
+      { name: '圣彼得堡音乐学院', nameRu: 'Санкт-Петербургская консерватория', desc: '1862年创立，俄罗斯第一所音乐学院，强力集团成员曾在此任教' },
+      { name: '爱乐大厅', nameRu: 'Большой зал Петербургской филармонии', desc: '俄罗斯最古老的音乐厅，肖斯塔科维奇在此首演多部交响曲' },
+      { name: '冬宫/艾尔米塔什', nameRu: 'Эрмитаж', desc: '帝国时代的音乐生活中心，宫廷音乐会与歌剧首演的举办地' }
+    ],
+    coords: [59.9343, 30.3351],
+    composers: ['glinka', 'mussorgsky', 'rimsky_korsakov', 'borodin', 'cui', 'balakirev', 'stravinsky', 'glazunov', 'taneev', 'lyadov']
   }
 ];
-
-export default cities;
