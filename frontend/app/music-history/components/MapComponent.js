@@ -265,7 +265,7 @@ export default function MapComponent({
 
     // Add city markers with special styling
     cities.forEach(city => {
-      const cityMarker = L.marker(city.coordinates, {
+      const cityMarker = L.marker(city.coords, {
         icon: createCityIcon()
       });
 
