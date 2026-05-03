@@ -309,36 +309,26 @@ export default function CityCard({ city, composers, onClose, onSelectComposer })
         </div>
         
         <div className="city-card-image-section">
-          {/* 圣彼得堡简化极光效果 - 只有aurora-overlay和简单的aurora-waves */}
-          {isNight && city.id === 'st-petersburg' && (
-            <div className="aurora-overlay">
-              <div className="aurora-waves simple"></div>
-            </div>
-          )}
-          
-          {/* 莫斯科雪花效果 */}
-          {isNight && city.id === 'moscow' && (
-            <div className="snow-overlay">
-              {[...Array(30)].map((_, i) => (
-                <div key={i} className="snowflake" style={{
-                  left: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 5}s`,
-                  animationDuration: `${3 + Math.random() * 4}s`
-                }}></div>
-              ))}
+          {/* 夜间模式纯UI装饰 - 月亮和星星 */}
+          {isNight && (
+            <div className="night-decor">
+              <div className="night-moon"></div>
+              <div className="night-star" style={{ top: '12%', left: '8%', animationDelay: '0s' }}></div>
+              <div className="night-star" style={{ top: '8%', left: '25%', animationDelay: '1.2s' }}></div>
+              <div className="night-star" style={{ top: '18%', left: '85%', animationDelay: '0.6s' }}></div>
+              <div className="night-star" style={{ top: '5%', left: '65%', animationDelay: '1.8s' }}></div>
+              <div className="night-star" style={{ top: '15%', left: '45%', animationDelay: '0.3s' }}></div>
+              <div className="night-star" style={{ top: '22%', left: '72%', animationDelay: '2.1s' }}></div>
             </div>
           )}
           
           <div className="city-card-image-wrapper" ref={imageRef}>
-            {/* 城市图片 */}
+            {/* 城市图片 - 夜间模式不修改插画本身 */}
             <img 
               src={city.image} 
               alt={city.name}
-              className={`city-card-image ${isNight ? 'night-image' : ''}`}
+              className="city-card-image"
             />
-            
-            {/* 暖灯效果 - 像一盏灯照着纸雕模型 */}
-            {isNight && <div className="warm-lamp-glow"></div>}
             
             {/* 地标热点标记 */}
             {landmarkSpots.map((spot, index) => (
