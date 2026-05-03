@@ -309,11 +309,10 @@ export default function CityCard({ city, composers, onClose, onSelectComposer })
         </div>
         
         <div className="city-card-image-section">
-          {/* 圣彼得堡极光 + 星空效果 */}
+          {/* 圣彼得堡简化极光效果 - 只有aurora-overlay和简单的aurora-waves */}
           {isNight && city.id === 'st-petersburg' && (
             <div className="aurora-overlay">
-              <div className="aurora-waves enhanced"></div>
-              <div className="stars-night subtle"></div>
+              <div className="aurora-waves simple"></div>
             </div>
           )}
           
@@ -331,9 +330,6 @@ export default function CityCard({ city, composers, onClose, onSelectComposer })
           )}
           
           <div className="city-card-image-wrapper" ref={imageRef}>
-            {/* 夜间天空渐变效果 - 深蓝到深紫 */}
-            {isNight && <div className="night-sky-overlay"></div>}
-            
             {/* 城市图片 */}
             <img 
               src={city.image} 
@@ -341,20 +337,8 @@ export default function CityCard({ city, composers, onClose, onSelectComposer })
               className={`city-card-image ${isNight ? 'night-image' : ''}`}
             />
             
-            {/* 夜间城市环境光 - 底部暖黄往上泛 */}
-            {isNight && <div className="night-city-glow"></div>}
-            
-            {/* 夜间河流反光 - 微妙水平光带 */}
-            {isNight && <div className="river-reflection-subtle"></div>}
-            
-            {/* 夜间路灯效果 - 精确少量椭圆形 */}
-            {isNight && (
-              <div className="street-lamp-glow-container">
-                <div className="street-lamp-glow left"></div>
-                <div className="street-lamp-glow center"></div>
-                <div className="street-lamp-glow right"></div>
-              </div>
-            )}
+            {/* 暖灯效果 - 像一盏灯照着纸雕模型 */}
+            {isNight && <div className="warm-lamp-glow"></div>}
             
             {/* 地标热点标记 */}
             {landmarkSpots.map((spot, index) => (
