@@ -313,12 +313,6 @@ export default function RelationshipNetwork({ onClose }) {
           />
           {/* 头像或首字 */}
           {composer.portrait ? (
-            <>
-              <defs>
-                <clipPath id={`clip-${id}`}>
-                  <circle r={radius - 3} />
-                </clipPath>
-              </defs>
               <foreignObject
                 x={-(radius - 3)}
                 y={-(radius - 3)}
@@ -339,7 +333,6 @@ export default function RelationshipNetwork({ onClose }) {
                   onError={(e) => { e.target.style.display = 'none'; }}
                 />
               </foreignObject>
-            </>
           ) : (
             <text
               textAnchor="middle"
@@ -367,6 +360,24 @@ export default function RelationshipNetwork({ onClose }) {
     });
   };
   
+  // 渲染所有节点的clipPath（统一在defs中）
+  // 渲染所有节点的clipPath（统一在defs中）
+  const renderClipPaths = () => {
+    const composerIds = getComposersWithRelationships();
+    return Array.from(composerIds).map(id => {
+      const composer = composers.find(c => c.id === id);
+      if (!composer || !composer.portrait) return null;
+      
+      const radius = getNodeRadius(id);
+      
+      return (
+        <clipPath key={`clip-${id}`} id={`clip-${id}`}>
+          <circle r={radius - 3} />
+        </clipPath>
+      );
+    });
+  };
+
   // 渲染箭头标记
   const renderArrowMarkers = () => {
     return Object.entries(relationshipConfig).map(([type, config]) => (
@@ -410,6 +421,7 @@ export default function RelationshipNetwork({ onClose }) {
         >
           {/* 定义 */}
           <defs>
+            {renderClipPaths()}
             {renderArrowMarkers()}
           </defs>
           
