@@ -382,7 +382,7 @@ export default function CityCard({ city, composers, onClose, onSelectComposer })
             
             <div className="city-card-landmarks">
               <h3>音乐地标</h3>
-              {city.musicLandmarks.map((landmark, index) => (
+              {(city.musicLandmarks || []).map((landmark, index) => (
                 <div 
                   key={index} 
                   className={`landmark-item ${activeLandmark === index ? 'highlighted' : ''}`}

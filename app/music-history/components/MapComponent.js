@@ -296,35 +296,25 @@ export default function MapComponent({
 
     // Add city markers with special styling
     cities.forEach(city => {
-      // Use different icon for cities with/without images
-      const hasImage = city.image && city.image.length > 0;
-      const icon = hasImage ? createCityIcon() : createSmallCityIcon();
+      const icon = createCityIcon(city.name, city.id);
       
       const cityMarker = L.marker(city.coords, {
         icon: icon
       });
 
       // Different tooltip content for cities with/without images
-      const tooltipContent = hasImage
-        ? `
-          <div class="marker-tooltip city-tooltip">
-            <strong>🎵 ${city.name}</strong><br/>
-            <span>${city.nameRu}</span><br/>
-            <span style="font-size: 10px; opacity: 0.7;">点击查看音乐之城</span>
-          </div>
-        `
-        : `
-          <div class="marker-tooltip city-tooltip small-city">
-            <strong>♪ ${city.name}</strong><br/>
-            <span>${city.nameRu}</span><br/>
-            <span style="font-size: 10px; opacity: 0.7;">作曲家故乡</span>
+      const isMajor = ['moscow', 'stpetersburg'].includes(city.id);
+      const tooltipContent = `
+          <div class="marker-tooltip city-tooltip" style="text-align: center;">
+            <span style="font-size: 10px; opacity: 0.8;">${city.nameRu}</span><br/>
+            <span style="font-size: 10px; opacity: 0.6;">${isMajor ? '点击查看音乐之城' : '作曲家故乡'}</span>
           </div>
         `;
 
       cityMarker.bindTooltip(tooltipContent, {
-        className: 'custom-tooltip city ' + (hasImage ? '' : 'small'),
+        className: 'custom-tooltip city',
         direction: 'top',
-        offset: [0, hasImage ? -18 : -14]
+        offset: [0, -20]
       });
 
       // Only open CityCard for cities with images
