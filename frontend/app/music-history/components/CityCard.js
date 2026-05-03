@@ -313,7 +313,7 @@ export default function CityCard({ city, composers, onClose, onSelectComposer })
           {isNight && city.id === 'st-petersburg' && (
             <div className="aurora-overlay">
               <div className="aurora-waves enhanced"></div>
-              <div className="stars-night dense"></div>
+              <div className="stars-night subtle"></div>
             </div>
           )}
           
@@ -341,11 +341,20 @@ export default function CityCard({ city, composers, onClose, onSelectComposer })
               className={`city-card-image ${isNight ? 'night-image' : ''}`}
             />
             
-            {/* 夜间河流反光 - 水平暖黄色光带 */}
-            {isNight && <div className="river-reflection"></div>}
+            {/* 夜间城市环境光 - 底部暖黄往上泛 */}
+            {isNight && <div className="night-city-glow"></div>}
             
-            {/* 夜间路灯效果 - 大范围暖黄光晕 */}
-            {isNight && <div className="street-lights-overlay"></div>}
+            {/* 夜间河流反光 - 微妙水平光带 */}
+            {isNight && <div className="river-reflection-subtle"></div>}
+            
+            {/* 夜间路灯效果 - 精确少量椭圆形 */}
+            {isNight && (
+              <div className="street-lamp-glow-container">
+                <div className="street-lamp-glow left"></div>
+                <div className="street-lamp-glow center"></div>
+                <div className="street-lamp-glow right"></div>
+              </div>
+            )}
             
             {/* 地标热点标记 */}
             {landmarkSpots.map((spot, index) => (
@@ -363,9 +372,6 @@ export default function CityCard({ city, composers, onClose, onSelectComposer })
                 </div>
               </div>
             ))}
-            
-            {/* 增强版夜间窗户灯光 */}
-            {isNight && <div className="night-lights-overlay enhanced"></div>}
           </div>
         </div>
         
