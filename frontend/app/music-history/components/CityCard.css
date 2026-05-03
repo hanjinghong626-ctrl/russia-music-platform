@@ -327,7 +327,7 @@
 
 /* 夜间图片滤镜 - 城市夜景效果 */
 .city-card.night-mode .city-card-image {
-  filter: brightness(0.3) contrast(1.2) saturate(0.7) hue-rotate(10deg);
+  filter: brightness(0.38) contrast(1.3) saturate(0.6) hue-rotate(10deg);
   transition: filter 0.8s ease;
 }
 
