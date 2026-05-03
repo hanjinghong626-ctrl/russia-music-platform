@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import './CityCard.css';
+import './CityCard-v2.css';
 
 // 音效管理器 - Phase 5
 class SoundManager {
