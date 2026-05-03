@@ -89,15 +89,9 @@ const createCityIcon = () => {
           box-shadow: 0 0 15px rgba(212, 175, 55, 0.5), 0 4px 12px rgba(0,0,0,0.3);
           animation: city-marker-pulse 2s ease-in-out infinite;
         "></div>
-        <div style="
-          position: relative;
-          z-index: 1;
-          font-size: 18px;
-          color: #0A0E17;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        ">🎵</div>
+        <svg style="position: relative; z-index: 1; width: 20px; height: 20px;" viewBox="0 0 24 24" fill="#D4AF37">
+          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
         <div class="city-marker-ring" style="
           position: absolute;
           inset: -6px;
