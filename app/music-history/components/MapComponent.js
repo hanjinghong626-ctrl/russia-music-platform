@@ -65,7 +65,7 @@ const createCustomIcon = (isActive = false, isHighlighted = false, isDimmed = fa
   });
 };
 
-// City marker icon with music note style
+// City marker icon with music note style (for cities with images)
 const createCityIcon = () => {
   const size = 36;
   
@@ -99,6 +99,40 @@ const createCityIcon = () => {
           border-radius: 50%;
           animation: city-ring-expand 2s ease-out infinite;
         "></div>
+      </div>
+    `,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2]
+  });
+};
+
+// Smaller city marker icon for cities without images
+const createSmallCityIcon = () => {
+  const size = 28;
+  
+  return L.divIcon({
+    className: 'city-marker small',
+    html: `
+      <div class="city-marker-container small" style="
+        width: ${size}px;
+        height: ${size}px;
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">
+        <div class="city-marker-bg small" style="
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, #9B8B6E 0%, #7A6B52 100%);
+          border-radius: 50%;
+          box-shadow: 0 0 10px rgba(155, 139, 110, 0.4), 0 2px 8px rgba(0,0,0,0.25);
+          animation: city-marker-pulse 2.5s ease-in-out infinite;
+        "></div>
+        <svg style="position: relative; z-index: 1; width: 14px; height: 14px;" viewBox="0 0 24 24" fill="#9B8B6E">
+          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
       </div>
     `,
     iconSize: [size, size],
@@ -159,10 +193,6 @@ export default function MapComponent({
         0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5), 0 4px 12px rgba(0,0,0,0.3); }
         50% { transform: scale(1.08); box-shadow: 0 0 25px rgba(212, 175, 55, 0.7), 0 4px 16px rgba(0,0,0,0.35); }
       }
-      @keyframes city-ring-expand {
-        0% { transform: scale(1); opacity: 0.6; }
-        100% { transform: scale(1.8); opacity: 0; }
-      }
       .custom-marker { background: transparent !important; border: none !important; }
       .city-marker { background: transparent !important; border: none !important; }
       .leaflet-container { background: #0A0E17 !important; font-family: 'Noto Sans SC', sans-serif; }
@@ -188,6 +218,13 @@ export default function MapComponent({
       .marker-wrapper.dimmed > div:last-child {
         opacity: 0.12 !important;
         border-color: #3a3a3a !important;
+      }
+      .city-marker-container.small .city-marker-bg {
+        animation: city-marker-pulse-small 2.5s ease-in-out infinite;
+      }
+      @keyframes city-marker-pulse-small {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
       }
     `;
     document.head.appendChild(style);
@@ -259,23 +296,44 @@ export default function MapComponent({
 
     // Add city markers with special styling
     cities.forEach(city => {
+      // Use different icon for cities with/without images
+      const hasImage = city.image && city.image.length > 0;
+      const icon = hasImage ? createCityIcon() : createSmallCityIcon();
+      
       const cityMarker = L.marker(city.coords, {
-        icon: createCityIcon()
+        icon: icon
       });
 
-      cityMarker.bindTooltip(`
-        <div class="marker-tooltip city-tooltip">
-          <strong>🎵 ${city.name}</strong><br/>
-          <span>${city.nameRu}</span><br/>
-          <span style="font-size: 10px; opacity: 0.7;">点击查看音乐之城</span>
-        </div>
-      `, {
-        className: 'custom-tooltip city',
+      // Different tooltip content for cities with/without images
+      const tooltipContent = hasImage
+        ? `
+          <div class="marker-tooltip city-tooltip">
+            <strong>🎵 ${city.name}</strong><br/>
+            <span>${city.nameRu}</span><br/>
+            <span style="font-size: 10px; opacity: 0.7;">点击查看音乐之城</span>
+          </div>
+        `
+        : `
+          <div class="marker-tooltip city-tooltip small-city">
+            <strong>♪ ${city.name}</strong><br/>
+            <span>${city.nameRu}</span><br/>
+            <span style="font-size: 10px; opacity: 0.7;">作曲家故乡</span>
+          </div>
+        `;
+
+      cityMarker.bindTooltip(tooltipContent, {
+        className: 'custom-tooltip city ' + (hasImage ? '' : 'small'),
         direction: 'top',
-        offset: [0, -18]
+        offset: [0, hasImage ? -18 : -14]
       });
 
-      cityMarker.on('click', () => handleCitySelect(city));
+      // Only open CityCard for cities with images
+      cityMarker.on('click', () => {
+        if (city.image) {
+          handleCitySelect(city);
+        }
+      });
+      
       cityMarker.addTo(map);
       cityMarkersRef.current.push(cityMarker);
     });
