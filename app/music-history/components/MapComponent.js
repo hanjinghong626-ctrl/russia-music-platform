@@ -1,4 +1,4 @@
-// Russia Music Soul - Interactive Map with Atmosphere
+/* Russia Music Soul v2.1 - with atmosphere animations */
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
