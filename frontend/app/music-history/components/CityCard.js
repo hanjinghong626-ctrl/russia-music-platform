@@ -279,7 +279,7 @@ export default function CityCard({ city, composers, onClose, onSelectComposer })
     >
       <div 
         ref={cardRef}
-        className={`city-card ${isNight ? 'night-mode' : 'day-mode'} ${getCityThemeClass()}`}
+        className={`city-card ${isNight ? 'night-mode' : 'day-mode'} ${getCityThemeClass()} ${city.id === 'moscow' ? 'layout-top-bottom' : 'layout-left-right'}`}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{
