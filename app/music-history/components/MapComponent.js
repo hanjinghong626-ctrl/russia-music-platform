@@ -319,7 +319,7 @@ export default function MapComponent({
       {/* Elegant title overlay - inspired by "诗词山河" */}
       <div className="map-overlay-tl">
         <div className="map-title-elegant">
-          <div className="title-main">俄罗斯音乐山河</div>
+          <div className="title-main">俄罗斯音乐之魂</div>
           <div className="title-divider"></div>
           <div className="title-sub">跨越三百年 · {composerCount}位作曲家 · 47段师承</div>
         </div>
