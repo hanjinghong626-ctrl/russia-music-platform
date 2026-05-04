@@ -111,35 +111,10 @@ export default function MapComponent({ activePeriod, onComposerSelect, onCitySel
         <div className="snowflake s19"></div><div className="snowflake s20"></div>
       </div>
 
-      {/* TROIKA */}
+      {/* TROIKA - reindeer sleigh using generated image */}
       <div className="atmosphere-troika">
         <div className="troika-sleigh">
-          <svg viewBox="0 0 360 100" className="troika-svg" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="tgold" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="rgba(212,175,55,0.15)"/><stop offset="40%" stopColor="rgba(212,175,55,0.5)"/><stop offset="70%" stopColor="rgba(212,175,55,0.6)"/><stop offset="100%" stopColor="rgba(212,175,55,0.2)"/></linearGradient></defs>
-            <path d="M 215 82 Q 225 90 250 86 L 340 82" stroke="url(#tgold)" fill="none" strokeWidth="1.2" strokeLinecap="round"/>
-            <path d="M 210 85 Q 220 93 245 89 L 335 85" stroke="rgba(212,175,55,0.15)" fill="none" strokeWidth="0.8" strokeLinecap="round"/>
-            <path d="M 220 74 Q 216 65, 222 58 L 310 58 Q 318 58, 318 64 L 318 70 Q 318 74, 314 74 Z" fill="rgba(212,175,55,0.06)" stroke="rgba(212,175,55,0.35)" strokeWidth="0.8"/>
-            <path d="M 240 62 L 245 58 L 250 62 L 245 66 Z" stroke="rgba(212,175,55,0.2)" fill="rgba(212,175,55,0.04)" strokeWidth="0.4"/>
-            <path d="M 260 62 L 265 58 L 270 62 L 265 66 Z" stroke="rgba(212,175,55,0.2)" fill="rgba(212,175,55,0.04)" strokeWidth="0.4"/>
-            <path d="M 280 62 L 285 58 L 290 62 L 285 66 Z" stroke="rgba(212,175,55,0.2)" fill="rgba(212,175,55,0.04)" strokeWidth="0.4"/>
-            <path d="M 300 62 L 305 58 L 310 62 L 305 66 Z" stroke="rgba(212,175,55,0.15)" fill="rgba(212,175,55,0.03)" strokeWidth="0.4"/>
-            <path d="M 305 58 L 305 42 Q 303 34, 298 32 Q 292 30, 290 34 L 292 42 L 296 58" fill="rgba(212,175,55,0.05)" stroke="rgba(212,175,55,0.3)" strokeWidth="0.7"/>
-            <path d="M 299 36 Q 295 33, 293 37" stroke="rgba(212,175,55,0.2)" fill="none" strokeWidth="0.4"/>
-            <path d="M 222 58 Q 218 50, 222 44 Q 226 38, 222 32 Q 218 26, 214 24 Q 210 22, 208 26" stroke="rgba(212,175,55,0.45)" fill="none" strokeWidth="0.8" strokeLinecap="round"/>
-            <circle cx="212" cy="30" r="2" stroke="rgba(212,175,55,0.4)" fill="rgba(212,175,55,0.08)" strokeWidth="0.4"/>
-            <circle cx="208" cy="34" r="1.5" stroke="rgba(212,175,55,0.3)" fill="rgba(212,175,55,0.06)" strokeWidth="0.3"/>
-            <circle cx="297" cy="32" r="1.8" stroke="rgba(212,175,55,0.35)" fill="rgba(212,175,55,0.06)" strokeWidth="0.3"/>
-            <g opacity="0.35" transform="translate(10,15) scale(0.65)"><path d="M 22 35 Q 16 30, 18 24 Q 14 18, 10 14 Q 8 10, 10 7 Q 13 4, 18 7 L 22 10 Q 25 7, 28 10 L 32 16 Q 36 20, 38 26 L 40 34" stroke="rgba(212,175,55,0.9)" fill="rgba(212,175,55,0.03)" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round"/><path d="M 18 34 L 14 48 M 24 36 L 22 48 M 30 34 L 34 46 M 36 32 L 40 44" stroke="rgba(212,175,55,0.7)" fill="none" strokeWidth="0.7" strokeLinecap="round"/><path d="M 36 18 Q 42 14, 44 20 Q 46 25, 42 28" stroke="rgba(212,175,55,0.5)" fill="none" strokeWidth="0.5" strokeLinecap="round"/><path d="M 12 8 Q 8 5, 10 2" stroke="rgba(212,175,55,0.4)" fill="none" strokeWidth="0.4"/></g>
-            <g opacity="0.5" transform="translate(55,8) scale(0.78)"><path d="M 22 35 Q 16 30, 18 24 Q 14 18, 10 14 Q 8 10, 10 7 Q 13 4, 18 7 L 22 10 Q 25 7, 28 10 L 32 16 Q 36 20, 38 26 L 40 34" stroke="rgba(212,175,55,0.9)" fill="rgba(212,175,55,0.04)" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round"/><path d="M 18 34 L 14 48 M 24 36 L 22 48 M 30 34 L 34 46 M 36 32 L 40 44" stroke="rgba(212,175,55,0.7)" fill="none" strokeWidth="0.7" strokeLinecap="round"/><path d="M 36 18 Q 42 14, 44 20 Q 46 25, 42 28" stroke="rgba(212,175,55,0.5)" fill="none" strokeWidth="0.5" strokeLinecap="round"/><path d="M 12 8 Q 8 5, 10 2" stroke="rgba(212,175,55,0.4)" fill="none" strokeWidth="0.4"/><path d="M 14 7 Q 11 4, 12 1" stroke="rgba(212,175,55,0.35)" fill="none" strokeWidth="0.3"/></g>
-            <g opacity="0.7" transform="translate(108,0) scale(0.9)"><path d="M 22 35 Q 16 30, 18 24 Q 14 18, 10 14 Q 8 10, 10 7 Q 13 4, 18 7 L 22 10 Q 25 7, 28 10 L 32 16 Q 36 20, 38 26 L 40 34" stroke="rgba(212,175,55,0.95)" fill="rgba(212,175,55,0.05)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M 18 34 L 14 48 M 24 36 L 22 48 M 30 34 L 34 46 M 36 32 L 40 44" stroke="rgba(212,175,55,0.75)" fill="none" strokeWidth="0.8" strokeLinecap="round"/><path d="M 36 18 Q 42 14, 46 18 Q 48 22, 44 26 Q 40 28, 38 25" stroke="rgba(212,175,55,0.5)" fill="none" strokeWidth="0.6" strokeLinecap="round"/><path d="M 12 8 Q 8 5, 10 2" stroke="rgba(212,175,55,0.4)" fill="none" strokeWidth="0.4"/><path d="M 14 7 Q 11 4, 12 0" stroke="rgba(212,175,55,0.35)" fill="none" strokeWidth="0.35"/><path d="M 16 6 Q 13 2, 15 -1" stroke="rgba(212,175,55,0.3)" fill="none" strokeWidth="0.3"/><path d="M 10 7 L 7 3" stroke="rgba(212,175,55,0.5)" fill="none" strokeWidth="0.5" strokeLinecap="round"/><circle cx="20" cy="22" r="1.5" stroke="rgba(212,175,55,0.4)" fill="rgba(212,175,55,0.08)" strokeWidth="0.3"/></g>
-            <path d="M 70 42 Q 120 52, 220 60" stroke="rgba(212,175,55,0.08)" fill="none" strokeWidth="0.4" strokeDasharray="5,4"/>
-            <path d="M 115 40 Q 155 50, 220 60" stroke="rgba(212,175,55,0.08)" fill="none" strokeWidth="0.4" strokeDasharray="5,4"/>
-            <path d="M 160 38 Q 190 48, 220 60" stroke="rgba(212,175,55,0.08)" fill="none" strokeWidth="0.4" strokeDasharray="5,4"/>
-            <circle cx="5" cy="75" r="2.5" fill="rgba(255,255,255,0.06)"/>
-            <circle cx="-3" cy="72" r="3.5" fill="rgba(255,255,255,0.04)"/>
-            <circle cx="-10" cy="78" r="4" fill="rgba(255,255,255,0.03)"/>
-            <circle cx="0" cy="80" r="3" fill="rgba(255,255,255,0.04)"/>
-          </svg>
+          <img src="/images/troika-reindeer.png" alt="" className="troika-img" draggable="false" />
         </div>
       </div>
 
