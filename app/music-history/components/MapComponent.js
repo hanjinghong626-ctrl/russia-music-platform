@@ -67,78 +67,47 @@ const createCustomIcon = (isActive = false, isHighlighted = false, isDimmed = fa
 
 // City marker icon with music note style (for cities with images)
 const createCityIcon = () => {
-  const size = 36;
+  const size = 14;
   
   return L.divIcon({
     className: 'city-marker',
     html: `
-      <div class="city-marker-container" style="
+      <div style="
         width: ${size}px;
         height: ${size}px;
-        position: relative;
+        background: #D4AF37;
+        border-radius: 50%;
+        box-shadow: 0 0 8px rgba(212, 175, 55, 0.5), 0 0 2px rgba(212, 175, 55, 0.8);
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      ">
-        <div class="city-marker-bg" style="
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, #D4AF37 0%, #B8962E 100%);
-          border-radius: 50%;
-          box-shadow: 0 0 15px rgba(212, 175, 55, 0.5), 0 4px 12px rgba(0,0,0,0.3);
-          animation: city-marker-pulse 2s ease-in-out infinite;
-        "></div>
-        <svg style="position: relative; z-index: 1; width: 20px; height: 20px;" viewBox="0 0 24 24" fill="#D4AF37">
-          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-        </svg>
-        <div class="city-marker-ring" style="
-          position: absolute;
-          inset: -6px;
-          border: 2px solid rgba(212, 175, 55, 0.3);
-          border-radius: 50%;
-          animation: city-ring-expand 2s ease-out infinite;
-        "></div>
-      </div>
+      "></div>
     `,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2]
   });
 };
 
+
 // Smaller city marker icon for cities without images
 const createSmallCityIcon = () => {
-  const size = 28;
+  const size = 10;
   
   return L.divIcon({
     className: 'city-marker small',
     html: `
-      <div class="city-marker-container small" style="
+      <div style="
         width: ${size}px;
         height: ${size}px;
-        position: relative;
+        background: #9B8B6E;
+        border-radius: 50%;
+        box-shadow: 0 0 6px rgba(155, 139, 110, 0.4), 0 0 2px rgba(155, 139, 110, 0.6);
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      ">
-        <div class="city-marker-bg small" style="
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, #9B8B6E 0%, #7A6B52 100%);
-          border-radius: 50%;
-          box-shadow: 0 0 10px rgba(155, 139, 110, 0.4), 0 2px 8px rgba(0,0,0,0.25);
-          animation: city-marker-pulse 2.5s ease-in-out infinite;
-        "></div>
-        <svg style="position: relative; z-index: 1; width: 14px; height: 14px;" viewBox="0 0 24 24" fill="#9B8B6E">
-          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-        </svg>
-      </div>
+      "></div>
     `,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2]
   });
 };
+
 
 export default function MapComponent({ 
   activePeriod, 
