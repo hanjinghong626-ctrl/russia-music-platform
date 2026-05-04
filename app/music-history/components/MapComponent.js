@@ -65,7 +65,7 @@ const createCustomIcon = (isActive = false, isHighlighted = false, isDimmed = fa
   });
 };
 
-// City marker icon with music note style (for cities with images)
+// City marker icon - clean minimal dot with subtle glow
 const createCityIcon = () => {
   const size = 14;
   
@@ -265,7 +265,6 @@ export default function MapComponent({
 
     // Add city markers with special styling
     cities.forEach(city => {
-      // Use different icon for cities with/without images
       const hasImage = city.image && city.image.length > 0;
       const icon = hasImage ? createCityIcon() : createSmallCityIcon();
       
@@ -273,20 +272,19 @@ export default function MapComponent({
         icon: icon
       });
 
-      // Different tooltip content for cities with/without images
       const tooltipContent = hasImage
         ? `
           <div class="marker-tooltip city-tooltip">
-            <strong>🎵 ${city.name}</strong><br/>
+            <strong>🏛 ${city.name}</strong><br/>
             <span>${city.nameRu}</span><br/>
-            <span style="font-size: 10px; opacity: 0.7;">点击查看音乐之城</span>
+            <span style="font-size: 10px; opacity: 0.7;">点击查看城市详情</span>
           </div>
         `
         : `
           <div class="marker-tooltip city-tooltip small-city">
-            <strong>♪ ${city.name}</strong><br/>
+            <strong>🎵 ${city.name}</strong><br/>
             <span>${city.nameRu}</span><br/>
-            <span style="font-size: 10px; opacity: 0.7;">作曲家故乡</span>
+            <span style="font-size: 10px; opacity: 0.7;">更多城市开发中</span>
           </div>
         `;
 
@@ -296,7 +294,6 @@ export default function MapComponent({
         offset: [0, hasImage ? -18 : -14]
       });
 
-      // Only open CityCard for cities with images
       cityMarker.on('click', () => {
         if (city.image) {
           handleCitySelect(city);
@@ -312,13 +309,22 @@ export default function MapComponent({
     setRelationshipMode(prev => !prev);
   };
 
+  // Count composers by period for the subtitle
+  const composerCount = composers.length;
+
   return (
     <div className="map-wrapper">
       <div ref={mapRef} className="leaflet-map" />
+      
+      {/* Elegant title overlay - inspired by "诗词山河" */}
       <div className="map-overlay-tl">
-        <div className="map-title">俄罗斯音乐史</div>
-        <div className="map-subtitle">交互地图</div>
+        <div className="map-title-elegant">
+          <div className="title-main">俄罗斯音乐山河</div>
+          <div className="title-divider"></div>
+          <div className="title-sub">跨越三百年 · {composerCount}位作曲家 · 47段师承</div>
+        </div>
       </div>
+      
       {activePeriod && (
         <div className="map-overlay-tr">
           <div 
@@ -337,7 +343,7 @@ export default function MapComponent({
       <button
         className={`rel-toggle-btn ${relationshipMode ? 'active' : ''}`}
         onClick={toggleRelationshipMode}
-        title={relationshipMode ? "关闭关系网" : "打开关系网"}
+        title={relationshipMode ? "退出关系网" : "查看关系网"}
       >
         <svg className="rel-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="5" cy="12" r="2.5" fill="currentColor" stroke="none"/>
@@ -365,7 +371,7 @@ export default function MapComponent({
       )}
 
       <div className="map-instructions">
-        <span>点击标记查看作曲家详情 · 点击🎵查看城市详情 · 点击"关系网"按钮查看关系网络</span>
+        <span>点击标记查看作曲家详情 · 点击城市查看详情 · 点击"关系网"按钮查看关系网络</span>
       </div>
     </div>
   );
