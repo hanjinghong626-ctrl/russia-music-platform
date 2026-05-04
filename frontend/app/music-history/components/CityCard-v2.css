@@ -95,8 +95,9 @@
 
 .city-card.layout-left-right .city-card-image-section {
   flex: 0 0 45%;
-  height: 100%;
+  min-height: 400px;
   padding: 12px 0 12px 12px;
+  align-self: stretch;
 }
 
 .city-card-image-wrapper {
