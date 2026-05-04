@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { composers } from '../data/composers';
@@ -41,18 +41,6 @@ export default function MapComponent({ activePeriod, onComposerSelect, onCitySel
   const composerMapRef = useRef({});
   const [relationshipMode, setRelationshipMode] = useState(false);
   const [selectedCity, setSelectedCity] = useState(null);
-
-  const snowParticles = useMemo(() => Array.from({length:40}, (_,i) => ({
-    id: i, left: ((i*37+13)%100),
-    fallDuration: 8+((i*7+3)%12), swayDuration: 3+((i*5+2)%5),
-    delay: ((i*11+5)%15), size: 2+((i*3+1)%5),
-  })), []);
-
-  const flowingNotes = useMemo(() => Array.from({length:12}, (_,i) => ({
-    id: i, symbol: ['♪','♫','♬','♩'][i%4],
-    duration: 18+((i*7+3)%22), delay: ((i*4.2+1)%28),
-    top: 15+((i*17+7)%60), size: 14+((i*5+2)%8),
-  })), []);
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -129,40 +117,56 @@ export default function MapComponent({ activePeriod, onComposerSelect, onCitySel
       {selectedCity && <CityCard city={selectedCity} composers={composers} onClose={() => setSelectedCity(null)} onSelectComposer={handleComposerSelectFromCard} />}
       <div className="map-instructions"><span>点击标记查看作曲家详情 · 点击城市查看详情 · 点击"关系网"按钮查看关系网络</span></div>
 
-      {/* 1. Snow */}
-      <div className="snow-overlay">
-        {snowParticles.map(p => (
-          <div key={p.id} className="snowflake" style={{ left:`${p.left}%`, width:`${p.size}px`, height:`${p.size}px`, animationDuration:`${p.fallDuration}s, ${p.swayDuration}s`, animationDelay:`${p.delay}s, ${p.delay}s` }} />
-        ))}
+      {/* Snow - pure CSS, no inline style overrides */}
+      <div className="atmosphere-snow">
+        <div className="snowflake s1"></div>
+        <div className="snowflake s2"></div>
+        <div className="snowflake s3"></div>
+        <div className="snowflake s4"></div>
+        <div className="snowflake s5"></div>
+        <div className="snowflake s6"></div>
+        <div className="snowflake s7"></div>
+        <div className="snowflake s8"></div>
+        <div className="snowflake s9"></div>
+        <div className="snowflake s10"></div>
+        <div className="snowflake s11"></div>
+        <div className="snowflake s12"></div>
+        <div className="snowflake s13"></div>
+        <div className="snowflake s14"></div>
+        <div className="snowflake s15"></div>
+        <div className="snowflake s16"></div>
+        <div className="snowflake s17"></div>
+        <div className="snowflake s18"></div>
+        <div className="snowflake s19"></div>
+        <div className="snowflake s20"></div>
       </div>
 
-      {/* 2. Troika */}
-      <div className="troika-overlay">
+      {/* Troika */}
+      <div className="atmosphere-troika">
         <div className="troika-sleigh">
           <svg viewBox="0 0 200 70" className="troika-svg">
-            <path d="M 100 55 Q 110 62 130 58 L 190 55" stroke="rgba(212,175,55,0.45)" fill="none" strokeWidth="1.5" strokeLinecap="round"/>
-            <path d="M 105 45 L 180 45 L 185 38 L 185 33 L 105 33 L 100 38 Z" fill="rgba(212,175,55,0.1)" stroke="rgba(212,175,55,0.3)" strokeWidth="0.8"/>
-            <path d="M 175 33 L 175 22 L 170 18 L 168 22 L 170 33" fill="rgba(212,175,55,0.08)" stroke="rgba(212,175,55,0.25)" strokeWidth="0.6"/>
-            <g transform="translate(5,8) scale(0.75)"><path d="M 20 28 Q 25 12 32 18 Q 36 10 33 20 L 35 32 M 20 28 L 16 44 M 28 32 L 32 44" stroke="rgba(212,175,55,0.4)" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></g>
-            <g transform="translate(28,5) scale(0.85)"><path d="M 20 28 Q 25 12 32 18 Q 36 10 33 20 L 35 32 M 20 28 L 16 44 M 28 32 L 32 44" stroke="rgba(212,175,55,0.45)" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></g>
-            <g transform="translate(52,2) scale(0.92)"><path d="M 20 28 Q 25 12 32 18 Q 36 10 33 20 L 35 32 M 20 28 L 16 44 M 28 32 L 32 44" stroke="rgba(212,175,55,0.5)" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></g>
-            <path d="M 60 30 Q 75 35, 105 38" stroke="rgba(212,175,55,0.1)" fill="none" strokeWidth="0.6" strokeDasharray="3,3"/>
-            <path d="M 80 28 Q 90 33, 105 38" stroke="rgba(212,175,55,0.1)" fill="none" strokeWidth="0.6" strokeDasharray="3,3"/>
-            <circle cx="-2" cy="50" r="3" fill="rgba(255,255,255,0.05)"/>
-            <circle cx="-8" cy="45" r="2" fill="rgba(255,255,255,0.04)"/>
-            <circle cx="-14" cy="52" r="4" fill="rgba(255,255,255,0.03)"/>
-            <circle cx="0" cy="56" r="2.5" fill="rgba(255,255,255,0.04)"/>
+            <path d="M 100 55 Q 110 62 130 58 L 190 55" stroke="rgba(212,175,55,0.5)" fill="none" strokeWidth="1.5" strokeLinecap="round"/>
+            <path d="M 105 45 L 180 45 L 185 38 L 185 33 L 105 33 L 100 38 Z" fill="rgba(212,175,55,0.12)" stroke="rgba(212,175,55,0.35)" strokeWidth="0.8"/>
+            <path d="M 175 33 L 175 22 L 170 18 L 168 22 L 170 33" fill="rgba(212,175,55,0.08)" stroke="rgba(212,175,55,0.28)" strokeWidth="0.6"/>
+            <g transform="translate(5,8) scale(0.75)"><path d="M 20 28 Q 25 12 32 18 Q 36 10 33 20 L 35 32 M 20 28 L 16 44 M 28 32 L 32 44" stroke="rgba(212,175,55,0.45)" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></g>
+            <g transform="translate(28,5) scale(0.85)"><path d="M 20 28 Q 25 12 32 18 Q 36 10 33 20 L 35 32 M 20 28 L 16 44 M 28 32 L 32 44" stroke="rgba(212,175,55,0.5)" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></g>
+            <g transform="translate(52,2) scale(0.92)"><path d="M 20 28 Q 25 12 32 18 Q 36 10 33 20 L 35 32 M 20 28 L 16 44 M 28 32 L 32 44" stroke="rgba(212,175,55,0.55)" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></g>
+            <path d="M 60 30 Q 75 35, 105 38" stroke="rgba(212,175,55,0.12)" fill="none" strokeWidth="0.6" strokeDasharray="3,3"/>
+            <path d="M 80 28 Q 90 33, 105 38" stroke="rgba(212,175,55,0.12)" fill="none" strokeWidth="0.6" strokeDasharray="3,3"/>
           </svg>
         </div>
       </div>
 
-      {/* 3. Golden Notes River */}
-      <div className="notes-river-overlay">
-        {flowingNotes.map(n => (
-          <div key={n.id} className="flowing-note" style={{ top:`${n.top}%`, fontSize:`${n.size}px`, animationDuration:`${n.duration}s, ${n.duration*0.4}s`, animationDelay:`${n.delay}s, ${n.delay}s` }}>
-            {n.symbol}
-          </div>
-        ))}
+      {/* Golden Notes River - pure CSS */}
+      <div className="atmosphere-notes">
+        <span className="gnote n1">♪</span>
+        <span className="gnote n2">♫</span>
+        <span className="gnote n3">♬</span>
+        <span className="gnote n4">♩</span>
+        <span className="gnote n5">♪</span>
+        <span className="gnote n6">♫</span>
+        <span className="gnote n7">♬</span>
+        <span className="gnote n8">♩</span>
       </div>
     </div>
   );
