@@ -6,7 +6,6 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { composers } from '../data/composers';
 import { cities } from '../data/cities';
-import troikaImg from '../../public/images/troika-reindeer.png';
 import RelationshipNetwork from './RelationshipNetwork';
 import CityCard from './CityCard';
 import './MapComponent.css';
@@ -116,7 +115,7 @@ export default function MapComponent({ activePeriod, onComposerSelect, onCitySel
       {/* TROIKA - reindeer sleigh using generated image */}
       <div className="atmosphere-troika">
         <div className="troika-sleigh">
-          <img src={troikaImg} alt="troika" className="troika-img" draggable="false" />
+          <div className="troika-img"></div>
         </div>
       </div>
 
