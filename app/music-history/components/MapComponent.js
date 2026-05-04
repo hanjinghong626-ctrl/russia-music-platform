@@ -117,7 +117,7 @@ export default function MapComponent({ activePeriod, onComposerSelect, onCitySel
       {/* TROIKA - reindeer sleigh using generated image */}
       <div className="atmosphere-troika">
         <div className="troika-sleigh">
-          <img src={troikaImg} alt="" className="troika-img" draggable="false" />
+          <img src={troikaImg} alt="troika" className="troika-img" draggable="false" />
         </div>
       </div>
 
