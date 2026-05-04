@@ -1,3 +1,4 @@
+// Russia Music Soul - Interactive Map with Atmosphere
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
