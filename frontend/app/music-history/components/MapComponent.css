@@ -107,28 +107,34 @@
 .s19 { left: 88%; width: 4px; height: 4px; animation-duration: 13s, 4s; animation-delay: 8s, 8s; }
 .s20 { left: 95%; width: 2px; height: 2px; animation-duration: 16s, 3.8s; animation-delay: 4s, 4s; }
 
-/* 2. TROIKA - smooth GPU-accelerated ride */
+/* 2. TROIKA - smooth GPU-accelerated ride with image */
 .atmosphere-troika {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%;
   z-index: 998; pointer-events: none; overflow: hidden;
 }
 .troika-sleigh {
-  position: absolute; top: 60%;
+  position: absolute; top: 55%;
   will-change: transform, left, opacity;
-  animation: troika-ride 35s ease-in-out infinite;
+  animation: troika-ride 40s ease-in-out infinite;
   animation-delay: 5s;
   opacity: 0;
-  filter: drop-shadow(0 0 12px rgba(212,175,55,0.15));
+  filter: drop-shadow(0 0 15px rgba(212,175,55,0.2));
 }
-.troika-svg { width: 200px; height: 70px; }
+.troika-img {
+  width: 280px;
+  height: auto;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+.troika-svg { display: none; }
 @keyframes troika-ride {
-  0%   { left: -250px; opacity: 0; transform: translate3d(0,0,0) scale(0.65); }
-  3%   { opacity: 0.7; }
-  20%  { opacity: 0.85; transform: translate3d(0,0,0) scale(0.85); }
-  50%  { opacity: 0.6; transform: translate3d(0,0,0) scale(1); }
-  75%  { opacity: 0.3; transform: translate3d(0,0,0) scale(1.12); }
-  90%  { opacity: 0.1; transform: translate3d(0,0,0) scale(1.2); }
-  100% { left: 110%; opacity: 0; transform: translate3d(0,0,0) scale(1.25); }
+  0%   { left: -320px; opacity: 0; transform: translate3d(0,0,0) scale(0.6); }
+  3%   { opacity: 0.75; }
+  20%  { opacity: 0.9; transform: translate3d(0,0,0) scale(0.8); }
+  50%  { opacity: 0.65; transform: translate3d(0,0,0) scale(1); }
+  75%  { opacity: 0.3; transform: translate3d(0,0,0) scale(1.1); }
+  92%  { opacity: 0.1; transform: translate3d(0,0,0) scale(1.18); }
+  100% { left: 110%; opacity: 0; transform: translate3d(0,0,0) scale(1.22); }
 }
 
 /* 3. GOLDEN NOTES RIVER */
@@ -176,6 +182,6 @@
   .period-indicator { padding: 6px 12px; }
   .period-indicator .period-name { font-size: 12px; }
   .map-instructions { display: none; }
-  .troika-svg { width: 140px; height: 50px; }
+  .troika-img { width: 180px; }
   .gnote { font-size: 12px !important; }
 }
