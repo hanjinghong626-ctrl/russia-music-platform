@@ -2,6 +2,7 @@
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 .leaflet-map {
@@ -55,7 +56,7 @@
   pointer-events: none;
 }
 
-/* Elegant title - inspired by "诗词山河" */
+/* Elegant title */
 .map-title-elegant {
   background: rgba(10, 14, 23, 0.75);
   backdrop-filter: blur(12px);
@@ -91,25 +92,6 @@
   color: var(--color-primary);
   letter-spacing: 2px;
   opacity: 0.8;
-}
-
-/* Legacy title (kept for reference) */
-.map-title {
-  font-family: 'Noto Serif SC', 'Playfair Display', serif;
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  line-height: 1.2;
-}
-
-.map-subtitle {
-  font-family: 'Playfair Display', serif;
-  font-size: 14px;
-  color: var(--color-primary);
-  font-style: italic;
-  letter-spacing: 2px;
-  text-transform: uppercase;
 }
 
 .map-overlay-tr {
@@ -186,63 +168,14 @@
   animation: city-pulse 3s ease-in-out infinite;
 }
 
-.city-wrapper.importance-5 .city-dot {
-  background: rgba(212, 175, 55, 0.5);
-}
-
-.city-wrapper.importance-4 .city-dot {
-  background: rgba(212, 175, 55, 0.4);
-}
-
-.city-wrapper.importance-3 .city-dot {
-  background: rgba(212, 175, 55, 0.3);
-}
-
-.city-wrapper.importance-2 .city-dot {
-  background: rgba(212, 175, 55, 0.2);
-}
+.city-wrapper.importance-5 .city-dot { background: rgba(212, 175, 55, 0.5); }
+.city-wrapper.importance-4 .city-dot { background: rgba(212, 175, 55, 0.4); }
+.city-wrapper.importance-3 .city-dot { background: rgba(212, 175, 55, 0.3); }
+.city-wrapper.importance-2 .city-dot { background: rgba(212, 175, 55, 0.2); }
 
 @keyframes city-pulse {
   0%, 100% { transform: scale(1); opacity: 0.5; }
   50% { transform: scale(1.3); opacity: 0; }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .title-main {
-    font-size: 20px;
-    letter-spacing: 2px;
-  }
-  
-  .title-sub {
-    font-size: 10px;
-  }
-  
-  .map-title-elegant {
-    padding: 12px 18px;
-  }
-  
-  .map-overlay-tl {
-    top: 12px;
-    left: 12px;
-  }
-  
-  .map-overlay-tr {
-    top: 12px;
-    right: 12px;
-  }
-  
-  .period-indicator {
-    padding: 6px 12px;
-  }
-  
-  .period-indicator .period-name {
-    font-size: 12px;
-  }
-  
-  .map-instructions {
-    display: none;
-  }
 }
 
 /* Relationship Network Toggle Button */
@@ -282,4 +215,192 @@
   width: 16px;
   height: 16px;
   flex-shrink: 0;
+}
+
+/* ===== Atmospheric Animation Styles ===== */
+
+/* 1. Snow Effect */
+.snow-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.snowflake {
+  position: absolute;
+  top: -10px;
+  background: radial-gradient(circle, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
+  border-radius: 50%;
+  opacity: 0;
+  animation: snow-fall linear infinite, snow-sway ease-in-out infinite;
+  filter: blur(0.5px);
+}
+
+@keyframes snow-fall {
+  0% {
+    top: -5%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    top: 105%;
+    opacity: 0;
+  }
+}
+
+@keyframes snow-sway {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(15px); }
+  75% { transform: translateX(-15px); }
+}
+
+/* 2. Troika Sleigh */
+.troika-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 998;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.troika-sleigh {
+  position: absolute;
+  top: 62%;
+  animation: troika-ride 35s ease-in-out infinite;
+  opacity: 0;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.15));
+}
+
+.troika-svg {
+  width: 200px;
+  height: 70px;
+}
+
+@keyframes troika-ride {
+  0% {
+    left: -250px;
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  5% {
+    opacity: 0.6;
+  }
+  15% {
+    opacity: 0.8;
+    transform: scale(0.85);
+  }
+  40% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  65% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+  85% {
+    opacity: 0.2;
+    transform: scale(1.2);
+  }
+  100% {
+    left: 110%;
+    opacity: 0;
+    transform: scale(1.3);
+  }
+}
+
+/* 3. Golden Notes River */
+.notes-river-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 997;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.flowing-note {
+  position: absolute;
+  left: -30px;
+  color: rgba(212, 175, 55, 0.15);
+  font-family: 'Playfair Display', serif;
+  animation: note-flow linear infinite, note-drift ease-in-out infinite;
+  text-shadow: 0 0 12px rgba(212, 175, 55, 0.1);
+  will-change: transform, left;
+}
+
+@keyframes note-flow {
+  0% {
+    left: -5%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.6;
+  }
+  100% {
+    left: 105%;
+    opacity: 0;
+  }
+}
+
+@keyframes note-drift {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(5deg); }
+  50% { transform: translateY(5px) rotate(-3deg); }
+  75% { transform: translateY(-4px) rotate(2deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .title-main {
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+  
+  .title-sub {
+    font-size: 10px;
+  }
+  
+  .map-title-elegant {
+    padding: 12px 18px;
+  }
+  
+  .map-overlay-tl {
+    top: 12px;
+    left: 12px;
+  }
+  
+  .map-overlay-tr {
+    top: 12px;
+    right: 12px;
+  }
+  
+  .period-indicator {
+    padding: 6px 12px;
+  }
+  
+  .period-indicator .period-name {
+    font-size: 12px;
+  }
+  
+  .map-instructions {
+    display: none;
+  }
+
+  .troika-svg {
+    width: 140px;
+    height: 50px;
+  }
+
+  .snowflake {
+    animation-duration: 6s, 2.5s !important;
+  }
 }
