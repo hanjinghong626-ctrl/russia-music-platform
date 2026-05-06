@@ -2,8 +2,8 @@
   position: absolute;
   top: 14%;
   right: 1%;
-  width: 280px;
-  height: 380px;
+  width: 200px;
+  height: 270px;
   z-index: 1003;
   pointer-events: none;
   overflow: hidden;
@@ -112,11 +112,11 @@
 
 @media (max-width: 768px) {
   .basil-container {
-    width: 180px;
-    height: 250px;
+    width: 130px;
+    height: 180px;
     top: 12%;
     right: 1%;
     z-index: 1003;
   }
-  .basil-pen-light { width: 35px; height: 35px; }
+  .basil-pen-light { width: 25px; height: 25px; }
 }
