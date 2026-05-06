@@ -5,6 +5,7 @@ import './BasilCathedral.css';
 export default function BasilCathedral({ cityActive }) {
   const [phase, setPhase] = useState('waiting');
   const [artwork, setArtwork] = useState('cathedral');
+  const [svgKey, setSvgKey] = useState(0);
 
   useEffect(() => {
     let timers = [];
@@ -25,6 +26,7 @@ export default function BasilCathedral({ cityActive }) {
       timers.push(setTimeout(() => {
         setPhase('gone');
         timers.push(setTimeout(() => {
+          setSvgKey(prev => prev + 1);
           setArtwork(prev => prev === 'cathedral' ? 'reindeer' : prev === 'reindeer' ? 'gum' : prev === 'gum' ? 'bolshoi' : prev === 'bolshoi' ? 'msu' : prev === 'msu' ? 'soviet' : prev === 'soviet' ? 'st-isaac' : 'cathedral');
           startCycle();
         }, 10000));
@@ -36,22 +38,32 @@ export default function BasilCathedral({ cityActive }) {
   }, [artwork]);
 
   const imageSrc = artwork === 'cathedral' 
-    ? '/images/basil-golden-lineart.png' 
+    ? '/images/basil-cathedral-animated.svg' 
     : artwork === 'reindeer'
     ? '/images/golden-reindeer-lineart.png'
     : artwork === 'gum'
     ? '/images/gum-golden-lineart.png'
-    : artwork === 'gum' ? '/images/gum-golden-lineart.png' : artwork === 'bolshoi' ? '/images/bolshoi-golden-lineart.png' : artwork === 'msu' ? '/images/msu-golden-lineart.png' : artwork === 'soviet' ? '/images/soviet-palace-golden-lineart.png' : '/images/st-isaac-golden-lineart.png';
+    : artwork === 'bolshoi' ? '/images/bolshoi-golden-lineart.png' : artwork === 'msu' ? '/images/msu-golden-lineart.png' : artwork === 'soviet' ? '/images/soviet-palace-golden-lineart.png' : '/images/st-isaac-golden-lineart.png';
 
   const drawDirection = artwork === 'reindeer' ? 'horizontal' : 'vertical';
+  const isSvgArt = artwork === 'cathedral';
 
   return (
-    <div className={`basil-container phase-${phase} draw-${drawDirection}${cityActive ? " city-active" : ""}`}>
-      <div 
-        className="basil-image" 
-        style={{ backgroundImage: `url(${imageSrc})` }}
-      />
-      {phase === 'drawing' && (
+    <div className={`basil-container phase-${phase} draw-${drawDirection}${cityActive ? " city-active" : ""}${isSvgArt ? " svg-art" : ""}`}>
+      {isSvgArt ? (
+        <object
+          key={svgKey}
+          type="image/svg+xml"
+          data={imageSrc}
+          className="basil-svg"
+        />
+      ) : (
+        <div 
+          className="basil-image" 
+          style={{ backgroundImage: `url(${imageSrc})` }}
+        />
+      )}
+      {phase === 'drawing' && !isSvgArt && (
         <>
           <div className={`basil-pen-light draw-${drawDirection}`} />
         </>
