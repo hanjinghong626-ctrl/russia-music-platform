@@ -10,8 +10,7 @@ export default function BasilCathedral({ cityActive }) {
     let timers = [];
     
     function startCycle() {
-      const isCathedral = artwork === 'cathedral';
-      const drawDuration = isCathedral ? 19000 : 8000;
+      const drawDuration = artwork === 'reindeer' ? 8000 : 19000;
       
       setPhase('waiting');
       timers.push(setTimeout(() => setPhase('drawing'), 2000));
@@ -26,7 +25,7 @@ export default function BasilCathedral({ cityActive }) {
       timers.push(setTimeout(() => {
         setPhase('gone');
         timers.push(setTimeout(() => {
-          setArtwork(prev => prev === 'cathedral' ? 'reindeer' : 'cathedral');
+          setArtwork(prev => prev === 'cathedral' ? 'reindeer' : prev === 'reindeer' ? 'gum' : 'cathedral');
           startCycle();
         }, 10000));
       }, goneStart));
@@ -38,9 +37,11 @@ export default function BasilCathedral({ cityActive }) {
 
   const imageSrc = artwork === 'cathedral' 
     ? '/images/basil-golden-lineart.png' 
-    : '/images/golden-reindeer-lineart.png';
+    : artwork === 'reindeer'
+    ? '/images/golden-reindeer-lineart.png'
+    : '/images/gum-golden-lineart.png';
 
-  const drawDirection = artwork === 'cathedral' ? 'vertical' : 'horizontal';
+  const drawDirection = artwork === 'reindeer' ? 'horizontal' : 'vertical';
 
   return (
     <div className={`basil-container phase-${phase} draw-${drawDirection}${cityActive ? " city-active" : ""}`}>
