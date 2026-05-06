@@ -25,7 +25,7 @@ export default function BasilCathedral({ cityActive }) {
       timers.push(setTimeout(() => {
         setPhase('gone');
         timers.push(setTimeout(() => {
-          setArtwork(prev => prev === 'cathedral' ? 'reindeer' : prev === 'reindeer' ? 'gum' : prev === 'gum' ? 'bolshoi' : prev === 'bolshoi' ? 'msu' : prev === 'msu' ? 'soviet' : 'cathedral');
+          setArtwork(prev => prev === 'cathedral' ? 'reindeer' : prev === 'reindeer' ? 'gum' : prev === 'gum' ? 'bolshoi' : prev === 'bolshoi' ? 'msu' : prev === 'msu' ? 'soviet' : prev === 'soviet' ? 'st-isaac' : 'cathedral');
           startCycle();
         }, 10000));
       }, goneStart));
@@ -41,7 +41,7 @@ export default function BasilCathedral({ cityActive }) {
     ? '/images/golden-reindeer-lineart.png'
     : artwork === 'gum'
     ? '/images/gum-golden-lineart.png'
-    : artwork === 'gum' ? '/images/gum-golden-lineart.png' : artwork === 'bolshoi' ? '/images/bolshoi-golden-lineart.png' : artwork === 'msu' ? '/images/msu-golden-lineart.png' : '/images/soviet-palace-golden-lineart.png';
+    : artwork === 'gum' ? '/images/gum-golden-lineart.png' : artwork === 'bolshoi' ? '/images/bolshoi-golden-lineart.png' : artwork === 'msu' ? '/images/msu-golden-lineart.png' : artwork === 'soviet' ? '/images/soviet-palace-golden-lineart.png' : '/images/st-isaac-golden-lineart.png';
 
   const drawDirection = artwork === 'reindeer' ? 'horizontal' : 'vertical';
 
