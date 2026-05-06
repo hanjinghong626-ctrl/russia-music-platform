@@ -25,7 +25,7 @@ export default function BasilCathedral({ cityActive }) {
       timers.push(setTimeout(() => {
         setPhase('gone');
         timers.push(setTimeout(() => {
-          setArtwork(prev => prev === 'cathedral' ? 'reindeer' : prev === 'reindeer' ? 'gum' : prev === 'gum' ? 'bolshoi' : 'cathedral');
+          setArtwork(prev => prev === 'cathedral' ? 'reindeer' : prev === 'reindeer' ? 'gum' : prev === 'gum' ? 'bolshoi' : prev === 'bolshoi' ? 'msu' : 'cathedral');
           startCycle();
         }, 10000));
       }, goneStart));
@@ -41,7 +41,7 @@ export default function BasilCathedral({ cityActive }) {
     ? '/images/golden-reindeer-lineart.png'
     : artwork === 'gum'
     ? '/images/gum-golden-lineart.png'
-    : '/images/bolshoi-golden-lineart.png';
+    : artwork === 'gum' ? '/images/gum-golden-lineart.png' : artwork === 'bolshoi' ? '/images/bolshoi-golden-lineart.png' : '/images/msu-golden-lineart.png';
 
   const drawDirection = artwork === 'reindeer' ? 'horizontal' : 'vertical';
 
