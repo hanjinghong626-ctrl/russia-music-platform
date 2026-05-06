@@ -9,6 +9,7 @@ import { cities } from '../data/cities';
 import RelationshipNetwork from './RelationshipNetwork';
 import CityCard from './CityCard';
 import './MapComponent.css';
+import BasilCathedral from './BasilCathedral';
 
 const createCustomIcon = (isActive = false, isHighlighted = false, isDimmed = false) => {
   let color = '#8B7355'; let size = 24; let innerSize = 8;
@@ -99,6 +100,7 @@ export default function MapComponent({ activePeriod, onComposerSelect, onCitySel
       </button>
       {relationshipMode && <RelationshipNetwork onClose={() => setRelationshipMode(false)} />}
       {selectedCity && <CityCard city={selectedCity} composers={composers} onClose={() => setSelectedCity(null)} onSelectComposer={handleComposerSelectFromCard} />}
+      <BasilCathedral cityActive={!!selectedCity} />
       <div className="map-instructions"><span>点击标记查看作曲家详情 · 点击城市查看详情 · 点击"关系网"按钮查看关系网络</span></div>
 
       {/* SNOW */}

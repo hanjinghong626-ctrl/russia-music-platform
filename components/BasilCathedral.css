@@ -1,0 +1,122 @@
+.basil-container {
+  position: absolute;
+  top: 14%;
+  right: 1%;
+  width: 280px;
+  height: 380px;
+  z-index: 1003;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.basil-image {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 3s ease;
+}
+
+.phase-waiting .basil-image { opacity: 0; }
+.phase-drawing .basil-image {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+}
+.phase-holding .basil-image {
+  opacity: 1;
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.3));
+  animation: shimmer 3s ease-in-out infinite;
+}
+.phase-fading .basil-image { opacity: 0; transition: opacity 3s ease; }
+.phase-gone .basil-image { opacity: 0; }
+
+@keyframes shimmer {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(212,175,55,0.3)); }
+  50% { filter: drop-shadow(0 0 20px rgba(212,175,55,0.5)); }
+}
+
+.draw-vertical .basil-image {
+  clip-path: inset(0 0 100% 0);
+  animation: draw-vertical 19s ease-in-out forwards;
+}
+@keyframes draw-vertical {
+  0% { clip-path: inset(0 0 100% 0); }
+  100% { clip-path: inset(0 0 0% 0); }
+}
+
+.draw-horizontal .basil-image {
+  opacity: 1;
+  transform: translateX(100%);
+  animation: reindeer-walk-in 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+@keyframes reindeer-walk-in {
+  0% { transform: translateX(100%); opacity: 0; }
+  8% { opacity: 1; }
+  100% { transform: translateX(0%); opacity: 1; }
+}
+
+.basil-pen-light {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(244, 228, 186, 0.4) 20%,
+    rgba(212, 175, 55, 0.3) 40%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(6px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.basil-pen-light.draw-vertical { animation: pen-down 19s ease-in-out forwards; }
+@keyframes pen-down {
+  0% { top: -25px; left: 50%; transform: translateX(-50%); }
+  12% { top: calc(15% - 25px); left: 50%; transform: translateX(-50%); }
+  22% { top: calc(15% - 25px); left: 50%; transform: translateX(-50%); }
+  45% { top: calc(45% - 25px); left: 50%; transform: translateX(-50%); }
+  52% { top: calc(55% - 25px); left: 50%; transform: translateX(-50%); }
+  60% { top: calc(55% - 25px); left: 50%; transform: translateX(-50%); }
+  78% { top: calc(78% - 25px); left: 50%; transform: translateX(-50%); }
+  88% { top: calc(88% - 25px); left: 50%; transform: translateX(-50%); }
+  100% { top: calc(100% + 25px); left: 50%; transform: translateX(-50%); }
+}
+
+.basil-pen-light.draw-horizontal {
+  width: 40px;
+  height: 40px;
+  animation: walk-ahead 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+@keyframes walk-ahead {
+  0% { left: 95%; top: 50%; opacity: 0; }
+  8% { opacity: 0.8; }
+  20% { left: 75%; top: 48%; }
+  40% { left: 50%; top: 52%; }
+  60% { left: 30%; top: 50%; }
+  80% { left: 12%; top: 48%; }
+  100% { left: -5%; top: 50%; opacity: 0; }
+}
+
+.phase-waiting .basil-pen-light,
+.phase-holding .basil-pen-light,
+.phase-fading .basil-pen-light,
+.phase-gone .basil-pen-light { display: none; }
+
+/* 城市词条打开时，教堂驯鹿到底层 */
+.basil-container.city-active { z-index: 1 !important; }
+
+@media (max-width: 768px) {
+  .basil-container {
+    width: 180px;
+    height: 250px;
+    top: 12%;
+    right: 1%;
+    z-index: 1003;
+  }
+  .basil-pen-light { width: 35px; height: 35px; }
+}
