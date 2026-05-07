@@ -9,6 +9,7 @@ const DRAW_DURATION = 19000; // 19 seconds for cathedral drawing
 export default function BasilCathedral({ cityActive }) {
   const [phase, setPhase] = useState('waiting');
   const [artwork, setArtwork] = useState('cathedral');
+  const [dataReady, setDataReady] = useState(false);
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
   const strokeDataRef = useRef(null);
@@ -18,16 +19,27 @@ export default function BasilCathedral({ cityActive }) {
 
   // Load stroke data and PNG image once on mount
   useEffect(() => {
+    let strokesLoaded = false;
+    let imageLoaded = false;
+
+    function checkBoth() {
+      if (strokesLoaded && imageLoaded) setDataReady(true);
+    }
+
     fetch('/images/basil-stroke-data.json')
       .then(r => r.json())
       .then(data => {
         strokeDataRef.current = data;
+        strokesLoaded = true;
+        checkBoth();
       })
       .catch(err => console.error('Failed to load stroke data:', err));
 
     const img = new Image();
     img.onload = () => {
       pngImageRef.current = img;
+      imageLoaded = true;
+      checkBoth();
     };
     img.src = '/images/basil-golden-lineart.png';
   }, []);
@@ -126,7 +138,7 @@ export default function BasilCathedral({ cityActive }) {
 
   // Drawing animation loop (cathedral only)
   useEffect(() => {
-    if (artwork !== 'cathedral' || phase !== 'drawing') return;
+    if (artwork !== 'cathedral' || phase !== 'drawing' || !dataReady) return;
 
     const data = strokeDataRef.current;
     if (!data || !pngImageRef.current) return;
@@ -165,7 +177,7 @@ export default function BasilCathedral({ cityActive }) {
         cancelAnimationFrame(animFrameRef.current);
       }
     };
-  }, [artwork, phase]);
+  }, [artwork, phase, dataReady]);
 
   // Phase cycle
   useEffect(() => {
