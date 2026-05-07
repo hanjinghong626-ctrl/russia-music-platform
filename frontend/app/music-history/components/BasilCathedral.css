@@ -2,8 +2,8 @@
   position: absolute;
   top: 14%;
   right: 1%;
-  width: 280px;
-  height: 380px;
+  width: 200px;
+  height: 270px;
   z-index: 1003;
   pointer-events: none;
   overflow: hidden;
