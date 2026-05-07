@@ -47,7 +47,7 @@
   100% { clip-path: inset(0 0 0% 0); }
 }
 
-.draw-horizontal .basil-image {
+.draw-horizontal.phase-drawing .basil-image, .draw-horizontal.phase-holding .basil-image {
   opacity: 1;
   transform: translateX(100%);
   animation: reindeer-walk-in 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
