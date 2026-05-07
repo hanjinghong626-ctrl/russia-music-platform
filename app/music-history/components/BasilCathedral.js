@@ -55,19 +55,18 @@ export default function BasilCathedral({ cityActive }) {
     return maskCanvasRef.current;
   }
 
-  // Reset mask to fully opaque black (hides everything)
+  // Reset mask to fully transparent (nothing revealed yet)
   function resetMask() {
     const mc = ensureMaskCanvas();
     const mctx = mc.getContext('2d');
     mctx.globalCompositeOperation = 'source-over';
-    mctx.fillStyle = '#000000';
-    mctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    mctx.clearRect(0, 0, CANVAS_W, CANVAS_H); // all transparent = nothing revealed
     lastDrawnPointRef.current = 0;
   }
 
-  // Render visible canvas: PNG with mask applied
-  // mask black areas → erase PNG → transparent → page bg shows through
-  // mask transparent areas → PNG remains visible
+  // Render visible canvas: PNG revealed only where mask is opaque
+  // mask transparent → destination-in removes PNG → hidden
+  // mask opaque (white strokes) → destination-in keeps PNG → visible
   function renderFrame() {
     const canvas = canvasRef.current;
     const pngImage = pngImageRef.current;
@@ -81,20 +80,22 @@ export default function BasilCathedral({ cityActive }) {
     ctx.globalCompositeOperation = 'source-over';
     ctx.drawImage(pngImage, 0, 0, CANVAS_W, CANVAS_H);
 
-    // Apply mask: black areas in mask erase PNG
-    ctx.globalCompositeOperation = 'destination-out';
+    // Apply mask: keep PNG only where mask is opaque (destination-in)
+    // This means: mask alpha > 0 → keep PNG pixel; mask alpha = 0 → remove PNG pixel
+    ctx.globalCompositeOperation = 'destination-in';
     ctx.drawImage(maskCanvas, 0, 0);
 
     ctx.globalCompositeOperation = 'source-over';
   }
 
-  // Incrementally erase strokes on mask
-  function eraseStrokesOnMask(strokes, targetPoint) {
+  // Incrementally add strokes to mask (build up revealed areas)
+  // Strokes are drawn as white on the transparent mask → those areas become opaque → PNG becomes visible there
+  function addStrokesToMask(strokes, targetPoint) {
     const mc = ensureMaskCanvas();
     const mctx = mc.getContext('2d');
 
-    mctx.globalCompositeOperation = 'destination-out';
-    mctx.strokeStyle = 'rgba(255,255,255,1)';
+    mctx.globalCompositeOperation = 'source-over';
+    mctx.strokeStyle = 'rgba(255,255,255,1)'; // white = opaque = revealed
     mctx.lineWidth = 4;
     mctx.lineCap = 'round';
     mctx.lineJoin = 'round';
@@ -132,7 +133,6 @@ export default function BasilCathedral({ cityActive }) {
       pointCount = strokeEnd;
     }
 
-    mctx.globalCompositeOperation = 'source-over';
     lastDrawnPointRef.current = targetPoint;
   }
 
@@ -161,7 +161,7 @@ export default function BasilCathedral({ cityActive }) {
       const targetPoint = Math.floor(progress * totalPoints);
 
       if (targetPoint > lastDrawnPointRef.current) {
-        eraseStrokesOnMask(strokes, targetPoint);
+        addStrokesToMask(strokes, targetPoint);
         renderFrame();
       }
 
