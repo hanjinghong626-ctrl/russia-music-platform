@@ -13,139 +13,40 @@ export default function BasilCathedral({ cityActive }) {
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
   const strokeDataRef = useRef(null);
-  const pngImageRef = useRef(null);
-  const maskCanvasRef = useRef(null);
-  const lastDrawnPointRef = useRef(0);
+  const drawnPointsRef = useRef(0);
 
-  // Load stroke data and PNG image once on mount
+  // Load stroke data once on mount
   useEffect(() => {
-    let strokesLoaded = false;
-    let imageLoaded = false;
-
-    function checkBoth() {
-      if (strokesLoaded && imageLoaded) setDataReady(true);
-    }
-
     fetch('/images/basil-stroke-data.json')
       .then(r => r.json())
       .then(data => {
         strokeDataRef.current = data;
-        strokesLoaded = true;
-        checkBoth();
+        setDataReady(true);
       })
       .catch(err => console.error('Failed to load stroke data:', err));
-
-    const img = new Image();
-    img.onload = () => {
-      pngImageRef.current = img;
-      imageLoaded = true;
-      checkBoth();
-    };
-    img.src = '/images/basil-golden-lineart.png';
   }, []);
 
-  // Helper: ensure offscreen mask canvas exists
-  function ensureMaskCanvas() {
-    if (!maskCanvasRef.current) {
-      const mc = document.createElement('canvas');
-      mc.width = CANVAS_W;
-      mc.height = CANVAS_H;
-      maskCanvasRef.current = mc;
-    }
-    return maskCanvasRef.current;
-  }
-
-  // Reset mask to fully transparent (nothing revealed yet)
-  function resetMask() {
-    const mc = ensureMaskCanvas();
-    const mctx = mc.getContext('2d');
-    mctx.globalCompositeOperation = 'source-over';
-    mctx.clearRect(0, 0, CANVAS_W, CANVAS_H); // all transparent = nothing revealed
-    lastDrawnPointRef.current = 0;
-  }
-
-  // Render visible canvas: PNG revealed only where mask is opaque
-  // mask transparent → destination-in removes PNG → hidden
-  // mask opaque (white strokes) → destination-in keeps PNG → visible
-  function renderFrame() {
-    const canvas = canvasRef.current;
-    const pngImage = pngImageRef.current;
-    const maskCanvas = ensureMaskCanvas();
-    if (!canvas || !pngImage) return;
-
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
-
-    // Draw PNG image scaled to canvas
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.drawImage(pngImage, 0, 0, CANVAS_W, CANVAS_H);
-
-    // Apply mask: keep PNG only where mask is opaque (destination-in)
-    // This means: mask alpha > 0 → keep PNG pixel; mask alpha = 0 → remove PNG pixel
-    ctx.globalCompositeOperation = 'destination-in';
-    ctx.drawImage(maskCanvas, 0, 0);
-
-    ctx.globalCompositeOperation = 'source-over';
-  }
-
-  // Incrementally add strokes to mask (build up revealed areas)
-  // Strokes are drawn as white on the transparent mask → those areas become opaque → PNG becomes visible there
-  function addStrokesToMask(strokes, targetPoint) {
-    const mc = ensureMaskCanvas();
-    const mctx = mc.getContext('2d');
-
-    mctx.globalCompositeOperation = 'source-over';
-    mctx.strokeStyle = 'rgba(255,255,255,1)'; // white = opaque = revealed
-    mctx.lineWidth = 4;
-    mctx.lineCap = 'round';
-    mctx.lineJoin = 'round';
-
-    let pointCount = 0;
-
-    for (let si = 0; si < strokes.length; si++) {
-      const stroke = strokes[si];
-      const pts = stroke.points;
-      const strokeLen = pts.length;
-      const strokeEnd = pointCount + strokeLen;
-
-      if (strokeEnd <= lastDrawnPointRef.current) {
-        pointCount = strokeEnd;
-        continue;
-      }
-
-      if (pointCount >= targetPoint) {
-        break;
-      }
-
-      const startIdx = Math.max(0, lastDrawnPointRef.current - pointCount);
-      const endIdx = Math.min(strokeLen, targetPoint - pointCount);
-
-      if (endIdx - startIdx >= 2) {
-        mctx.beginPath();
-        const drawStart = Math.max(0, startIdx - 1);
-        mctx.moveTo(pts[drawStart][0], pts[drawStart][1]);
-        for (let i = drawStart + 1; i < endIdx; i++) {
-          mctx.lineTo(pts[i][0], pts[i][1]);
-        }
-        mctx.stroke();
-      }
-
-      pointCount = strokeEnd;
-    }
-
-    lastDrawnPointRef.current = targetPoint;
-  }
-
-  // Drawing animation loop (cathedral only)
+  // Canvas drawing animation loop (cathedral only)
   useEffect(() => {
     if (artwork !== 'cathedral' || phase !== 'drawing' || !dataReady) return;
 
+    const canvas = canvasRef.current;
     const data = strokeDataRef.current;
-    if (!data || !pngImageRef.current) return;
+    if (!canvas || !data) return;
 
-    // Reset mask and render initial blank state
-    resetMask();
-    renderFrame();
+    const ctx = canvas.getContext('2d');
+
+    // Clear canvas and reset progress
+    ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+    drawnPointsRef.current = 0;
+
+    // Set up drawing style
+    ctx.strokeStyle = '#D4AF37';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(212, 175, 55, 0.6)';
+    ctx.shadowBlur = 4;
 
     const strokes = data.strokes;
     let totalPoints = 0;
@@ -160,9 +61,47 @@ export default function BasilCathedral({ cityActive }) {
       const progress = Math.min(elapsed / DRAW_DURATION, 1.0);
       const targetPoint = Math.floor(progress * totalPoints);
 
-      if (targetPoint > lastDrawnPointRef.current) {
-        addStrokesToMask(strokes, targetPoint);
-        renderFrame();
+      if (targetPoint > drawnPointsRef.current) {
+        // Incrementally draw only new line segments
+        let pointCount = 0;
+        const drawnPoints = drawnPointsRef.current;
+
+        for (let si = 0; si < strokes.length; si++) {
+          const pts = strokes[si].points;
+          const strokeStart = pointCount;
+          const strokeEnd = pointCount + pts.length;
+
+          // Skip fully drawn strokes
+          if (strokeEnd <= drawnPoints) {
+            pointCount = strokeEnd;
+            continue;
+          }
+          // Skip strokes not yet reached
+          if (strokeStart >= targetPoint) break;
+
+          // Calculate the range to draw within this stroke
+          const fromIdx = Math.max(0, drawnPoints - strokeStart);
+          const toIdx = Math.min(pts.length, targetPoint - strokeStart);
+
+          if (fromIdx === 0 && toIdx > 0) {
+            // New stroke beginning - draw a small dot at start point
+            ctx.beginPath();
+            ctx.moveTo(pts[0][0], pts[0][1]);
+            ctx.lineTo(pts[0][0] + 0.1, pts[0][1]);
+            ctx.stroke();
+          }
+
+          for (let i = Math.max(1, fromIdx); i < toIdx; i++) {
+            ctx.beginPath();
+            ctx.moveTo(pts[i - 1][0], pts[i - 1][1]);
+            ctx.lineTo(pts[i][0], pts[i][1]);
+            ctx.stroke();
+          }
+
+          pointCount = strokeEnd;
+        }
+
+        drawnPointsRef.current = targetPoint;
       }
 
       if (progress < 1.0) {
@@ -178,6 +117,18 @@ export default function BasilCathedral({ cityActive }) {
       }
     };
   }, [artwork, phase, dataReady]);
+
+  // Reset canvas when switching back to cathedral
+  useEffect(() => {
+    if (artwork === 'cathedral') {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+      }
+      drawnPointsRef.current = 0;
+    }
+  }, [artwork]);
 
   // Phase cycle
   useEffect(() => {
@@ -217,19 +168,6 @@ export default function BasilCathedral({ cityActive }) {
     return () => timers.forEach(clearTimeout);
   }, [artwork]);
 
-  // Setup canvas dimensions and initial state
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    canvas.width = CANVAS_W;
-    canvas.height = CANVAS_H;
-
-    if (artwork === 'cathedral') {
-      resetMask();
-      renderFrame();
-    }
-  }, [artwork]);
-
   const imageSrc = artwork === 'cathedral'
     ? '/images/basil-golden-lineart.png'
     : artwork === 'reindeer'
@@ -248,20 +186,16 @@ export default function BasilCathedral({ cityActive }) {
 
   return (
     <div className={`basil-container phase-${phase} draw-${drawDirection}${cityActive ? ' city-active' : ''}`}>
-      {artwork === 'cathedral' ? (
-        <canvas
-          ref={canvasRef}
-          className="basil-canvas"
-        />
-      ) : (
-        <div
-          className="basil-image"
-          style={{ backgroundImage: `url(${imageSrc})` }}
-        />
+      {artwork === 'cathedral' && (
+        <>
+          <canvas ref={canvasRef} width={CANVAS_W} height={CANVAS_H} className="basil-canvas" />
+          <img src="/images/basil-golden-lineart.png" className="basil-png-fade" alt="" />
+        </>
       )}
-      {phase === 'drawing' && (
-        <div className={`basil-pen-light draw-${drawDirection}`} />
+      {artwork !== 'cathedral' && (
+        <div className="basil-image" style={{ backgroundImage: `url(${imageSrc})` }} />
       )}
+      {phase === 'drawing' && <div className={`basil-pen-light draw-${drawDirection}`} />}
     </div>
   );
 }

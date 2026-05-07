@@ -2,13 +2,37 @@
   position: absolute;
   top: 14%;
   right: 1%;
-  width: 280px;
-  height: 380px;
+  width: 200px;
+  height: 270px;
   z-index: 1003;
   pointer-events: none;
   overflow: hidden;
 }
 
+/* Canvas for cathedral: 280x380 internal resolution, CSS scaled to 200x270 */
+.basil-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* PNG image for crossfade (cathedral only) */
+.basil-png-fade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Other artworks: background image */
 .basil-image {
   width: 100%;
   height: 100%;
@@ -19,6 +43,36 @@
   transition: opacity 3s ease;
 }
 
+/* ========== Phase transitions for canvas (cathedral) ========== */
+.phase-waiting .basil-canvas { opacity: 0; }
+.phase-drawing .basil-canvas {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+}
+.phase-holding .basil-canvas {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.phase-fading .basil-canvas { opacity: 0; }
+.phase-gone .basil-canvas { opacity: 0; }
+
+/* ========== Phase transitions for PNG fade (cathedral) ========== */
+.phase-waiting .basil-png-fade { opacity: 0; }
+.phase-drawing .basil-png-fade { opacity: 0; }
+.phase-holding .basil-png-fade {
+  opacity: 1;
+  transition: opacity 1s ease;
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.3));
+  animation: shimmer 3s ease-in-out infinite;
+}
+.phase-fading .basil-png-fade {
+  opacity: 0;
+  transition: opacity 3s ease;
+}
+.phase-gone .basil-png-fade { opacity: 0; }
+
+/* ========== Phase transitions for image (other artworks) ========== */
 .phase-waiting .basil-image { opacity: 0; }
 .phase-drawing .basil-image {
   opacity: 1;
@@ -33,11 +87,13 @@
 .phase-fading .basil-image { opacity: 0; transition: opacity 3s ease; }
 .phase-gone .basil-image { opacity: 0; }
 
+/* Shimmer effect for holding phase */
 @keyframes shimmer {
   0%, 100% { filter: drop-shadow(0 0 12px rgba(212,175,55,0.3)); }
   50% { filter: drop-shadow(0 0 20px rgba(212,175,55,0.5)); }
 }
 
+/* ========== Vertical clip-path drawing (non-reindeer artworks) ========== */
 .draw-vertical .basil-image {
   clip-path: inset(0 0 100% 0);
   animation: draw-vertical 19s ease-in-out forwards;
@@ -47,6 +103,7 @@
   100% { clip-path: inset(0 0 0% 0); }
 }
 
+/* ========== Reindeer: smooth walk-in from right ========== */
 .draw-horizontal .basil-image {
   opacity: 1;
   transform: translateX(100%);
@@ -58,6 +115,7 @@
   100% { transform: translateX(0%); opacity: 1; }
 }
 
+/* ========== Pen light effect - glowing brush tip ========== */
 .basil-pen-light {
   position: absolute;
   width: 50px;
@@ -102,21 +160,23 @@
   100% { left: -5%; top: 50%; opacity: 0; }
 }
 
+/* Hide pen light when not drawing */
 .phase-waiting .basil-pen-light,
 .phase-holding .basil-pen-light,
 .phase-fading .basil-pen-light,
 .phase-gone .basil-pen-light { display: none; }
 
-/* 城市词条打开时，教堂驯鹿到底层 */
+/* City entry active: push cathedral to bottom layer */
 .basil-container.city-active { z-index: 1 !important; }
 
+/* ========== Responsive ========== */
 @media (max-width: 768px) {
   .basil-container {
-    width: 180px;
-    height: 250px;
+    width: 130px;
+    height: 180px;
     top: 12%;
     right: 1%;
     z-index: 1003;
   }
-  .basil-pen-light { width: 35px; height: 35px; }
+  .basil-pen-light { width: 25px; height: 25px; }
 }

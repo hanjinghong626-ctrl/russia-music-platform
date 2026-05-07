@@ -9,13 +9,26 @@
   overflow: hidden;
 }
 
-/* Canvas for cathedral: transparent background, internal 280x380 resolution */
+/* Canvas for cathedral: 280x380 internal resolution, CSS scaled to 200x270 */
 .basil-canvas {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  pointer-events: none;
+}
+
+/* PNG image for crossfade (cathedral only) */
+.basil-png-fade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -38,12 +51,26 @@
   filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
 }
 .phase-holding .basil-canvas {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.phase-fading .basil-canvas { opacity: 0; }
+.phase-gone .basil-canvas { opacity: 0; }
+
+/* ========== Phase transitions for PNG fade (cathedral) ========== */
+.phase-waiting .basil-png-fade { opacity: 0; }
+.phase-drawing .basil-png-fade { opacity: 0; }
+.phase-holding .basil-png-fade {
   opacity: 1;
+  transition: opacity 1s ease;
   filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.3));
   animation: shimmer 3s ease-in-out infinite;
 }
-.phase-fading .basil-canvas { opacity: 0; transition: opacity 3s ease; }
-.phase-gone .basil-canvas { opacity: 0; }
+.phase-fading .basil-png-fade {
+  opacity: 0;
+  transition: opacity 3s ease;
+}
+.phase-gone .basil-png-fade { opacity: 0; }
 
 /* ========== Phase transitions for image (other artworks) ========== */
 .phase-waiting .basil-image { opacity: 0; }
