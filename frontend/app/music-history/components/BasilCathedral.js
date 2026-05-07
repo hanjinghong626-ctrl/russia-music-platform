@@ -5,7 +5,6 @@ import './BasilCathedral.css';
 export default function BasilCathedral({ cityActive }) {
   const [phase, setPhase] = useState('waiting');
   const [artwork, setArtwork] = useState('cathedral');
-  
 
   useEffect(() => {
     let timers = [];
@@ -26,7 +25,6 @@ export default function BasilCathedral({ cityActive }) {
       timers.push(setTimeout(() => {
         setPhase('gone');
         timers.push(setTimeout(() => {
-          
           setArtwork(prev => prev === 'cathedral' ? 'reindeer' : prev === 'reindeer' ? 'gum' : prev === 'gum' ? 'bolshoi' : prev === 'bolshoi' ? 'msu' : prev === 'msu' ? 'soviet' : prev === 'soviet' ? 'st-isaac' : 'cathedral');
           startCycle();
         }, 10000));
@@ -46,10 +44,9 @@ export default function BasilCathedral({ cityActive }) {
     : artwork === 'bolshoi' ? '/images/bolshoi-golden-lineart.png' : artwork === 'msu' ? '/images/msu-golden-lineart.png' : artwork === 'soviet' ? '/images/soviet-palace-golden-lineart.png' : '/images/st-isaac-golden-lineart.png';
 
   const drawDirection = artwork === 'reindeer' ? 'horizontal' : 'vertical';
-  const isSvgArt = artwork === 'cathedral';
 
   return (
-    <div className={`basil-container phase-${phase} draw-${drawDirection}${cityActive ? " city-active" : ""}${isSvgArt ? " svg-art" : ""}`}>
+    <div className={`basil-container phase-${phase} draw-${drawDirection}${cityActive ? " city-active" : ""}`}>
       <div 
         className="basil-image" 
         style={{ backgroundImage: `url(${imageSrc})` }}
@@ -58,7 +55,7 @@ export default function BasilCathedral({ cityActive }) {
         <>
           <div className={`basil-pen-light draw-${drawDirection}`} />
         </>
-      )
+      )}
     </div>
   );
 }
