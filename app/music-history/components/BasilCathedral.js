@@ -37,25 +37,21 @@ export default function BasilCathedral({ cityActive }) {
     return () => timers.forEach(clearTimeout);
   }, [artwork]);
 
-  // Canvas stroke-by-stroke drawing
   const startDrawing = useCallback(async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
     
     try {
       const res = await fetch('/images/basil-stroke-data.json');
       const data = await res.json();
       canvas.width = data.width;
       canvas.height = data.height;
+      const ctx = canvas.getContext('2d');
       
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = '#D4AF37';
-      ctx.lineWidth = 1.5;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
-      ctx.shadowBlur = 4;
+      // 初始全黑遮罩
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       const totalStrokes = data.strokes.length;
       const totalDuration = 19000;
@@ -75,12 +71,20 @@ export default function BasilCathedral({ cityActive }) {
         const targetPoint = Math.floor(progress * currentStroke.points.length);
         
         if (targetPoint > pointIndex) {
+          // 擦除遮罩 - destination-out
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.strokeStyle = 'rgba(255,255,255,1)';
+          ctx.lineWidth = 7;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          
           ctx.beginPath();
           ctx.moveTo(currentStroke.points[pointIndex][0], currentStroke.points[pointIndex][1]);
           for (let i = pointIndex + 1; i <= targetPoint && i < currentStroke.points.length; i++) {
             ctx.lineTo(currentStroke.points[i][0], currentStroke.points[i][1]);
           }
           ctx.stroke();
+          
           pointIndex = targetPoint;
         }
         
@@ -125,7 +129,14 @@ export default function BasilCathedral({ cityActive }) {
   return (
     <div className={`basil-container phase-${phase} draw-${drawDirection}${cityActive ? " city-active" : ""}`}>
       {artwork === 'cathedral' ? (
-        <canvas ref={canvasRef} className="basil-canvas" />
+        <div className="basil-canvas-wrapper">
+          <img 
+            src="/images/basil-golden-lineart.png" 
+            className="basil-canvas-img"
+            alt=""
+          />
+          <canvas ref={canvasRef} className="basil-canvas-mask" />
+        </div>
       ) : (
         <div 
           className="basil-image" 
