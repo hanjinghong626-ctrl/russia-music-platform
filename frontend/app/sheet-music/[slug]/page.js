@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import './sheet-music.css'
+import '../sheet-music.css'
 
 // Voice type filter options
 const VOICE_FILTERS = [
