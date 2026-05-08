@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { periods } from './data/periods';
 import Timeline from './components/Timeline';
 import Sidebar from './components/Sidebar';
@@ -51,6 +52,9 @@ export default function MusicHistoryPage() {
         <nav className="header-nav">
           <a href="/" className="nav-link">返回首页</a>
           <a href="/music-history" className="nav-link active">交互地图</a>
+          <Link href="/music-history/composers" className="nav-link">作曲家</Link>
+          <Link href="/music-history/schools" className="nav-link">学派</Link>
+          <Link href="/music-history/glossary" className="nav-link">术语库</Link>
         </nav>
       </header>
 

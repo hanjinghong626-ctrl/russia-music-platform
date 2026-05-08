@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import './ComposerCard.css';
 
 export default function ComposerCard({ composer, onClose }) {
@@ -165,6 +166,13 @@ export default function ComposerCard({ composer, onClose }) {
 
         <div className="card-footer">
           <div className="footer-decoration"></div>
+          <Link 
+            href={`/music-history/composers/${composer.id}`} 
+            className="card-detail-link"
+            onClick={handleClose}
+          >
+            查看完整资料 →
+          </Link>
         </div>
       </div>
     </div>
