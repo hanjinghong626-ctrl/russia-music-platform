@@ -93,6 +93,10 @@ export default async function HomePage() {
                 <span>🎼</span>
                 曲库
               </Link>
+              <Link href="/vocal-exercises" className="text-gray-600 hover:text-emerald-700 transition-colors font-medium flex items-center gap-1">
+                <span>🎵</span>
+                练声曲
+              </Link>
               <Link href="/music-history" className="text-gray-600 hover:text-gray-900">音乐史交互地图</Link>
               <Link href="/schools-map" className="text-gray-600 hover:text-primary-700 transition-colors font-medium flex items-center gap-1">
                 <span>🗺️</span>

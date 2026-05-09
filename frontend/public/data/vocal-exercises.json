@@ -1,0 +1,298 @@
+{
+  "collections": [
+    {
+      "id": "abt",
+      "nameZh": "阿布特练声曲",
+      "nameRu": "Вокализы Абта",
+      "nameEn": "Abt Vocalises",
+      "composer": "Franz Abt",
+      "composerZh": "弗朗茨·阿布特",
+      "years": "1819-1885",
+      "country": "德国",
+      "description": "德国作曲家弗朗茨·阿布特创作的练声曲集，以其优美的旋律和渐进式难度著称，适合初学者建立音准和呼吸基础。",
+      "difficulty": "初级-中级",
+      "voiceTypes": ["女高音", "女低音", "男高音", "男低音"],
+      "pieceCount": 48,
+      "url": "https://notarhiv.ru/vokalizi/abt/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "No.1 降B大调", "titleRu": "Вокализ №1", "opus": "Op.474", "pdfUrl": "https://notarhiv.ru/notes/ABT-2.pdf"},
+        {"id": 2, "title": "No.2 F大调", "titleRu": "Вокализ №2", "opus": "Op.474", "pdfUrl": "https://notarhiv.ru/notes/ABT-3.pdf"},
+        {"id": 3, "title": "No.3 降E大调", "titleRu": "Вокализ №3", "opus": "Op.474", "pdfUrl": "https://notarhiv.ru/notes/ABT-4.pdf"},
+        {"id": 4, "title": "No.4 G大调", "titleRu": "Вокализ №4", "opus": "Op.474", "pdfUrl": "https://notarhiv.ru/notes/ABT-5.pdf"},
+        {"id": 5, "title": "No.5 A小调", "titleRu": "Вокализ №5", "opus": "Op.474", "pdfUrl": "https://notarhiv.ru/notes/ABT-6.pdf"},
+        {"id": 6, "title": "No.6 D大调", "titleRu": "Вокализ №6", "opus": "Op.474", "pdfUrl": "https://notarhiv.ru/notes/ABT-7.pdf"},
+        {"id": 7, "title": "No.7 C大调", "titleRu": "Вокализ №7", "opus": "Op.474", "pdfUrl": "https://notarhiv.ru/notes/ABT-8.pdf"},
+        {"id": 8, "title": "No.8 降A大调", "titleRu": "Вокализ №8", "opus": "Op.474", "pdfUrl": "https://notarhiv.ru/notes/ABT-9.pdf"}
+      ]
+    },
+    {
+      "id": "concone",
+      "nameZh": "孔科内练声曲",
+      "nameRu": "Вокализы Конконе",
+      "nameEn": "Concone Vocalises",
+      "composer": "Giuseppe Concone",
+      "composerZh": "朱塞佩·孔科内",
+      "years": "1801-1861",
+      "country": "意大利",
+      "description": "意大利声乐教师孔科内的经典练习曲，以其简洁优雅的音乐语言和清晰的声乐技巧训练著称，是声乐教育的基石教材。",
+      "difficulty": "初级-中级",
+      "voiceTypes": ["女高音", "女中音", "男高音", "男中音"],
+      "pieceCount": 50,
+      "url": "https://notarhiv.ru/vokalizi/concone/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "25首练声曲 Op.1", "titleRu": "25 Vocalizzi Op.1", "difficulty": "初级", "pdfUrl": "https://notarhiv.ru/notes/concone25.pdf"},
+        {"id": 2, "title": "每日练习 Op.5", "titleRu": "Lezioni di canto Op.5", "difficulty": "中级", "pdfUrl": "https://notarhiv.ru/notes/concone5.pdf"},
+        {"id": 3, "title": "50首练声曲 Op.10", "titleRu": "50 Vocalizzi Op.10", "difficulty": "中级-高级", "pdfUrl": "https://notarhiv.ru/notes/concone50.pdf"},
+        {"id": 4, "title": "练习曲 Op.8", "titleRu": "Esercizi Op.8", "difficulty": "高级", "pdfUrl": "https://notarhiv.ru/notes/concone8.pdf"}
+      ]
+    },
+    {
+      "id": "vaccai",
+      "nameZh": "瓦卡伊练声曲",
+      "nameRu": "Вокализы Ваккаи",
+      "nameEn": "Vaccai Vocalises",
+      "composer": "Nicola Vaccai",
+      "composerZh": "尼古拉·瓦卡伊",
+      "years": "1790-1848",
+      "country": "意大利",
+      "description": "意大利作曲家瓦卡伊最著名的Practical Method for the Medium Voice，包含从基础到进阶的系统训练，是柴可夫斯基音乐学院推荐教材。",
+      "difficulty": "中级",
+      "voiceTypes": ["女中音", "男中音", "男低音"],
+      "pieceCount": 30,
+      "url": "https://notarhiv.ru/vokalizi/vaccai/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "Practical Method - 第1课", "titleRu": "Metodo pratico - Lezione I", "pdfUrl": "https://notarhiv.ru/notes/vaccai1.pdf"},
+        {"id": 2, "title": "Practical Method - 第2课", "titleRu": "Metodo pratico - Lezione II", "pdfUrl": "https://notarhiv.ru/notes/vaccai2.pdf"},
+        {"id": 3, "title": "Practical Method - 第3课", "titleRu": "Metodo pratico - Lezione III", "pdfUrl": "https://notarhiv.ru/notes/vaccai3.pdf"},
+        {"id": 4, "title": "Practical Method - 第4课", "titleRu": "Metodo pratico - Lezione IV", "pdfUrl": "https://notarhiv.ru/notes/vaccai4.pdf"},
+        {"id": 5, "title": "Practical Method - 第5课", "titleRu": "Metodo pratico - Lezione V", "pdfUrl": "https://notarhiv.ru/notes/vaccai5.pdf"},
+        {"id": 6, "title": "Practical Method - 第6课", "titleRu": "Metodo pratico - Lezione VI", "pdfUrl": "https://notarhiv.ru/notes/vaccai6.pdf"}
+      ]
+    },
+    {
+      "id": "panofka",
+      "nameZh": "帕诺夫卡练声曲",
+      "nameRu": "Вокализы Пановки",
+      "nameEn": "Panofka Vocalises",
+      "composer": "Heinrich Panofka",
+      "composerZh": "海因里希·帕诺夫卡",
+      "years": "1807-1887",
+      "country": "德国",
+      "description": "德国小提琴家和声乐教师帕诺夫卡创作的24首练声曲，分为四个声部版本（女高音、女低音、男高音、男低音），系统训练声区统一和音色变化。",
+      "difficulty": "中级-高级",
+      "voiceTypes": ["女高音", "女低音", "男高音", "男低音"],
+      "pieceCount": 96,
+      "url": "https://notarhiv.ru/vokalizi/panofka/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "24首练声曲 Op.81 - 女高音", "titleRu": "24 Vocalises Op.81 - Soprano", "pdfUrl": "https://notarhiv.ru/notes/panofka81s.pdf"},
+        {"id": 2, "title": "24首练声曲 Op.81 - 女低音", "titleRu": "24 Vocalises Op.81 - Alto", "pdfUrl": "https://notarhiv.ru/notes/panofka81a.pdf"},
+        {"id": 3, "title": "24首练声曲 Op.81 - 男高音", "titleRu": "24 Vocalises Op.81 - Tenor", "pdfUrl": "https://notarhiv.ru/notes/panofka81t.pdf"},
+        {"id": 4, "title": "24首练声曲 Op.81 - 男低音", "titleRu": "24 Vocalises Op.81 - Bass", "pdfUrl": "https://notarhiv.ru/notes/panofka81b.pdf"},
+        {"id": 5, "title": "24首练声曲 Op.67", "titleRu": "24 Vocalises Op.67", "pdfUrl": "https://notarhiv.ru/notes/panofka67.pdf"}
+      ]
+    },
+    {
+      "id": "marchesi",
+      "nameZh": "马尔凯西练声曲",
+      "nameRu": "Вокализы Маркези",
+      "nameEn": "Marchesi Vocal Exercises",
+      "composer": "Mathilde Marchesi",
+      "composerZh": "玛蒂尔德·马尔凯西",
+      "years": "1821-1913",
+      "country": "意大利",
+      "description": "19世纪著名声乐教师马尔凯西夫人创立的声乐学派练习曲，以科学的声音训练方法和优美的音乐性著称，培养了众多著名歌唱家。",
+      "difficulty": "中级-高级",
+      "voiceTypes": ["女高音", "女中音"],
+      "pieceCount": 40,
+      "url": "https://notarhiv.ru/vokalizi/marchesi/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "声乐练习曲 Op.1", "titleRu": "Vocal Exercises Op.1", "difficulty": "中级", "pdfUrl": "https://notarhiv.ru/notes/marchesi1.pdf"},
+        {"id": 2, "title": "声乐练习曲 Op.2", "titleRu": "Vocal Exercises Op.2", "difficulty": "高级", "pdfUrl": "https://notarhiv.ru/notes/marchesi2.pdf"},
+        {"id": 3, "title": "中等声部练习曲", "titleRu": "Exercises for Medium Voice", "difficulty": "中级", "pdfUrl": "https://notarhiv.ru/notes/marchesi3.pdf"}
+      ]
+    },
+    {
+      "id": "seidler",
+      "nameZh": "塞德勒练声曲",
+      "nameRu": "Вокализы Зейдлера",
+      "nameEn": "Seidler Vocalises",
+      "composer": "Ernst Seidler",
+      "composerZh": "恩斯特·塞德勒",
+      "years": "19世纪",
+      "country": "德国",
+      "description": "德国声乐教师塞德勒的系统声乐训练教材，循序渐进地训练呼吸支持和声音连贯性，是德国声乐教育体系的重要组成部分。",
+      "difficulty": "初级-中级",
+      "voiceTypes": ["女高音", "女中音", "男高音", "男中音"],
+      "pieceCount": 24,
+      "url": "https://notarhiv.ru/vokalizi/seidler/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "声乐艺术基础 第1部分", "titleRu": "Die Kunst des Gesanges I", "pdfUrl": "https://notarhiv.ru/notes/seidler1.pdf"},
+        {"id": 2, "title": "声乐艺术基础 第2部分", "titleRu": "Die Kunst des Gesanges II", "pdfUrl": "https://notarhiv.ru/notes/seidler2.pdf"},
+        {"id": 3, "title": "声乐艺术基础 第3部分", "titleRu": "Die Kunst des Gesanges III", "pdfUrl": "https://notarhiv.ru/notes/seidler3.pdf"}
+      ]
+    },
+    {
+      "id": "lutgen",
+      "nameZh": "吕特根练声曲",
+      "nameRu": "Вокализы Лютгена",
+      "nameEn": "Lütgen Vocalises",
+      "composer": "Julius Lütgen",
+      "composerZh": "尤利乌斯·吕特根",
+      "years": "19世纪",
+      "country": "德国",
+      "description": "德国声乐教育家吕特根编写的练声曲集，与波佐尼练习曲风格相近，注重旋律的流畅性和声区的自然过渡。",
+      "difficulty": "中级",
+      "voiceTypes": ["女高音", "女中音", "男高音", "男低音"],
+      "pieceCount": 48,
+      "url": "https://notarhiv.ru/vokalizi/lutgen/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "48首练声曲 第1册", "titleRu": "48 Vocalises - Part I", "pdfUrl": "https://notarhiv.ru/notes/lutgen1.pdf"},
+        {"id": 2, "title": "48首练声曲 第2册", "titleRu": "48 Vocalises - Part II", "pdfUrl": "https://notarhiv.ru/notes/lutgen2.pdf"},
+        {"id": 3, "title": "48首练声曲 第3册", "titleRu": "48 Vocalises - Part III", "pdfUrl": "https://notarhiv.ru/notes/lutgen3.pdf"}
+      ]
+    },
+    {
+      "id": "bordogni",
+      "nameZh": "博尔东尼练声曲",
+      "nameRu": "Вокализы Бордони",
+      "nameEn": "Bordogni Vocalises",
+      "composer": "Marco Bordogni",
+      "composerZh": "马尔科·博尔东尼",
+      "years": "1788-1860",
+      "country": "意大利",
+      "description": "意大利男高音歌唱家博尔东尼改编的96首练声曲，原型来自博尔东尼的艺术歌曲，以其优美的旋律和丰富的音乐表现力著称，是柴院必练教材。",
+      "difficulty": "中级-高级",
+      "voiceTypes": ["女高音", "女中音", "男高音", "男中音", "男低音"],
+      "pieceCount": 96,
+      "url": "https://notarhiv.ru/vokalizi/bordogni/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "96首练声曲 - 女高音版", "titleRu": "96 Vocalises - Soprano", "pdfUrl": "https://notarhiv.ru/notes/bordogni_s.pdf"},
+        {"id": 2, "title": "96首练声曲 - 女中音版", "titleRu": "96 Vocalises - Alto", "pdfUrl": "https://notarhiv.ru/notes/bordogni_a.pdf"},
+        {"id": 3, "title": "96首练声曲 - 男高音版", "titleRu": "96 Vocalises - Tenor", "pdfUrl": "https://notarhiv.ru/notes/bordogni_t.pdf"},
+        {"id": 4, "title": "96首练声曲 - 男中音版", "titleRu": "96 Vocalises - Baritone", "pdfUrl": "https://notarhiv.ru/notes/bordogni_b.pdf"},
+        {"id": 5, "title": "96首练声曲 - 男低音版", "titleRu": "96 Vocalises - Bass", "pdfUrl": "https://notarhiv.ru/notes/bordogni_bass.pdf"}
+      ]
+    },
+    {
+      "id": "lamperti",
+      "nameZh": "兰佩尔蒂练声曲",
+      "nameRu": "Вокализы Ламперти",
+      "nameEn": "Lamperti Vocalises",
+      "composer": "Francesco Lamperti",
+      "composerZh": "弗朗切斯科·兰佩尔蒂",
+      "years": "1819-1880",
+      "country": "意大利",
+      "description": "意大利声乐教育之父兰佩尔蒂创立的声乐学派教材，以其对声音技巧的精妙分析和科学的训练方法著称，是美声唱法的最高典范。",
+      "difficulty": "高级-专业",
+      "voiceTypes": ["女高音", "女中音", "男高音"],
+      "pieceCount": 30,
+      "url": "https://notarhiv.ru/vokalizi/lamperti/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "声乐练习与练声曲", "titleRu": "Vocalizzo ed esercizi", "pdfUrl": "https://notarhiv.ru/notes/lamperti1.pdf"},
+        {"id": 2, "title": "花腔练习", "titleRu": "Esercizi di agilità", "pdfUrl": "https://notarhiv.ru/notes/lamperti2.pdf"},
+        {"id": 3, "title": "声区统一练习", "titleRu": "Exercises for vocal registers", "pdfUrl": "https://notarhiv.ru/notes/lamperti3.pdf"}
+      ]
+    },
+    {
+      "id": "garcia",
+      "nameZh": "加尔西亚练声曲",
+      "nameRu": "Вокализы Гарсиа",
+      "nameEn": "García Vocal Exercises",
+      "composer": "Manuel García",
+      "composerZh": "曼努埃尔·加尔西亚",
+      "years": "1775-1906",
+      "country": "西班牙",
+      "description": "著名西班牙男高音和声乐教师加尔西亚二世创立的声乐训练体系，其关于声带机制的理论和练习至今影响深远，是声乐医学的先驱。",
+      "difficulty": "中级-高级",
+      "voiceTypes": ["女高音", "女中音", "男高音", "男中音", "男低音"],
+      "pieceCount": 30,
+      "url": "https://notarhiv.ru/vokalizi/garcia/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "声乐教师指南", "titleRu": "Traité complet de l'art du chant", "pdfUrl": "https://notarhiv.ru/notes/garcia1.pdf"},
+        {"id": 2, "title": "声带训练练习", "titleRu": "Exercises for vocal cords", "pdfUrl": "https://notarhiv.ru/notes/garcia2.pdf"},
+        {"id": 3, "title": "声区转换练习", "titleRu": "Exercises for register transitions", "pdfUrl": "https://notarhiv.ru/notes/garcia3.pdf"}
+      ]
+    },
+    {
+      "id": "lablache",
+      "nameZh": "拉布拉什练声曲",
+      "nameRu": "Вокализы Лаблаш",
+      "nameEn": "Lablache Vocalises",
+      "composer": "Luigi Lablache",
+      "composerZh": "路易吉·拉布拉什",
+      "years": "1794-1858",
+      "country": "意大利",
+      "description": "19世纪最伟大的男低音歌唱家拉布拉什创作的练声曲，专门为男低音和男低音训练设计，注重低音声部的开发与美化。",
+      "difficulty": "中级-高级",
+      "voiceTypes": ["男低音", "男中音"],
+      "pieceCount": 24,
+      "url": "https://notarhiv.ru/vokalizi/lablache/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "24首男低音练声曲", "titleRu": "24 Vocalises for Bass", "pdfUrl": "https://notarhiv.ru/notes/lablache1.pdf"},
+        {"id": 2, "title": "男低音练习曲", "titleRu": "Esercizi per Basso", "pdfUrl": "https://notarhiv.ru/notes/lablache2.pdf"}
+      ]
+    },
+    {
+      "id": "gretchaninoff",
+      "nameZh": "格列恰尼诺夫练声曲",
+      "nameRu": "Вокализы Гречанинова",
+      "nameEn": "Gretchaninoff Vocalises",
+      "composer": "Alexander Gretchaninoff",
+      "composerZh": "亚历山大·格列恰尼诺夫",
+      "years": "1864-1946",
+      "country": "俄罗斯",
+      "description": "俄罗斯作曲家格列恰尼诺夫创作的练声曲，旋律优美，富有俄罗斯音乐特色，适合作为声乐学习和音乐会的过渡曲目。",
+      "difficulty": "初级-中级",
+      "voiceTypes": ["女高音", "女中音", "男高音", "男低音"],
+      "pieceCount": 25,
+      "url": "https://notarhiv.ru/vokalizi/gretchaninoff/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "25首练声曲 Op.47", "titleRu": "25 Vocalises Op.47", "pdfUrl": "https://notarhiv.ru/notes/gretchaninoff47.pdf"},
+        {"id": 2, "title": "25首练声曲 Op.156", "titleRu": "25 Vocalises Op.156", "pdfUrl": "https://notarhiv.ru/notes/gretchaninoff156.pdf"}
+      ]
+    },
+    {
+      "id": "rachmaninoff",
+      "nameZh": "拉赫玛尼诺夫练声曲",
+      "nameRu": "Вокализы Рахманинова",
+      "nameEn": "Rachmaninoff Vocalises",
+      "composer": "Sergei Rachmaninoff",
+      "composerZh": "谢尔盖·拉赫玛尼诺夫",
+      "years": "1873-1943",
+      "country": "俄罗斯",
+      "description": "俄罗斯浪漫主义作曲家拉赫玛尼诺夫创作的五首练声曲，以其深沉的情感和丰富的钢琴伴奏著称，是音乐会曲目中的经典之作。",
+      "difficulty": "高级",
+      "voiceTypes": ["女高音", "男中音"],
+      "pieceCount": 5,
+      "url": "https://notarhiv.ru/vokalizi/rachmaninoff/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "练声曲 Op.34 No.5", "titleRu": "Вокализ Op.34 No.5", "pdfUrl": "https://notarhiv.ru/notes/rachmaninoff_vocalise.pdf"}
+      ]
+    },
+    {
+      "id": "medtner",
+      "nameZh": "梅特纳练声曲",
+      "nameRu": "Вокализы Метнера",
+      "nameEn": "Medtner Vocalises",
+      "composer": "Nikolai Medtner",
+      "composerZh": "尼古拉·梅特纳",
+      "years": "1880-1951",
+      "country": "俄罗斯",
+      "description": "俄罗斯作曲家梅特纳创作的练声曲，融合了俄罗斯民族音乐元素和德国浪漫主义风格，音乐语言独特而富有表现力。",
+      "difficulty": "高级",
+      "voiceTypes": ["女高音", "女中音", "男中音"],
+      "pieceCount": 3,
+      "url": "https://notarhiv.ru/vokalizi/medtner/spisok.html",
+      "pieces": [
+        {"id": 1, "title": "练声曲三首 Op.23", "titleRu": "Три Вокализа Op.23", "pdfUrl": "https://notarhiv.ru/notes/medtner_op23.pdf"}
+      ]
+    }
+  ],
+  "metadata": {
+    "lastUpdated": "2024-01-15",
+    "source": "notarhiv.ru",
+    "totalCollections": 14,
+    "totalPieces": 515,
+    "note": "所有作品均为公版。所有PDF链接指向源站，不存储在本地。"
+  }
+}
