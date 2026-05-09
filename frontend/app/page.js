@@ -432,4 +432,14 @@ export default async function HomePage() {
               专业音乐留学决策支持平台 | 打破信息不对称
             </p>
             
-            <div className="w-24 h-1 bg-gradient-to-r from-primary-600 via-gold-500 to-accent-500 mx-auto rounded-f
+            <div className="w-24 h-1 bg-gradient-to-r from-primary-600 via-gold-500 to-accent-500 mx-auto rounded-full mb-4" />
+            
+            <p className="text-gray-500 text-xs">
+              © 2026 Russia Music Study Platform. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}
