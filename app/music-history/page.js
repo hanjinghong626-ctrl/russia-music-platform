@@ -55,7 +55,8 @@ export default function MusicHistoryPage() {
           <Link href="/music-history/composers" className="nav-link">作曲家</Link>
           <Link href="/music-history/schools" className="nav-link">学派</Link>
           <Link href="/music-history/glossary" className="nav-link">术语库</Link>
-          <Link href="/music-history/topics/romance" className="nav-link">专题</Link>
+          <Link href="/music-history/topics/romance" className="nav-link">浪漫曲</Link>
+          <Link href="/music-history/topics/opera" className="nav-link">歌剧</Link>
         </nav>
       </header>
 
