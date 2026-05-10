@@ -68,7 +68,7 @@ function StatsBar({ metadata }) {
 // 曲集卡片组件
 function CollectionCard({ collection }) {
   return (
-    <Link href={`/vocal-exercises/${collection.id}`} className="collection-card">
+    <Link href={`/sheet-music/vocal-exercises/${collection.id}`} className="collection-card">
       <div className="card-header">
         <div className="card-icon">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -234,8 +234,8 @@ export default async function VocalExercisesPage() {
 
       {/* 底部导航 */}
       <nav className="page-nav">
+        <Link href="/sheet-music" className="nav-link">返回曲库</Link>
         <Link href="/" className="nav-link">返回首页</Link>
-        <Link href="/music-history" className="nav-link">音乐史地图</Link>
       </nav>
     </div>
   )

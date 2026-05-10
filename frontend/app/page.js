@@ -93,7 +93,7 @@ export default async function HomePage() {
                 <span>🎼</span>
                 曲库
               </Link>
-              <Link href="/vocal-exercises" className="text-gray-600 hover:text-emerald-700 transition-colors font-medium flex items-center gap-1">
+              <Link href="/sheet-music/vocal-exercises" className="text-gray-600 hover:text-emerald-700 transition-colors font-medium flex items-center gap-1">
                 <span>🎵</span>
                 练声曲
               </Link>

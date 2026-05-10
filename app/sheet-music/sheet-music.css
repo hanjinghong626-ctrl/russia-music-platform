@@ -704,3 +704,171 @@
     font-size: 12px;
   }
 }
+
+/* ============================================
+   Vocal Exercises Entry Section (in Sheet Music page)
+   ============================================ */
+
+.sm-vocal-section {
+  margin-bottom: 48px;
+}
+
+.sm-vocal-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.sm-vocal-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+
+.sm-vocal-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 4px;
+}
+
+.sm-vocal-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.sm-vocal-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #a7f3d0 100%);
+  border: 2px solid #6ee7b7;
+  border-radius: 16px;
+  padding: 24px 28px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sm-vocal-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  transform: rotate(-30deg);
+}
+
+.sm-vocal-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25);
+  border-color: #10b981;
+}
+
+.sm-vocal-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.sm-vocal-content {
+  flex: 1;
+  z-index: 1;
+}
+
+.sm-vocal-card-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0 0 6px;
+}
+
+.sm-vocal-card-desc {
+  font-size: 14px;
+  color: #047857;
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.sm-vocal-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sm-vocal-tag {
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 6px;
+  font-size: 12px;
+  color: #059669;
+  font-weight: 500;
+}
+
+.sm-vocal-arrow {
+  flex-shrink: 0;
+  color: #059669;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.sm-vocal-card:hover .sm-vocal-arrow {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+/* Section Header */
+.sm-section-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.sm-section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 4px;
+}
+
+.sm-section-desc {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Mobile Responsive for Vocal Section */
+@media (max-width: 640px) {
+  .sm-vocal-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .sm-vocal-icon {
+    font-size: 40px;
+  }
+
+  .sm-vocal-card-title {
+    font-size: 18px;
+  }
+
+  .sm-vocal-tags {
+    justify-content: center;
+  }
+
+  .sm-vocal-arrow {
+    display: none;
+  }
+}

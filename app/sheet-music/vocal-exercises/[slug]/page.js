@@ -104,7 +104,7 @@ export default async function CollectionDetailPage({ params }) {
           </div>
         </section>
         <div className="not-found">
-          <Link href="/vocal-exercises" className="back-link">← 返回练声曲库</Link>
+          <Link href="/sheet-music/vocal-exercises" className="back-link">← 返回练声曲库</Link>
         </div>
       </div>
     )
@@ -120,7 +120,7 @@ export default async function CollectionDetailPage({ params }) {
         </div>
         <div className="hero-content">
           <nav className="breadcrumb">
-            <Link href="/vocal-exercises">练声曲库</Link>
+            <Link href="/sheet-music/vocal-exercises">练声曲库</Link>
             <span className="separator">/</span>
             <span className="current">{collection.nameZh}</span>
           </nav>
@@ -208,7 +208,7 @@ export default async function CollectionDetailPage({ params }) {
             .filter(c => c.id !== collection.id)
             .slice(0, 3)
             .map(c => (
-              <Link key={c.id} href={`/vocal-exercises/${c.id}`} className="related-card">
+              <Link key={c.id} href={`/sheet-music/vocal-exercises/${c.id}`} className="related-card">
                 <h3>{c.nameZh}</h3>
                 <p>{c.composer}</p>
                 <span className={`difficulty-badge small ${getDifficultyColor(c.difficulty)}`}>
@@ -222,8 +222,8 @@ export default async function CollectionDetailPage({ params }) {
 
       {/* 底部导航 */}
       <nav className="page-nav">
-        <Link href="/vocal-exercises" className="nav-link">← 返回练声曲库</Link>
-        <Link href="/" className="nav-link">返回首页</Link>
+        <Link href="/sheet-music/vocal-exercises" className="nav-link">← 返回练声曲库</Link>
+        <Link href="/sheet-music" className="nav-link">返回曲库</Link>
       </nav>
     </div>
   )

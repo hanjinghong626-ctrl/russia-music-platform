@@ -77,8 +77,41 @@ export default function SheetMusicPage() {
         </div>
       </div>
 
-      {/* Composer Cards */}
+      {/* Main Content */}
       <main className="sm-main">
+        {/* 练声曲库入口 - 放在作曲家卡片之前 */}
+        <div className="sm-vocal-section">
+          <div className="sm-vocal-header">
+            <span className="sm-vocal-badge">练声曲</span>
+            <h2 className="sm-vocal-title">练声曲库</h2>
+            <p className="sm-vocal-subtitle">声乐练习专用曲集，从初级到专业级全覆盖</p>
+          </div>
+          <Link href="/sheet-music/vocal-exercises" className="sm-vocal-card">
+            <div className="sm-vocal-icon">🎵</div>
+            <div className="sm-vocal-content">
+              <h3 className="sm-vocal-card-title">经典练声曲集</h3>
+              <p className="sm-vocal-card-desc">阿布特、孔科内、瓦卡伊等大师作品，系统训练声乐技巧</p>
+              <div className="sm-vocal-tags">
+                <span className="sm-vocal-tag">14个曲集</span>
+                <span className="sm-vocal-tag">515+首作品</span>
+                <span className="sm-vocal-tag">6种声部</span>
+              </div>
+            </div>
+            <div className="sm-vocal-arrow">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </Link>
+        </div>
+
+        {/* Section Title */}
+        <div className="sm-section-header">
+          <h2 className="sm-section-title">作曲家</h2>
+          <p className="sm-section-desc">点击作曲家名字浏览其代表作品</p>
+        </div>
+
+        {/* Composer Cards */}
         <div className="sm-composers-grid">
           {composers.map((composer, index) => (
             <Link
