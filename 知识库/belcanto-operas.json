@@ -1,0 +1,592 @@
+{
+  "metadata": {
+    "source": "https://www.belcanto.ru/opera.html",
+    "scrape_date": "2026-05-11T06:34:17.363337",
+    "description": "歌剧词典页面 - 包含668部歌剧"
+  },
+  "statistics": {
+    "total_operas": 668,
+    "by_country": {
+      "俄罗斯": 127,
+      "意大利": 134,
+      "德国": 97,
+      "法国": 90,
+      "苏联": 95,
+      "捷克": 39,
+      "奥地利": 30,
+      "英国": 13,
+      "波兰": 11,
+      "美国": 8,
+      "匈牙利": 7,
+      "斯洛伐克": 4,
+      "西班牙": 3,
+      "保加利亚": 3
+    },
+    "by_era": {
+      "19世纪": 23,
+      "20世纪": 65,
+      "18世纪": 13,
+      "17世纪": 7,
+      "21世纪": 6,
+      "时代未知": 554
+    }
+  },
+  "russian_composers_operas": [
+    {
+      "opera": "Жизнь за царя (为沙皇献身)",
+      "composer_slug": "glinka",
+      "composer_zh": "格林卡",
+      "year": 1836,
+      "belcanto_url": "https://www.belcanto.ru/susanin.html"
+    },
+    {
+      "opera": "Руслан и Людмила (鲁斯兰与柳德米拉)",
+      "composer_slug": "glinka",
+      "composer_zh": "格林卡",
+      "year": 1842,
+      "belcanto_url": "https://www.belcanto.ru/ruslan.html"
+    },
+    {
+      "opera": "Русалка (水仙女)",
+      "composer_slug": "darg",
+      "composer_zh": "达尔戈梅日斯基",
+      "year": 1855,
+      "belcanto_url": "https://www.belcanto.ru/rusalka_darg.html"
+    },
+    {
+      "opera": "Каменный гость (石客)",
+      "composer_slug": "darg",
+      "composer_zh": "达尔戈梅日斯基",
+      "year": 1872,
+      "belcanto_url": "https://www.belcanto.ru/gost.html"
+    },
+    {
+      "opera": "Эсмеральда (艾斯美拉达)",
+      "composer_slug": "darg",
+      "composer_zh": "达尔戈梅日斯基",
+      "year": 1841,
+      "belcanto_url": "https://www.belcanto.ru/esmeralda.html"
+    },
+    {
+      "opera": "Борис Годунов (鲍里斯·戈杜诺夫)",
+      "composer_slug": "mussorgsky",
+      "composer_zh": "穆索尔斯基",
+      "belcanto_url": "https://www.belcanto.ru/godunov.html"
+    },
+    {
+      "opera": "Хованщина (霍凡希纳)",
+      "composer_slug": "mussorgsky",
+      "composer_zh": "穆索尔斯基",
+      "belcanto_url": "https://www.belcanto.ru/hovan.html"
+    },
+    {
+      "opera": "Женитьба (婚事)",
+      "composer_slug": "mussorgsky",
+      "composer_zh": "穆索尔斯基",
+      "year": 1868,
+      "belcanto_url": "https://www.belcanto.ru/zhenitba.html"
+    },
+    {
+      "opera": "Сорочинская ярмарка (索罗钦斯克市集)",
+      "composer_slug": "mussorgsky",
+      "composer_zh": "穆索尔斯基",
+      "belcanto_url": "https://www.belcanto.ru/sorochinskaya.html"
+    },
+    {
+      "opera": "Саламбо (萨拉姆博)",
+      "composer_slug": "mussorgsky",
+      "composer_zh": "穆索尔斯基",
+      "year": 1863,
+      "belcanto_url": "https://www.belcanto.ru/salambo.html"
+    },
+    {
+      "opera": "Псковитянка (普斯科夫少女)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/pskovityanka.html"
+    },
+    {
+      "opera": "Майская ночь (五月夜)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/mayskaya.html"
+    },
+    {
+      "opera": "Снегурочка (雪姑娘)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/snegurochka.html"
+    },
+    {
+      "opera": "Садко (萨特科)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/sadko.html"
+    },
+    {
+      "opera": "Моцарт и Сальери (莫扎特与萨列里)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "year": 1897,
+      "belcanto_url": "https://www.belcanto.ru/mozart-salieri.html"
+    },
+    {
+      "opera": "Боярыня Вера Шелога (维拉·舍洛加女贵",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/sheloga.html"
+    },
+    {
+      "opera": "Царская невеста (沙皇的新娘)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/nevesta.html"
+    },
+    {
+      "opera": "Кащей Бессмертный (不死王子卡舍伊)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/kaschey.html"
+    },
+    {
+      "opera": "Сказка о царе Салтане (萨尔坦王的故事)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/saltan.html"
+    },
+    {
+      "opera": "Золотой петушок (金鸡)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/zolot_petushok.html"
+    },
+    {
+      "opera": "Ночь перед Рождеством (圣诞节前夜)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/noch.html"
+    },
+    {
+      "opera": "Сказание о невидимом граде Китеже (基捷日的传说)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/kitezh.html"
+    },
+    {
+      "opera": "Сервилия (塞尔维利亚)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/servilia.html"
+    },
+    {
+      "opera": "Пан Воевода (总督)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/pan_voyevoda.html"
+    },
+    {
+      "opera": "Млада (姆拉达)",
+      "composer_slug": "rimsky",
+      "composer_zh": "里姆斯基-科萨科夫",
+      "belcanto_url": "https://www.belcanto.ru/mlada.html"
+    },
+    {
+      "opera": "Князь Игорь (伊戈尔王)",
+      "composer_slug": "borodin",
+      "composer_zh": "鲍罗廷",
+      "year": 1867,
+      "belcanto_url": "https://www.belcanto.ru/igor.html"
+    },
+    {
+      "opera": "Кавказский пленник (高加索的俘虏)",
+      "composer_slug": "cui",
+      "composer_zh": "居伊",
+      "year": 1858,
+      "belcanto_url": "https://www.belcanto.ru/plennik.html"
+    },
+    {
+      "opera": "Вильям Ратклиф (威廉·拉特克利夫)",
+      "composer_slug": "cui",
+      "composer_zh": "居伊",
+      "year": 1869,
+      "belcanto_url": "https://www.belcanto.ru/ratklif.html"
+    },
+    {
+      "opera": "Анджело (安杰洛)",
+      "composer_slug": "cui",
+      "composer_zh": "居伊",
+      "year": 1876,
+      "belcanto_url": "https://www.belcanto.ru/opera_angelo.html"
+    },
+    {
+      "opera": "Капитанская дочка (上尉的女儿)",
+      "composer_slug": "cui",
+      "composer_zh": "居伊",
+      "year": 1880,
+      "belcanto_url": "https://www.belcanto.ru/opera_kapitanskaya.html"
+    },
+    {
+      "opera": "Мадемуазель Фифи (菲菲小姐)",
+      "composer_slug": "cui",
+      "composer_zh": "居伊",
+      "year": 1903,
+      "belcanto_url": "https://www.belcanto.ru/opera_fifi.html"
+    },
+    {
+      "opera": "Красная шапочка (小红帽)",
+      "composer_slug": "cui",
+      "composer_zh": "居伊",
+      "year": 1884,
+      "belcanto_url": "https://www.belcanto.ru/opera_redhood.html"
+    },
+    {
+      "opera": "Евгений Онегин (叶甫盖尼·奥涅金)",
+      "composer_slug": "tchaikovsky",
+      "composer_zh": "柴可夫斯基",
+      "year": 1878,
+      "belcanto_url": "https://www.belcanto.ru/onegin.html"
+    },
+    {
+      "opera": "Пиковая дама (黑桃皇后)",
+      "composer_slug": "tchaikovsky",
+      "composer_zh": "柴可夫斯基",
+      "year": 1890,
+      "belcanto_url": "https://www.belcanto.ru/dama.html"
+    },
+    {
+      "opera": "Иоланта (约兰塔)",
+      "composer_slug": "tchaikovsky",
+      "composer_zh": "柴可夫斯基",
+      "year": 1892,
+      "belcanto_url": "https://www.belcanto.ru/iolanta.html"
+    },
+    {
+      "opera": "Чародейка (妖女)",
+      "composer_slug": "tchaikovsky",
+      "composer_zh": "柴可夫斯基",
+      "year": 1885,
+      "belcanto_url": "https://www.belcanto.ru/charodeika.html"
+    },
+    {
+      "opera": "Черевички (小皮靴)",
+      "composer_slug": "tchaikovsky",
+      "composer_zh": "柴可夫斯基",
+      "year": 1885,
+      "belcanto_url": "https://www.belcanto.ru/cherevichki.html"
+    },
+    {
+      "opera": "Опричник (禁卫军)",
+      "composer_slug": "tchaikovsky",
+      "composer_zh": "柴可夫斯基",
+      "year": 1874,
+      "belcanto_url": "https://www.belcanto.ru/oprichnik.html"
+    },
+    {
+      "opera": "Кузнец Вакула (铁匠瓦库拉)",
+      "composer_slug": "tchaikovsky",
+      "composer_zh": "柴可夫斯基",
+      "year": 1886,
+      "belcanto_url": "https://www.belcanto.ru/vakula.html"
+    },
+    {
+      "opera": "Мазепа (马泽帕)",
+      "composer_slug": "tchaikovsky",
+      "composer_zh": "柴可夫斯基",
+      "year": 1884,
+      "belcanto_url": "https://www.belcanto.ru/mazepa.html"
+    },
+    {
+      "opera": "Орлеанская дева (圣女贞德)",
+      "composer_slug": "tchaikovsky",
+      "composer_zh": "柴可夫斯基",
+      "year": 1881,
+      "belcanto_url": "https://www.belcanto.ru/orlean.html"
+    },
+    {
+      "opera": "Алеко (阿列科)",
+      "composer_slug": "tchaikovsky",
+      "composer_zh": "柴可夫斯基",
+      "year": 1892,
+      "belcanto_url": "https://www.belcanto.ru/aleko.html"
+    },
+    {
+      "opera": "Война и мир (战争与和平)",
+      "composer_slug": "tchaikovsky",
+      "composer_zh": "柴可夫斯基",
+      "year": 1867,
+      "belcanto_url": "https://www.belcanto.ru/voina.html"
+    },
+    {
+      "opera": "Алеко (阿列科)",
+      "composer_slug": "rachmaninoff",
+      "composer_zh": "拉赫玛尼诺夫",
+      "year": 1892,
+      "belcanto_url": "https://www.belcanto.ru/aleko.html"
+    },
+    {
+      "opera": "Франческа да Римини (里米尼的弗朗切斯卡)",
+      "composer_slug": "rachmaninoff",
+      "composer_zh": "拉赫玛尼诺夫",
+      "year": 1904,
+      "belcanto_url": "https://www.belcanto.ru/franceska.html"
+    },
+    {
+      "opera": "Монна Ванна (万娜)",
+      "composer_slug": "rachmaninoff",
+      "composer_zh": "拉赫玛尼诺夫",
+      "year": 1906,
+      "belcanto_url": "https://www.belcanto.ru/monna_vanna.html"
+    },
+    {
+      "opera": "Могучая кучка (强力集团)",
+      "composer_slug": "scriabin",
+      "composer_zh": "斯克里亚宾",
+      "note": "斯克里亚宾歌剧作品较少，主要创作钢琴曲",
+      "belcanto_url": "https://www.belcanto.ru/kuchka.html"
+    },
+    {
+      "opera": "Мавра (玛弗拉)",
+      "composer_slug": "stravinsky",
+      "composer_zh": "斯特拉文斯基",
+      "year": 1922,
+      "belcanto_url": "https://www.belcanto.ru/mavra.html"
+    },
+    {
+      "opera": "Похождения повесы (浪子的历程)",
+      "composer_slug": "stravinsky",
+      "composer_zh": "斯特拉文斯基",
+      "year": 1951,
+      "belcanto_url": "https://www.belcanto.ru/raves.html"
+    },
+    {
+      "opera": "Царь Эдип (俄狄浦斯王)",
+      "composer_slug": "stravinsky",
+      "composer_zh": "斯特拉文斯基",
+      "year": 1927,
+      "belcanto_url": "https://www.belcanto.ru/or-stravinsky-edip.html"
+    },
+    {
+      "opera": "Байка про Лису, Петуха, Кота да Барана (狐狸、公鸡、猫和公羊)",
+      "composer_slug": "stravinsky",
+      "composer_zh": "斯特拉文斯基",
+      "year": 1950,
+      "belcanto_url": "https://www.belcanto.ru/or-stravinsky-bayka.html"
+    },
+    {
+      "opera": "Любовь к трём апельсинам (三个橙子的爱情)",
+      "composer_slug": "prokofiev",
+      "composer_zh": "普罗科菲耶夫",
+      "year": 1921,
+      "belcanto_url": "https://www.belcanto.ru/apelsin.html"
+    },
+    {
+      "opera": "Огненный ангел (火天使)",
+      "composer_slug": "prokofiev",
+      "composer_zh": "普罗科菲耶夫",
+      "year": 1925,
+      "belcanto_url": "https://www.belcanto.ru/angel.html"
+    },
+    {
+      "opera": "Игрок (赌徒)",
+      "composer_slug": "prokofiev",
+      "composer_zh": "普罗科菲耶夫",
+      "year": 1929,
+      "belcanto_url": "https://www.belcanto.ru/gambler.html"
+    },
+    {
+      "opera": "Семён Котко (谢苗·科特科)",
+      "composer_slug": "prokofiev",
+      "composer_zh": "普罗科菲耶夫",
+      "year": 1940,
+      "belcanto_url": "https://www.belcanto.ru/kotko.html"
+    },
+    {
+      "opera": "Обручение в монастыре (修道院中的订婚)",
+      "composer_slug": "prokofiev",
+      "composer_zh": "普罗科菲耶夫",
+      "year": 1940,
+      "belcanto_url": "https://www.belcanto.ru/obruchenie.html"
+    },
+    {
+      "opera": "Повесть о настоящем человеке (真正的人)",
+      "composer_slug": "prokofiev",
+      "composer_zh": "普罗科菲耶夫",
+      "year": 1948,
+      "belcanto_url": "https://www.belcanto.ru/povest.html"
+    },
+    {
+      "opera": "Леди Макбет Мценского уезда (姆岑斯克县麦克白夫人)",
+      "composer_slug": "shostakovich",
+      "composer_zh": "肖斯塔科维奇",
+      "year": 1934,
+      "belcanto_url": "https://www.belcanto.ru/katerina.html"
+    },
+    {
+      "opera": "Нос (鼻子)",
+      "composer_slug": "shostakovich",
+      "composer_zh": "肖斯塔科维奇",
+      "year": 1930,
+      "belcanto_url": "https://www.belcanto.ru/nos.html"
+    },
+    {
+      "opera": "Катерина Измайлова (卡捷琳娜·伊兹玛伊洛娃)",
+      "composer_slug": "shostakovich",
+      "composer_zh": "肖斯塔科维奇",
+      "year": 1962,
+      "belcanto_url": "https://www.belcanto.ru/izmaylova.html"
+    },
+    {
+      "opera": "Москва, Черёмушки (莫斯科·切列穆什基)",
+      "composer_slug": "shostakovich",
+      "composer_zh": "肖斯塔科维奇",
+      "year": 1958,
+      "belcanto_url": "https://www.belcanto.ru/cheremushki.html"
+    },
+    {
+      "opera": "Гаянэ (加亚内)",
+      "composer_slug": "khachaturian",
+      "composer_zh": "哈恰图良",
+      "year": 1942,
+      "belcanto_url": "https://www.belcanto.ru/gayane.html"
+    },
+    {
+      "opera": "Маскарад (假面舞会)",
+      "composer_slug": "khachaturian",
+      "composer_zh": "哈恰图良",
+      "year": 1941,
+      "belcanto_url": "https://www.belcanto.ru/maskarad.html"
+    },
+    {
+      "opera": "Мёртвые души (死魂灵)",
+      "composer_slug": "shchedrin",
+      "composer_zh": "谢德林",
+      "year": 1976,
+      "belcanto_url": "https://www.belcanto.ru/dushi.html"
+    },
+    {
+      "opera": "Не только любовь (不只是爱情)",
+      "composer_slug": "shchedrin",
+      "composer_zh": "谢德林",
+      "year": 1961,
+      "belcanto_url": "https://www.belcanto.ru/schedrin_netolko.html"
+    },
+    {
+      "opera": "Лолита (洛丽塔)",
+      "composer_slug": "shchedrin",
+      "composer_zh": "谢德林",
+      "year": 1992,
+      "belcanto_url": "https://www.belcanto.ru/opera_lolita.html"
+    },
+    {
+      "opera": "Очарованный странник (迷人的旅人)",
+      "composer_slug": "shchedrin",
+      "composer_zh": "谢德林",
+      "year": 1996,
+      "belcanto_url": "https://www.belcanto.ru/strannik.html"
+    },
+    {
+      "opera": "Левша (左撇子)",
+      "composer_slug": "shchedrin",
+      "composer_zh": "谢德林",
+      "year": 1999,
+      "belcanto_url": "https://www.belcanto.ru/levsha.html"
+    },
+    {
+      "opera": "Боярыня Морозова (莫罗佐娃女贵",
+      "composer_slug": "shchedrin",
+      "composer_zh": "谢德林",
+      "year": 2006,
+      "belcanto_url": "https://www.belcanto.ru/opera_morozova.html"
+    },
+    {
+      "opera": "Демофонт (德莫丰特)",
+      "composer_slug": "berezovsky",
+      "composer_zh": "别列佐夫斯基",
+      "year": 1773,
+      "belcanto_url": "https://www.belcanto.ru/demofont.html"
+    },
+    {
+      "opera": "Санкт-петербургский Гостиный двор (圣彼得堡商栈)",
+      "composer_slug": "pashkevich",
+      "composer_zh": "帕什克维奇",
+      "year": 1792,
+      "belcanto_url": "https://www.belcanto.ru/opera_kak.html"
+    },
+    {
+      "opera": "Федул с детьми (费杜尔与孩子们)",
+      "composer_slug": "pashkevich",
+      "composer_zh": "帕什克维奇",
+      "year": 1791,
+      "belcanto_url": "https://www.belcanto.ru/opera_fedul.html"
+    },
+    {
+      "opera": "Несчастье от кареты (马车祸)",
+      "composer_slug": "pashkevich",
+      "composer_zh": "帕什克维奇",
+      "year": 1779,
+      "belcanto_url": "https://www.belcanto.ru/kareta.html"
+    },
+    {
+      "opera": "Орфей (俄耳甫斯)",
+      "composer_slug": "fomin",
+      "composer_zh": "福明",
+      "year": 1792,
+      "belcanto_url": "https://www.belcanto.ru/orpheus_fomin.html"
+    },
+    {
+      "opera": "Мельник — колдун, обманщик и сват (磨坊主)",
+      "composer_slug": "sokolovsky",
+      "composer_zh": "索科洛夫斯基",
+      "year": 1779,
+      "belcanto_url": "https://www.belcanto.ru/melnik.html"
+    },
+    {
+      "opera": "Ямщики на подставах (驿马)",
+      "composer_slug": "fomin",
+      "composer_zh": "福明",
+      "belcanto_url": "https://www.belcanto.ru/yamschiki.html"
+    },
+    {
+      "opera": "Аскольдова могила (阿斯科尔德墓)",
+      "composer_slug": "verstovsky",
+      "composer_zh": "韦尔斯托夫斯基",
+      "year": 1836,
+      "belcanto_url": "https://www.belcanto.ru/askoldova.html"
+    },
+    {
+      "opera": "Идиот (白痴)",
+      "composer_slug": "weinberg",
+      "composer_zh": "温伯格",
+      "year": 1946,
+      "belcanto_url": "https://www.belcanto.ru/opera_idiot.html"
+    },
+    {
+      "opera": "Пассажирка (乘客)",
+      "composer_slug": "weinberg",
+      "composer_zh": "温伯格",
+      "year": 1983,
+      "belcanto_url": "https://www.belcanto.ru/passenger.html"
+    },
+    {
+      "opera": "Шахсенем (沙赫塞涅姆)",
+      "composer_slug": "glier",
+      "composer_zh": "格利埃尔",
+      "year": 1927,
+      "belcanto_url": "https://www.belcanto.ru/opera_shahsenem.html"
+    },
+    {
+      "opera": "Орестея (奥瑞斯忒亚)",
+      "composer_slug": "taneev",
+      "composer_zh": "塔涅耶夫",
+      "year": 1894,
+      "belcanto_url": "https://www.belcanto.ru/oresteya.html"
+    },
+    {
+      "opera": "Волшебное озеро (魔法湖)",
+      "composer_slug": "lyadov",
+      "composer_zh": "利亚多夫",
+      "note": "交响诗，非歌剧",
+      "belcanto_url": "https://www.belcanto.ru/lyadov_lake.html"
+    }
+  ]
+}

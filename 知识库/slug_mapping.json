@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "description": "composer-details.json slug 与 belcanto.ru slug 映射表",
+    "created_for": "俄罗斯音乐留学平台爬虫"
+  },
+  "mappings": {
+    "rimsky_korsakov": "rimsky",
+    "dargomyzhsky": "darg",
+    "shalyapin": "chaliapin",
+    "rakhmaninov": "rachmaninoff",
+    "gliere": "glier"
+  },
+  "failed_slugs": [
+    {
+      "original_slug": "gubaydulina",
+      "attempts": ["gubaydulina", "gubajdulina", "gujaidulina", "sofia_gubaydulina"],
+      "reason": "belcanto.ru 可能使用不同的转写或slug格式"
+    },
+    {
+      "original_slug": "silvestrov",
+      "attempts": ["silvestrov", "valery_silvestrov"],
+      "reason": "需要手动搜索正确的slug"
+    },
+    {
+      "original_slug": "anton_rubinstein",
+      "attempts": ["rubinstein_anton", "anton_rubinstein"],
+      "reason": "需要手动搜索正确的slug"
+    },
+    {
+      "original_slug": "gurilyov",
+      "attempts": ["gurilyov", "gurilov"],
+      "reason": "需要手动搜索正确的slug"
+    },
+    {
+      "original_slug": "kavelin",
+      "attempts": ["kavelin"],
+      "reason": "belcanto.ru 可能没有收录此作曲家"
+    },
+    {
+      "original_slug": "alyabyev",
+      "attempts": ["alyabyev", "alyabiev"],
+      "reason": "需要手动搜索正确的slug"
+    }
+  ],
+  "successful_slugs": [
+    "glinka", "darg", "balakirev", "cui", "borodin", "mussorgsky", "rimsky", "tchaikovsky",
+    "bortnyansky", "scriabin", "stravinsky", "prokofiev", "shostakovich", "berezovsky",
+    "pashkevich", "vedel", "kozlovsky", "lyadov", "taneev", "glazunov", "metner",
+    "arensky", "ippolitov_ivanov", "myaskovsky", "shebalin", "weinberg", "denisov",
+    "glier", "grechaninov", "nikolai_rubinstein", "khachaturian", "shnitke", "shchedrin",
+    "sviridov", "kabalevsky", "varlamov", "verstovsky", "rachmaninoff", "lyapunov",
+    "chaliapin", "sobinov", "nezhdanova", "sokolovsky"
+  ]
+}

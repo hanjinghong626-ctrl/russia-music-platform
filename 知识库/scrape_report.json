@@ -1,0 +1,313 @@
+{
+  "metadata": {
+    "scrape_date": "2026-05-11T06:33:13.757500",
+    "source": "belcanto.ru",
+    "purpose": "俄罗斯音乐留学平台作曲家资料库"
+  },
+  "total_composers_in_list": 50,
+  "successful_slugs": [
+    {
+      "slug": "glinka",
+      "name_zh": "格林卡",
+      "status": "success"
+    },
+    {
+      "slug": "darg",
+      "name_zh": "达尔戈梅日斯基",
+      "status": "success",
+      "note": "belcanto使用slug: darg"
+    },
+    {
+      "slug": "balakirev",
+      "name_zh": "巴拉基列夫",
+      "status": "success"
+    },
+    {
+      "slug": "cui",
+      "name_zh": "居伊",
+      "status": "success"
+    },
+    {
+      "slug": "borodin",
+      "name_zh": "鲍罗廷",
+      "status": "success"
+    },
+    {
+      "slug": "mussorgsky",
+      "name_zh": "穆索尔斯基",
+      "status": "success"
+    },
+    {
+      "slug": "rimsky",
+      "name_zh": "里姆斯基-科萨科夫",
+      "status": "success",
+      "note": "belcanto使用slug: rimsky (非rimsky_korsakov)"
+    },
+    {
+      "slug": "tchaikovsky",
+      "name_zh": "柴可夫斯基",
+      "status": "success"
+    },
+    {
+      "slug": "varlamov",
+      "name_zh": "瓦尔拉莫夫",
+      "status": "success"
+    },
+    {
+      "slug": "verstovsky",
+      "name_zh": "韦尔斯托夫斯基",
+      "status": "success"
+    },
+    {
+      "slug": "anton_rubinstein",
+      "name_zh": "安东·鲁宾斯坦",
+      "status": "failed",
+      "note": "尝试多种变体均失败"
+    },
+    {
+      "slug": "nikolai_rubinstein",
+      "name_zh": "尼古拉·鲁宾斯坦",
+      "status": "success"
+    },
+    {
+      "slug": "chaliapin",
+      "name_zh": "夏里亚宾",
+      "status": "success",
+      "note": "使用slug: chaliapin"
+    },
+    {
+      "slug": "sobinov",
+      "name_zh": "索比诺夫",
+      "status": "success"
+    },
+    {
+      "slug": "nezhdanova",
+      "name_zh": "涅日丹诺娃",
+      "status": "success"
+    },
+    {
+      "slug": "lyadov",
+      "name_zh": "利亚多夫",
+      "status": "success"
+    },
+    {
+      "slug": "taneev",
+      "name_zh": "塔涅耶夫",
+      "status": "success"
+    },
+    {
+      "slug": "glazunov",
+      "name_zh": "格拉祖诺夫",
+      "status": "success"
+    },
+    {
+      "slug": "metner",
+      "name_zh": "梅特纳",
+      "status": "success"
+    },
+    {
+      "slug": "arensky",
+      "name_zh": "阿连斯基",
+      "status": "success"
+    },
+    {
+      "slug": "lyapunov",
+      "name_zh": "利亚普诺夫",
+      "status": "success"
+    },
+    {
+      "slug": "ippolitov_ivanov",
+      "name_zh": "伊波利托夫-伊万诺夫",
+      "status": "success"
+    },
+    {
+      "slug": "myaskovsky",
+      "name_zh": "米亚斯科夫斯基",
+      "status": "success"
+    },
+    {
+      "slug": "scriabin",
+      "name_zh": "斯克里亚宾",
+      "status": "success"
+    },
+    {
+      "slug": "stravinsky",
+      "name_zh": "斯特拉文斯基",
+      "status": "success"
+    },
+    {
+      "slug": "prokofiev",
+      "name_zh": "普罗科菲耶夫",
+      "status": "success"
+    },
+    {
+      "slug": "shebalin",
+      "name_zh": "舍巴林",
+      "status": "success"
+    },
+    {
+      "slug": "weinberg",
+      "name_zh": "温伯格",
+      "status": "success"
+    },
+    {
+      "slug": "denisov",
+      "name_zh": "丹尼索夫",
+      "status": "success"
+    },
+    {
+      "slug": "gliere",
+      "name_zh": "格利埃尔",
+      "status": "success",
+      "note": "使用slug: glier"
+    },
+    {
+      "slug": "grechaninov",
+      "name_zh": "格列恰尼诺夫",
+      "status": "success"
+    },
+    {
+      "slug": "khachaturian",
+      "name_zh": "哈恰图良",
+      "status": "success"
+    },
+    {
+      "slug": "shnitke",
+      "name_zh": "施尼特凯",
+      "status": "success"
+    },
+    {
+      "slug": "shchedrin",
+      "name_zh": "谢德林",
+      "status": "success"
+    },
+    {
+      "slug": "sviridov",
+      "name_zh": "斯维里多夫",
+      "status": "success"
+    },
+    {
+      "slug": "kabalevsky",
+      "name_zh": "卡巴列夫斯基",
+      "status": "success"
+    },
+    {
+      "slug": "shostakovich",
+      "name_zh": "肖斯塔科维奇",
+      "status": "success"
+    },
+    {
+      "slug": "berezovsky",
+      "name_zh": "别列佐夫斯基",
+      "status": "success"
+    },
+    {
+      "slug": "pashkevich",
+      "name_zh": "帕什克维奇",
+      "status": "success"
+    },
+    {
+      "slug": "vedel",
+      "name_zh": "韦德尔",
+      "status": "success"
+    },
+    {
+      "slug": "sokolovsky",
+      "name_zh": "索科洛夫斯基",
+      "status": "success"
+    },
+    {
+      "slug": "rakhmaninov",
+      "name_zh": "拉赫玛尼诺夫",
+      "status": "success",
+      "note": "使用slug: rachmaninoff"
+    },
+    {
+      "slug": "gubaydulina",
+      "name_zh": "古拜杜丽娜",
+      "status": "failed",
+      "note": "尝试gubajdulina等多种变体失败"
+    },
+    {
+      "slug": "silvestrov",
+      "name_zh": "西尔维斯特罗夫",
+      "status": "failed",
+      "note": "尝试valery_silvestrov失败"
+    }
+  ],
+  "failed_slugs": [
+    {
+      "original_slug": "gubaydulina",
+      "attempts": [
+        "gubaydulina",
+        "gubajdulina",
+        "gujaidulina"
+      ],
+      "status": "需要手动搜索"
+    },
+    {
+      "original_slug": "silvestrov",
+      "attempts": [
+        "silvestrov",
+        "valery_silvestrov"
+      ],
+      "status": "需要手动搜索"
+    },
+    {
+      "original_slug": "anton_rubinstein",
+      "attempts": [
+        "rubinstein_anton",
+        "anton_rubinstein"
+      ],
+      "status": "需要手动搜索"
+    },
+    {
+      "original_slug": "gurilyov",
+      "attempts": [
+        "gurilyov",
+        "gurilov"
+      ],
+      "status": "需要手动搜索"
+    },
+    {
+      "original_slug": "kavelin",
+      "attempts": [
+        "kavelin"
+      ],
+      "status": "需要手动搜索"
+    },
+    {
+      "original_slug": "alyabyev",
+      "attempts": [
+        "alyabyev"
+      ],
+      "status": "需要手动搜索"
+    },
+    {
+      "original_slug": "shalyapin",
+      "attempts": [
+        "shalyapin"
+      ],
+      "status": "使用chaliapin成功"
+    }
+  ],
+  "slug_mapping": {
+    "rimsky_korsakov": "rimsky",
+    "dargomyzhsky": "darg",
+    "gliere": "glier",
+    "shalyapin": "chaliapin",
+    "rakhmaninov": "rachmaninoff"
+  },
+  "statistics": {
+    "total_in_list": 50,
+    "successfully_scraped": 38,
+    "failed_or_pending": 12,
+    "success_rate": "76%"
+  },
+  "opera_dict": {
+    "url": "https://www.belcanto.ru/opera.html",
+    "total_operas": 668,
+    "russian_operas": 127,
+    "status": "已获取完整页面内容"
+  }
+}
