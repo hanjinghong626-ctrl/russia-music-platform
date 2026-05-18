@@ -68,8 +68,8 @@ function MusicNotes() {
     </div>
   )
 }
-export default async function HomePage() {
-  const featuredSchools = await getFeaturedSchools()
+export default function HomePage() {
+  const featuredSchools = []
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 导航栏 */}
