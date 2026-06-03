@@ -1,0 +1,1568 @@
+/* ===================================
+   案中曲 - 作曲家剧本杀 3D动画样式
+   =================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Noto_Serif_SC:wght@400;500;600;700&family=Cinzel:wght@400;600;700&display=swap');
+
+:root {
+  --mystery-bg: #0a1628;
+  --mystery-bg-card: #111d33;
+  --mystery-gold: #d4a574;
+  --mystery-gold-bright: #e8a849;
+  --mystery-candle: #f5c36a;
+  --mystery-blood: #8b2252;
+  --mystery-ice: #4a7ab5;
+  --mystery-text: #e8e0d4;
+  --mystery-text-dim: #8a9ab5;
+  --mystery-shadow: rgba(0, 0, 0, 0.6);
+  --portrait-frame: #3a2a1a;
+}
+
+/* ===================================
+   全局容器
+   =================================== */
+.mystery-app {
+  min-height: 100vh;
+  background: var(--mystery-bg);
+  color: var(--mystery-text);
+  font-family: 'Noto Serif SC', 'Playfair Display', serif;
+  overflow-x: hidden;
+  perspective: 1200px;
+}
+
+/* ===================================
+   开场动画 - 3D粒子+城市剪影
+   =================================== */
+.mystery-intro {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: radial-gradient(ellipse at 50% 80%, #0f1f3a 0%, #0a1628 50%, #050d18 100%);
+}
+
+.intro-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--mystery-gold);
+  border-radius: 50%;
+  opacity: 0;
+  animation: particleFloat 5s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+  0% { opacity: 0; transform: translateY(0) translateZ(0); }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.3; }
+  100% { opacity: 0; transform: translateY(-100vh) translateZ(50px); }
+}
+
+.intro-silhouette {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 40vh;
+  background: 
+    linear-gradient(0deg, #050d18 0%, transparent 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 200'%3E%3Cpath d='M0 200 L0 120 L40 120 L40 80 L60 80 L60 60 L80 60 L80 100 L100 100 L100 40 L120 40 L120 30 L140 30 L140 60 L160 60 L160 100 L200 100 L200 70 L220 70 L220 50 L240 50 L240 90 L260 90 L260 110 L300 110 L300 60 L310 60 L310 20 L320 20 L320 10 L330 10 L330 20 L340 20 L340 60 L360 60 L360 100 L400 100 L400 80 L420 80 L420 50 L440 50 L440 90 L460 90 L460 70 L480 70 L480 40 L500 40 L500 90 L520 90 L520 110 L560 110 L560 80 L580 80 L580 50 L600 50 L600 30 L610 30 L610 10 L620 10 L620 30 L630 30 L630 50 L650 50 L650 90 L680 90 L680 110 L720 110 L720 60 L740 60 L740 40 L760 40 L760 70 L780 70 L780 100 L800 100 L800 80 L820 80 L820 30 L830 30 L830 15 L840 15 L840 30 L850 30 L850 80 L880 80 L880 110 L920 110 L920 90 L940 90 L940 60 L960 60 L960 80 L980 80 L980 100 L1000 100 L1000 70 L1020 70 L1020 50 L1040 50 L1040 90 L1060 90 L1060 110 L1100 110 L1100 80 L1120 80 L1120 60 L1140 60 L1140 90 L1160 90 L1160 120 L1200 120 L1200 200 Z' fill='%23080f1e'/%3E%3C/svg%3E") center bottom / cover no-repeat;
+  animation: silhouetteReveal 2s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes silhouetteReveal {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.intro-text {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-text.intro-step-1 {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.intro-text.intro-step-2 .intro-subtitle-ru {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.intro-text.intro-step-3 .intro-desc,
+.intro-text.intro-step-3 .intro-enter-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.intro-title {
+  font-family: 'Cinzel', 'Noto Serif SC', serif;
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 700;
+  color: var(--mystery-gold);
+  letter-spacing: 0.15em;
+  margin-bottom: 8px;
+  text-shadow: 0 0 40px rgba(212, 165, 116, 0.3), 0 0 80px rgba(212, 165, 116, 0.1);
+}
+
+.title-char {
+  display: inline-block;
+  animation: titleCharReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  transform: translateY(30px) rotateX(40deg);
+}
+
+@keyframes titleCharReveal {
+  to { opacity: 1; transform: translateY(0) rotateX(0); }
+}
+
+.intro-subtitle-ru {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(18px, 3vw, 28px);
+  color: var(--mystery-text-dim);
+  letter-spacing: 0.3em;
+  margin-bottom: 24px;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: all 1s ease 0.3s;
+}
+
+.intro-desc {
+  font-size: clamp(14px, 2vw, 18px);
+  color: var(--mystery-text-dim);
+  line-height: 1.8;
+  margin-bottom: 40px;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: all 1s ease 0.5s;
+}
+
+.intro-enter-btn {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 16px;
+  color: var(--mystery-gold);
+  background: transparent;
+  border: 1px solid var(--mystery-gold);
+  padding: 14px 36px;
+  cursor: pointer;
+  letter-spacing: 0.2em;
+  transition: all 0.4s ease;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: all 1s ease 0.7s, background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.intro-enter-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(212, 165, 116, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.intro-enter-btn:hover::before {
+  transform: translateX(100%);
+}
+
+.intro-enter-btn:hover {
+  background: rgba(212, 165, 116, 0.15);
+  box-shadow: 0 0 30px rgba(212, 165, 116, 0.2);
+  color: var(--mystery-gold-bright);
+}
+
+.btn-icon {
+  margin-right: 8px;
+}
+
+/* ===================================
+   通用头部
+   =================================== */
+.mystery-header {
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+  background: rgba(10, 22, 40, 0.95);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.back-link {
+  color: var(--mystery-text-dim);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+
+.back-link:hover { color: var(--mystery-gold); }
+
+.back-arrow {
+  margin-right: 4px;
+  transition: transform 0.3s;
+}
+
+.back-link:hover .back-arrow {
+  transform: translateX(-3px);
+}
+
+.mystery-page-title {
+  font-family: 'Cinzel', 'Noto Serif SC', serif;
+  font-size: 22px;
+  color: var(--mystery-gold);
+  letter-spacing: 0.1em;
+}
+
+.mystery-page-subtitle {
+  font-size: 13px;
+  color: var(--mystery-text-dim);
+  font-style: italic;
+}
+
+/* ===================================
+   选案界面 - 3D卡片
+   =================================== */
+.case-select-page {
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 50% 30%, #111d33 0%, var(--mystery-bg) 70%);
+}
+
+.cases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  padding: 40px 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.case-card {
+  position: relative;
+  cursor: pointer;
+  animation: caseCardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  transform: translateY(40px) rotateX(10deg);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.case-card:hover {
+  transform: translateY(-8px) rotateX(0deg) scale(1.02);
+}
+
+@keyframes caseCardAppear {
+  to { opacity: 1; transform: translateY(0) rotateX(0); }
+}
+
+.case-card-glow {
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, var(--mystery-gold) 0%, transparent 50%, var(--mystery-blood) 100%);
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity 0.5s;
+  z-index: 0;
+}
+
+.case-card:hover .case-card-glow {
+  opacity: 0.5;
+}
+
+.case-card-inner {
+  position: relative;
+  z-index: 1;
+  background: var(--mystery-bg-card);
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid rgba(212, 165, 116, 0.1);
+  overflow: hidden;
+}
+
+.case-card-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--mystery-gold), transparent);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.case-card:hover .case-card-inner::before {
+  opacity: 1;
+}
+
+.case-difficulty {
+  color: var(--mystery-gold);
+  font-size: 16px;
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+}
+
+.case-victim-portrait {
+  width: 120px;
+  height: 160px;
+  margin: 0 auto 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--portrait-frame);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.case-victim-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.2) brightness(0.85);
+  transition: filter 0.5s;
+}
+
+.case-card:hover .case-victim-portrait img {
+  filter: sepia(0) brightness(1);
+}
+
+.case-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 20px;
+  color: var(--mystery-text);
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.case-title-ru {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--mystery-text-dim);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.case-meta {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--mystery-text-dim);
+}
+
+.case-tags {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.case-tag {
+  font-size: 11px;
+  color: var(--mystery-gold);
+  border: 1px solid rgba(212, 165, 116, 0.3);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.case-start-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid rgba(212, 165, 116, 0.3);
+  color: var(--mystery-gold);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.case-start-btn:hover {
+  background: rgba(212, 165, 116, 0.1);
+  border-color: var(--mystery-gold);
+  box-shadow: 0 0 20px rgba(212, 165, 116, 0.15);
+}
+
+/* ===================================
+   案发现场 - 3D房间
+   =================================== */
+.crime-scene-page {
+  min-height: 100vh;
+  background: var(--mystery-bg);
+}
+
+.crime-scene-container {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+  padding: 24px 32px;
+  min-height: calc(100vh - 80px);
+}
+
+.scene-room {
+  position: relative;
+  background: linear-gradient(180deg, #0d1a2e 0%, #111d33 50%, #0a1422 100%);
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid rgba(212, 165, 116, 0.08);
+  overflow: hidden;
+}
+
+.room-ambient {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(245, 195, 106, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: ambientPulse 4s ease-in-out infinite;
+}
+
+@keyframes ambientPulse {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+}
+
+.room-flicker {
+  position: absolute;
+  top: 10%;
+  right: 20%;
+  width: 100px;
+  height: 200px;
+  background: radial-gradient(ellipse, rgba(245, 195, 106, 0.05) 0%, transparent 80%);
+  pointer-events: none;
+  animation: candleFlicker 2s ease-in-out infinite;
+}
+
+@keyframes candleFlicker {
+  0%, 100% { opacity: 0.4; transform: scaleY(1); }
+  25% { opacity: 0.7; transform: scaleY(1.05); }
+  50% { opacity: 0.3; transform: scaleY(0.95); }
+  75% { opacity: 0.6; transform: scaleY(1.02); }
+}
+
+.scene-description {
+  font-size: 15px;
+  color: var(--mystery-text-dim);
+  line-height: 1.8;
+  margin-bottom: 28px;
+  font-style: italic;
+}
+
+.scene-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+.scene-item {
+  position: relative;
+  background: rgba(17, 29, 51, 0.8);
+  border: 1px solid rgba(212, 165, 116, 0.1);
+  border-radius: 12px;
+  padding: 20px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: itemAppear 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+}
+
+@keyframes itemAppear {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.scene-item:hover {
+  transform: translateY(-4px) scale(1.05);
+  border-color: var(--mystery-gold);
+  box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+}
+
+.scene-item.item-glow {
+  animation: itemAppear 0.6s ease forwards, itemGlow 2s ease-in-out infinite 0.6s;
+}
+
+@keyframes itemGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(212, 165, 116, 0.1); }
+  50% { box-shadow: 0 0 25px rgba(212, 165, 116, 0.3); }
+}
+
+.scene-item.inspected {
+  border-color: rgba(74, 122, 181, 0.3);
+  background: rgba(74, 122, 181, 0.08);
+  cursor: default;
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+.item-icon {
+  display: block;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.item-name {
+  display: block;
+  font-size: 13px;
+  color: var(--mystery-text);
+}
+
+.item-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--mystery-ice);
+  font-size: 12px;
+}
+
+.scene-progress {
+  font-size: 13px;
+  color: var(--mystery-gold);
+  margin-left: auto;
+}
+
+.clue-counter {
+  background: rgba(212, 165, 116, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+/* 线索面板 */
+.clue-panel {
+  background: var(--mystery-bg-card);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(212, 165, 116, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.clue-panel-title {
+  font-size: 16px;
+  color: var(--mystery-gold);
+  margin-bottom: 16px;
+  letter-spacing: 0.1em;
+}
+
+.clue-empty {
+  font-size: 13px;
+  color: var(--mystery-text-dim);
+  text-align: center;
+  padding: 40px 0;
+  font-style: italic;
+}
+
+.clue-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.clue-card {
+  background: rgba(212, 165, 116, 0.05);
+  border: 1px solid rgba(212, 165, 116, 0.15);
+  border-radius: 10px;
+  padding: 14px;
+  animation: clueReveal 0.5s ease forwards;
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+@keyframes clueReveal {
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.clue-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.clue-icon { font-size: 18px; }
+
+.clue-name {
+  font-size: 14px;
+  color: var(--mystery-gold);
+  font-weight: 600;
+}
+
+.clue-text {
+  font-size: 13px;
+  color: var(--mystery-text-dim);
+  line-height: 1.6;
+}
+
+.next-phase-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.2), rgba(212, 165, 116, 0.05));
+  border: 1px solid rgba(212, 165, 116, 0.3);
+  color: var(--mystery-gold);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 15px;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.3s;
+  margin-top: auto;
+}
+
+.next-phase-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.3), rgba(212, 165, 116, 0.1));
+  box-shadow: 0 0 20px rgba(212, 165, 116, 0.2);
+}
+
+.next-phase-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ===================================
+   审讯界面 - 3D对话
+   =================================== */
+.interrogation-page {
+  min-height: 100vh;
+  background: var(--mystery-bg);
+}
+
+.interrogation-progress {
+  font-size: 13px;
+  color: var(--mystery-text-dim);
+  margin-left: auto;
+}
+
+/* 嫌疑人画廊 */
+.suspect-gallery {
+  padding: 40px 32px;
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.gallery-title {
+  font-size: 20px;
+  color: var(--mystery-text);
+  margin-bottom: 32px;
+  font-weight: 400;
+}
+
+.suspect-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.suspect-card {
+  width: 160px;
+  background: var(--mystery-bg-card);
+  border: 1px solid rgba(212, 165, 116, 0.1);
+  border-radius: 14px;
+  padding: 20px 16px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+}
+
+.suspect-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  border-color: var(--mystery-gold);
+  box-shadow: 0 10px 40px rgba(212, 165, 116, 0.15);
+}
+
+.suspect-portrait-wrap {
+  position: relative;
+  width: 100px;
+  height: 130px;
+  margin: 0 auto 12px;
+}
+
+.suspect-portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  filter: sepia(0.15) brightness(0.85);
+  transition: filter 0.4s;
+}
+
+.suspect-card:hover .suspect-portrait {
+  filter: sepia(0) brightness(1);
+}
+
+.portrait-frame {
+  position: absolute;
+  inset: -4px;
+  border: 2px solid var(--portrait-frame);
+  border-radius: 10px;
+  pointer-events: none;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.suspect-name {
+  font-size: 14px;
+  color: var(--mystery-text);
+  margin-bottom: 2px;
+}
+
+.suspect-name-ru {
+  font-size: 11px;
+  color: var(--mystery-text-dim);
+  font-style: italic;
+  margin-bottom: 4px;
+}
+
+.suspect-relation {
+  font-size: 12px;
+  color: var(--mystery-gold);
+  margin-bottom: 8px;
+}
+
+.round-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.round-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(212, 165, 116, 0.2);
+  transition: background 0.3s;
+}
+
+.round-dot.done {
+  background: var(--mystery-gold);
+}
+
+/* 审讯室 */
+.interrogation-room {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  padding: 24px 32px;
+  min-height: calc(100vh - 80px);
+}
+
+.interrogation-left {
+  background: var(--mystery-bg-card);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(212, 165, 116, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.suspect-large-portrait {
+  width: 200px;
+  height: 270px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+.suspect-large-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.1) brightness(0.9);
+}
+
+.portrait-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(10, 22, 40, 0.8) 100%);
+}
+
+.suspect-large-info {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.suspect-large-info h2 {
+  font-size: 18px;
+  color: var(--mystery-text);
+  margin-bottom: 4px;
+}
+
+.suspect-relation-large {
+  font-size: 13px;
+  color: var(--mystery-gold);
+  margin-bottom: 8px;
+}
+
+.round-indicator {
+  font-size: 12px;
+  color: var(--mystery-text-dim);
+  background: rgba(212, 165, 116, 0.08);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.back-suspects-btn {
+  margin-top: auto;
+  background: none;
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  color: var(--mystery-text-dim);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  transition: all 0.3s;
+}
+
+.back-suspects-btn:hover {
+  color: var(--mystery-gold);
+  border-color: var(--mystery-gold);
+}
+
+/* 对话区 */
+.interrogation-right {
+  background: var(--mystery-bg-card);
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid rgba(212, 165, 116, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.dialogue-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dialogue-prompt {
+  font-size: 16px;
+  color: var(--mystery-text-dim);
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.question-options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.question-btn {
+  background: rgba(17, 29, 51, 0.8);
+  border: 1px solid rgba(212, 165, 116, 0.15);
+  color: var(--mystery-text);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 15px;
+  text-align: left;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.question-btn:hover {
+  border-color: var(--mystery-gold);
+  background: rgba(212, 165, 116, 0.08);
+  transform: translateX(6px);
+  box-shadow: 0 4px 20px rgba(212, 165, 116, 0.1);
+}
+
+.question-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(212, 165, 116, 0.1);
+  color: var(--mystery-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* 对话展示 */
+.dialogue-response {
+  animation: dialogueAppear 0.6s ease forwards;
+}
+
+@keyframes dialogueAppear {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dialogue-q {
+  font-size: 15px;
+  color: var(--mystery-ice);
+  margin-bottom: 20px;
+  padding-left: 16px;
+  border-left: 3px solid var(--mystery-ice);
+}
+
+.q-label, .a-label {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.dialogue-a {
+  font-size: 16px;
+  color: var(--mystery-text);
+  line-height: 1.8;
+  margin-bottom: 16px;
+  padding: 20px;
+  background: rgba(212, 165, 116, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(212, 165, 116, 0.08);
+}
+
+.dialogue-hint {
+  font-size: 13px;
+  color: var(--mystery-gold);
+  background: rgba(212, 165, 116, 0.06);
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.hint-icon { margin-right: 6px; }
+
+.next-round-btn {
+  align-self: flex-end;
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.15), rgba(212, 165, 116, 0.05));
+  border: 1px solid rgba(212, 165, 116, 0.25);
+  color: var(--mystery-gold);
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  transition: all 0.3s;
+}
+
+.next-round-btn:hover {
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.25), rgba(212, 165, 116, 0.1));
+  box-shadow: 0 0 20px rgba(212, 165, 116, 0.15);
+}
+
+/* ===================================
+   证据板 + 推理
+   =================================== */
+.evidence-page {
+  min-height: 100vh;
+  background: var(--mystery-bg);
+  padding-bottom: 40px;
+}
+
+.evidence-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px 32px;
+}
+
+.evidence-section {
+  background: var(--mystery-bg-card);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(212, 165, 116, 0.08);
+}
+
+.evidence-label {
+  font-size: 16px;
+  color: var(--mystery-gold);
+  margin-bottom: 16px;
+  letter-spacing: 0.1em;
+}
+
+.evidence-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.evidence-item {
+  background: rgba(17, 29, 51, 0.8);
+  border: 1px solid rgba(212, 165, 116, 0.1);
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.evidence-item:hover {
+  border-color: var(--mystery-gold);
+}
+
+.evidence-item.evidence-selected {
+  border-color: var(--mystery-gold);
+  background: rgba(212, 165, 116, 0.08);
+  box-shadow: 0 0 15px rgba(212, 165, 116, 0.15);
+}
+
+.evidence-icon { margin-right: 8px; }
+.evidence-name { font-weight: 600; color: var(--mystery-text); }
+
+.evidence-clue {
+  font-size: 13px;
+  color: var(--mystery-text-dim);
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+/* 证词 */
+.testimony-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.testimony-suspect {
+  background: rgba(17, 29, 51, 0.5);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.testimony-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.testimony-portrait {
+  width: 40px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 6px;
+  filter: sepia(0.1);
+}
+
+.testimony-name {
+  font-size: 14px;
+  color: var(--mystery-text);
+  font-weight: 600;
+}
+
+.testimony-entry {
+  margin-bottom: 10px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(212, 165, 116, 0.2);
+}
+
+.testimony-round {
+  font-size: 11px;
+  color: var(--mystery-gold);
+  background: rgba(212, 165, 116, 0.08);
+  padding: 2px 8px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.testimony-q {
+  font-size: 13px;
+  color: var(--mystery-ice);
+  margin-bottom: 4px;
+}
+
+.testimony-a {
+  font-size: 13px;
+  color: var(--mystery-text-dim);
+  line-height: 1.5;
+}
+
+.testimony-hint {
+  font-size: 12px;
+  color: var(--mystery-gold);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+/* 指认区 */
+.verdict-section {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px;
+  text-align: center;
+}
+
+.verdict-label {
+  font-size: 20px;
+  color: var(--mystery-blood);
+  margin-bottom: 24px;
+  letter-spacing: 0.2em;
+}
+
+.culprit-select {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.culprit-option {
+  width: 110px;
+  background: var(--mystery-bg-card);
+  border: 2px solid rgba(139, 34, 82, 0.2);
+  border-radius: 12px;
+  padding: 16px 12px;
+  cursor: pointer;
+  transition: all 0.4s;
+  text-align: center;
+  position: relative;
+}
+
+.culprit-option:hover {
+  border-color: var(--mystery-blood);
+  transform: translateY(-4px);
+}
+
+.culprit-option.culprit-selected {
+  border-color: var(--mystery-blood);
+  background: rgba(139, 34, 82, 0.15);
+  box-shadow: 0 0 25px rgba(139, 34, 82, 0.3);
+  transform: translateY(-4px) scale(1.05);
+}
+
+.culprit-portrait {
+  width: 70px;
+  height: 92px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  filter: sepia(0.15) brightness(0.85);
+}
+
+.culprit-option.culprit-selected .culprit-portrait {
+  filter: none;
+}
+
+.culprit-name {
+  font-size: 12px;
+  color: var(--mystery-text);
+  display: block;
+}
+
+.culprit-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  color: var(--mystery-blood);
+  font-size: 14px;
+}
+
+.submit-verdict-btn {
+  padding: 16px 48px;
+  background: linear-gradient(135deg, var(--mystery-blood), #6a1a3e);
+  border: none;
+  color: #fff;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 16px;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.4s;
+  box-shadow: 0 4px 20px rgba(139, 34, 82, 0.3);
+}
+
+.submit-verdict-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(139, 34, 82, 0.5);
+}
+
+.submit-verdict-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ===================================
+   结案 - 3D印章效果
+   =================================== */
+.verdict-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.verdict-dramatic {
+  margin-bottom: 40px;
+}
+
+.verdict-stamp {
+  font-family: 'Cinzel', 'Noto Serif SC', serif;
+  font-size: clamp(48px, 10vw, 96px);
+  font-weight: 700;
+  animation: stampSlam 0.6s cubic-bezier(0.36, 1.2, 0.5, 1) forwards;
+  opacity: 0;
+  transform: scale(3) rotate(-15deg);
+  letter-spacing: 0.2em;
+}
+
+@keyframes stampSlam {
+  0% { opacity: 0; transform: scale(3) rotate(-15deg); }
+  60% { opacity: 1; transform: scale(0.9) rotate(2deg); }
+  80% { transform: scale(1.05) rotate(-1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-3deg); }
+}
+
+.verdict-correct .verdict-stamp {
+  color: var(--mystery-gold);
+  text-shadow: 0 0 40px rgba(212, 165, 116, 0.4);
+}
+
+.verdict-wrong .verdict-stamp {
+  color: var(--mystery-blood);
+  text-shadow: 0 0 40px rgba(139, 34, 82, 0.4);
+}
+
+.verdict-content {
+  text-align: center;
+  animation: verdictContent 0.8s ease 0.5s forwards;
+  opacity: 0;
+}
+
+@keyframes verdictContent {
+  to { opacity: 1; }
+}
+
+.verdict-perfect h2,
+.verdict-ok h2,
+.verdict-fail h2 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.verdict-perfect h2 { color: var(--mystery-gold); }
+.verdict-ok h2 { color: var(--mystery-ice); }
+.verdict-fail h2 { color: var(--mystery-blood); }
+
+.verdict-perfect p,
+.verdict-ok p,
+.verdict-fail p {
+  font-size: 16px;
+  color: var(--mystery-text-dim);
+  line-height: 1.8;
+  margin-bottom: 8px;
+}
+
+.verdict-hint {
+  color: var(--mystery-gold) !important;
+}
+
+.reveal-truth-btn {
+  margin-top: 32px;
+  padding: 14px 36px;
+  background: transparent;
+  border: 1px solid var(--mystery-gold);
+  color: var(--mystery-gold);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 15px;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.reveal-truth-btn:hover {
+  background: rgba(212, 165, 116, 0.1);
+  box-shadow: 0 0 20px rgba(212, 165, 116, 0.2);
+}
+
+/* ===================================
+   真相还原
+   =================================== */
+.truth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  background: radial-gradient(ellipse at 50% 30%, #111d33 0%, var(--mystery-bg) 70%);
+}
+
+.truth-reveal {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  animation: truthReveal 1s ease forwards;
+}
+
+@keyframes truthReveal {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.truth-title {
+  font-family: 'Cinzel', 'Noto Serif SC', serif;
+  font-size: 28px;
+  color: var(--mystery-gold);
+  margin-bottom: 32px;
+  letter-spacing: 0.2em;
+}
+
+.truth-portrait-row {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  margin-bottom: 36px;
+}
+
+.truth-victim, .truth-culprit {
+  text-align: center;
+}
+
+.truth-victim img, .truth-culprit img {
+  width: 140px;
+  height: 186px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid var(--portrait-frame);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.5);
+  margin-bottom: 8px;
+}
+
+.truth-victim p, .truth-culprit p {
+  font-size: 14px;
+  color: var(--mystery-text);
+  margin-bottom: 4px;
+}
+
+.truth-label {
+  font-size: 12px;
+  color: var(--mystery-text-dim);
+  background: rgba(74, 122, 181, 0.1);
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+
+.culprit-label {
+  background: rgba(139, 34, 82, 0.15) !important;
+  color: var(--mystery-blood) !important;
+}
+
+.truth-text {
+  text-align: left;
+  margin-bottom: 36px;
+}
+
+.truth-text p {
+  font-size: 15px;
+  color: var(--mystery-text-dim);
+  line-height: 2;
+  margin-bottom: 16px;
+  text-indent: 2em;
+}
+
+/* 知识卡片 */
+.knowledge-cards {
+  text-align: left;
+  margin-bottom: 36px;
+}
+
+.knowledge-title {
+  font-size: 18px;
+  color: var(--mystery-gold);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.knowledge-card {
+  background: var(--mystery-bg-card);
+  border: 1px solid rgba(212, 165, 116, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 12px;
+  transition: all 0.3s;
+}
+
+.knowledge-card:hover {
+  border-color: var(--mystery-gold);
+  box-shadow: 0 4px 20px rgba(212, 165, 116, 0.1);
+}
+
+.knowledge-card h4 {
+  font-size: 15px;
+  color: var(--mystery-gold);
+  margin-bottom: 8px;
+}
+
+.knowledge-card p {
+  font-size: 14px;
+  color: var(--mystery-text-dim);
+  line-height: 1.8;
+}
+
+.knowledge-source {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--mystery-text-dim);
+  margin-top: 8px;
+  font-style: italic;
+}
+
+.truth-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.replay-btn, .back-home-btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  letter-spacing: 0.1em;
+}
+
+.replay-btn {
+  background: rgba(212, 165, 116, 0.1);
+  border: 1px solid rgba(212, 165, 116, 0.3);
+  color: var(--mystery-gold);
+}
+
+.replay-btn:hover {
+  background: rgba(212, 165, 116, 0.2);
+  box-shadow: 0 0 15px rgba(212, 165, 116, 0.15);
+}
+
+.back-home-btn {
+  background: rgba(74, 122, 181, 0.1);
+  border: 1px solid rgba(74, 122, 181, 0.3);
+  color: var(--mystery-ice);
+}
+
+.back-home-btn:hover {
+  background: rgba(74, 122, 181, 0.2);
+}
+
+/* ===================================
+   响应式 - iPad优先
+   =================================== */
+@media (max-width: 1024px) {
+  .crime-scene-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .interrogation-room {
+    grid-template-columns: 1fr;
+  }
+  
+  .evidence-board {
+    grid-template-columns: 1fr;
+  }
+  
+  .cases-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 24px 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mystery-header {
+    padding: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .mystery-page-title {
+    font-size: 18px;
+  }
+  
+  .suspect-cards {
+    gap: 12px;
+  }
+  
+  .suspect-card {
+    width: 130px;
+    padding: 14px 10px;
+  }
+  
+  .suspect-portrait-wrap {
+    width: 80px;
+    height: 104px;
+  }
+  
+  .culprit-select {
+    gap: 10px;
+  }
+  
+  .culprit-option {
+    width: 90px;
+    padding: 12px 8px;
+  }
+  
+  .culprit-portrait {
+    width: 56px;
+    height: 74px;
+  }
+  
+  .truth-portrait-row {
+    gap: 24px;
+  }
+  
+  .truth-victim img, .truth-culprit img {
+    width: 100px;
+    height: 133px;
+  }
+  
+  .scene-items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+  }
+}
