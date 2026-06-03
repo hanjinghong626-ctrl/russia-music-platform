@@ -25,7 +25,6 @@ export default function MysteryPage() {
   const [playerX, setPlayerX] = useState(50); // 玩家在街道上的位置%
   const [currentBuilding, setCurrentBuilding] = useState(null);
   const [currentNpc, setCurrentNpc] = useState(null);
-  const [dialogueRound, setDialogueRound] = useState(0);
   const [dialogueHistory, setDialogueHistory] = useState({});
   const [currentQuestion, setCurrentQuestion] = useState(null);
 
@@ -126,8 +125,6 @@ export default function MysteryPage() {
     const char = worldMap.characters[npcId];
     if (!char) return;
     setCurrentNpc({ id: npcId, ...char });
-    const roundsDone = npcRoundsDone[npcId] || 0;
-    setDialogueRound(roundsDone);
     setCurrentQuestion(null);
     setPhase(PHASE.DIALOGUE);
     advanceTime(0.3);
@@ -136,11 +133,12 @@ export default function MysteryPage() {
   // 选择问题
   const askQuestion = useCallback((q) => {
     if (!currentNpc) return;
-    const key = `${currentNpc.id}_r${dialogueRound}`;
+    const round = npcRoundsDone[currentNpc.id] || 0;
+    const key = `${currentNpc.id}_r${round}`;
     setDialogueHistory(prev => ({ ...prev, [key]: q }));
     setCurrentQuestion(q);
     setTalkedNpcs(prev => new Set([...prev, currentNpc.id]));
-  }, [currentNpc, dialogueRound]);
+  }, [currentNpc, npcRoundsDone]);
 
   // 结束对话轮次
   const endDialogueRound = useCallback(() => {
