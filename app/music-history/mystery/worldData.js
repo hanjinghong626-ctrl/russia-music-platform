@@ -1,4 +1,4 @@
-// 案中曲 - 开放世界地图数据（多街区版）
+// 案中曲 - 开放世界地图数据（360全景版）
 // 1881年圣彼得堡 — 冬宫之夜的暗奏
 
 const worldMap = {
@@ -15,22 +15,23 @@ const worldMap = {
       nameRu: "Невский проспект",
       description: "圣彼得堡最繁华的主干道，音乐学院和书店林立",
       background: "/images/mystery/scenes/scene_nevsky.jpg",
+      panorama: "/images/mystery/panoramas/pano_nevsky.jpg",
       scrollWidth: 4000,
-      atmosphere: "afternoon", // afternoon / dusk / night / dawn
-      weather: "clear",       // clear / snow / fog
+      atmosphere: "afternoon",
+      weather: "clear",
       music: "busy",
-      // 街道两端的出口
+      initialYaw: 0,
       exits: {
-        left: "alley",   // 向左走→旧巷区
-        right: "riverside" // 向右走→河畔区
+        left: "alley",
+        right: "riverside"
       },
       buildings: [
         {
           id: "conservatory",
           name: "圣彼得堡音乐学院",
           nameRu: "Консерватория",
-          x: 12,
-          width: 22,
+          yaw: -60,
+          pitch: -5,
           sign: "音乐殿堂",
           icon: "🏛️",
           interior: "/images/mystery/scenes/scene_conservatory.jpg",
@@ -70,8 +71,8 @@ const worldMap = {
           id: "bookshop",
           name: "乐谱书店",
           nameRu: "Нотный магазин",
-          x: 50,
-          width: 14,
+          yaw: 20,
+          pitch: -8,
           sign: "乐谱与文献",
           icon: "📚",
           interior: "/images/mystery/scenes/scene_apartment.jpg",
@@ -102,8 +103,8 @@ const worldMap = {
           id: "cafe",
           name: "文学咖啡馆",
           nameRu: "Литературное кафе",
-          x: 82,
-          width: 12,
+          yaw: 80,
+          pitch: -5,
           sign: "咖啡与思想",
           icon: "☕",
           interior: "/images/mystery/scenes/scene_tavern.jpg",
@@ -128,8 +129,9 @@ const worldMap = {
           name: "居伊",
           nameRu: "Ц. А. Кюи",
           portrait: "/images/mystery/portraits/portrait_cui.jpg",
-          x: 82,
-          location: "在咖啡馆里",
+          yaw: 85,
+          pitch: -5,
+          location: "在咖啡馆门口",
           greeting: "哦？一位调查员？我正好写完一篇乐评。你想聊聊穆索尔斯基的事？"
         }
       ]
@@ -140,10 +142,12 @@ const worldMap = {
       nameRu: "Набережная",
       description: "涅瓦河畔，冬宫倒影，黄昏壮丽",
       background: "/images/mystery/scenes/scene_riverside.jpg",
+      panorama: "/images/mystery/panoramas/pano_riverside.jpg",
       scrollWidth: 4000,
       atmosphere: "dusk",
       weather: "clear",
       music: "melancholy",
+      initialYaw: 0,
       exits: {
         left: "nevsky",
         right: "park"
@@ -153,8 +157,8 @@ const worldMap = {
           id: "winter-palace",
           name: "冬宫外观",
           nameRu: "Зимний дворец",
-          x: 10,
-          width: 25,
+          yaw: -70,
+          pitch: 0,
           sign: "帝国之巅",
           icon: "🏰",
           interior: "/images/mystery/scenes/scene_conservatory.jpg",
@@ -176,8 +180,8 @@ const worldMap = {
           id: "dock",
           name: "码头仓库",
           nameRu: "Причал",
-          x: 48,
-          width: 14,
+          yaw: 10,
+          pitch: -5,
           sign: "货物与秘密",
           icon: "⚓",
           interior: "/images/mystery/scenes/scene_apartment.jpg",
@@ -199,8 +203,8 @@ const worldMap = {
           id: "riverside-bench",
           name: "河畔长椅",
           nameRu: "Скамья у реки",
-          x: 78,
-          width: 16,
+          yaw: 60,
+          pitch: -5,
           sign: "独白与秘密",
           icon: "🪑",
           interior: "/images/mystery/scenes/scene_park.jpg",
@@ -225,7 +229,8 @@ const worldMap = {
           name: "斯塔索夫",
           nameRu: "В. В. Стасов",
           portrait: "/images/mystery/portraits/portrait_stasov.jpg",
-          x: 78,
+          yaw: 65,
+          pitch: -5,
           location: "坐在河畔长椅旁",
           greeting: "你终于来了。我已经等了很久——穆索尔斯基的死不是简单的病逝，你最好仔细查。"
         }
@@ -237,10 +242,12 @@ const worldMap = {
       nameRu: "Переулки",
       description: "窄巷深处，穆索尔斯基的寓所和街角酒馆",
       background: "/images/mystery/scenes/scene_alley.jpg",
+      panorama: "/images/mystery/panoramas/pano_alley.jpg",
       scrollWidth: 4000,
       atmosphere: "night",
       weather: "fog",
       music: "tense",
+      initialYaw: 0,
       exits: {
         left: "park",
         right: "nevsky"
@@ -250,8 +257,8 @@ const worldMap = {
           id: "musorgsky-apt",
           name: "穆索尔斯基的寓所",
           nameRu: "Квартира Мусоргского",
-          x: 8,
-          width: 18,
+          yaw: -50,
+          pitch: -10,
           sign: "阁楼 · 第三层",
           icon: "🏚️",
           interior: "/images/mystery/scenes/scene_apartment.jpg",
@@ -278,48 +285,12 @@ const worldMap = {
             },
             {
               id: "candle",
-              name: "打翻的烛台",
+              name: "半截蜡烛",
               icon: "🕯️",
-              x: 50, y: 60,
-              description: "烛台倒在地上，蜡油洒在地板上形成凝固的痕迹。附近有一双泥泞的靴印——不是穆索尔斯基的尺寸。",
+              x: 45, y: 60,
+              description: "一根快要燃尽的蜡烛，蜡油滴落在桌面上，旁边有一个蓝色墨水瓶，瓶身有指纹。",
               isKey: false,
-              clue: "案发当晚有人来过，从外面带来了泥土。"
-            },
-            {
-              id: "diary",
-              name: "床头的日记",
-              icon: "🗝️",
-              x: 80, y: 50,
-              description: "最后一页写着：'1881年3月，N再次拿走了我的手稿。他说要帮我整理。他不知道，每改一个音符，就离我的灵魂远了一寸。'",
-              isKey: true,
-              clue: "日记中的'N'指尼古拉（Николай），即里姆斯基-科萨科夫。穆索尔斯基将修改比作灵魂的剥离。"
-            },
-            {
-              id: "scores",
-              name: "钢琴上的曲谱",
-              icon: "🎵",
-              x: 20, y: 40,
-              description: "《图画展览会》的钢琴版手稿，边缘有穆索尔斯基自己的注释：'不要配器！让它保持钢琴的样子！'",
-              isKey: false,
-              clue: "穆索尔斯基不希望自己的作品被配器改编，但后来还是被里姆斯基配器了。"
-            },
-            {
-              id: "bottle",
-              name: "空酒瓶",
-              icon: "🍶",
-              x: 45, y: 55,
-              description: "一瓶见底的伏特加。标签上写着一家小酒馆的名字——就是街角的那家。",
-              isKey: false,
-              clue: "穆索尔斯基经常去那家酒馆买酒，距离很近。"
-            },
-            {
-              id: "photo",
-              name: "合影照片",
-              icon: "📷",
-              x: 70, y: 40,
-              description: "一张强力集团的合影，所有人笑容灿烂。但穆索尔斯基的脸被人用铅笔轻轻画了个圈，旁边写着：'天才不应被修改。'",
-              isKey: false,
-              clue: "照片上的文字似乎是穆索尔斯基自己的笔迹。"
+              clue: "有人在这里待到深夜，使用了蓝色墨水——修改手稿的人可能深夜来过。"
             }
           ]
         },
@@ -327,31 +298,31 @@ const worldMap = {
           id: "tavern",
           name: "街角酒馆",
           nameRu: "Трактир",
-          x: 42,
-          width: 16,
-          sign: "伏特加与歌声",
+          yaw: 30,
+          pitch: -5,
+          sign: "伏特加与秘密",
           icon: "🍺",
           interior: "/images/mystery/scenes/scene_tavern.jpg",
           npcInside: "borodin",
           accessible: true,
           clueItems: [
             {
-              id: "barkeeper-testimony",
-              name: "酒保的证词",
-              icon: "🍺",
-              x: 40, y: 60,
-              description: "酒保说：'穆索尔斯基是常客，最近一个月倒是没怎么来了。不过上周有个戴眼镜的先生来找过他——两人吵了一架，穆索尔斯基摔门走了。'",
-              isKey: true,
-              clue: "酒保提到的'戴眼镜的先生'很可能就是里姆斯基-科萨科夫，两人曾公开争吵。"
-            },
-            {
-              id: "tavern-matchbook",
+              id: "tavern-match",
               name: "火柴盒",
               icon: "🔥",
-              x: 70, y: 48,
-              description: "一个音乐学院的火柴盒，酒保说：'那位戴眼镜的先生落下的。他每次来都坐那个角落的位置。'",
+              x: 35, y: 55,
+              description: "一个写着'音乐学院专用'的火柴盒，和穆索尔斯基寓所里找到的蜡烛放在一起看——有人从音乐学院来过这里。",
               isKey: false,
-              clue: "里姆斯基经常来这家酒馆找穆索尔斯基——他的到访是常态。"
+              clue: "音乐学院专用的火柴盒出现在酒馆——音乐学院的某人来过这里。"
+            },
+            {
+              id: "tavern-overheard",
+              name: "酒客的闲谈",
+              icon: "🗣️",
+              x: 60, y: 45,
+              description: "邻桌的酒客在低声议论：'听说那个教授又去穆索尔斯基家了，每次都带走一叠谱子。说是帮他整理，谁知道是不是……'",
+              isKey: true,
+              clue: "里姆斯基频繁去穆索尔斯基住处并带走乐谱——'整理'只是表面说法。"
             }
           ]
         },
@@ -359,58 +330,61 @@ const worldMap = {
           id: "basement",
           name: "地下室",
           nameRu: "Подвал",
-          x: 75,
-          width: 14,
-          sign: "锁住了……",
-          icon: "🔒",
+          yaw: 90,
+          pitch: -15,
+          sign: "🔒 需要钥匙",
+          icon: "🗝️",
           interior: "/images/mystery/scenes/scene_apartment.jpg",
           npcInside: null,
           accessible: false,
-          lockedReason: "铁门紧锁，需要找到钥匙",
+          lockedReason: "铁门紧锁。也许穆索尔斯基寓所里有钥匙……",
           clueItems: [
             {
-              id: "hidden-letters",
-              name: "藏在暗格的信件",
+              id: "basement-letter",
+              name: "地下室的密信",
               icon: "📨",
-              x: 50, y: 50,
-              description: "一叠穆索尔斯基写给巴拉基列夫的未寄出信件，其中一封写道：'如果有一天我死了，请确保我的作品不被篡改。这是我最后的心愿。'",
+              x: 40, y: 50,
+              description: "一封藏在暗格里的信，是里姆斯基写给出版商的：'穆索尔斯基的原稿我已经整理完毕，将以修订版出版。原稿……可以封存了。'",
               isKey: true,
-              clue: "穆索尔斯基预感自己可能不久于人世，并明确请求巴拉基列夫保护他的作品不被修改。"
+              clue: "里姆斯基计划以修订版替换原版出版，并要求'封存'原稿——这是对原始创作意图的系统性抹除。"
+            },
+            {
+              id: "basement-ink",
+              name: "丢弃的墨水瓶",
+              icon: "🖋️",
+              x: 55, y: 60,
+              description: "一个被摔碎的墨水瓶，蓝色墨水洒了一地。跟穆索尔斯基公寓里手稿上的蓝色铅笔修改痕迹颜色一致。",
+              isKey: true,
+              clue: "蓝色墨水的颜色与穆索尔斯基手稿上的修改痕迹一致——修改者曾在此活动。"
             }
           ]
         }
       ],
       npcs: [
         {
-          id: "borodin",
-          name: "鲍罗丁",
-          nameRu: "А. П. Бородин",
-          portrait: "/images/mystery/portraits/portrait_borodin.jpg",
-          x: 42,
-          location: "在酒馆里",
-          greeting: "唉……又是关于穆索尔斯基的事？我正喝着闷酒呢。你想问什么就问吧。"
-        },
-        {
           id: "balakirev",
           name: "巴拉基列夫",
           nameRu: "М. А. Балакирев",
           portrait: "/images/mystery/portraits/portrait_balakirev.jpg",
-          x: 25,
-          location: "站在公寓楼下",
-          greeting: "……你是谁？如果是来谈强力集团的往事，我已经没什么好说的了。"
+          yaw: -10,
+          pitch: -5,
+          location: "在巷口徘徊",
+          greeting: "……你是什么人？如果是来打听穆索尔斯基的事，我倒是可以告诉你一些东西。"
         }
       ]
     },
     {
       id: "park",
       name: "公园区",
-      nameRu: "Летний сад",
-      description: "夏园晨雾，白桦林间隐秘的对话",
+      nameRu: "Сад",
+      description: "晨雾中的花园、湖畔和雕像群",
       background: "/images/mystery/scenes/scene_park.jpg",
+      panorama: "/images/mystery/panoramas/pano_park.jpg",
       scrollWidth: 4000,
       atmosphere: "dawn",
       weather: "fog",
-      music: "serene",
+      music: "mystery",
+      initialYaw: 0,
       exits: {
         left: "riverside",
         right: "alley"
@@ -418,36 +392,36 @@ const worldMap = {
       buildings: [
         {
           id: "gazebo",
-          name: "花园凉亭",
+          name: "湖畔凉亭",
           nameRu: "Беседка",
-          x: 10,
-          width: 16,
-          sign: "密会之地",
-          icon: "🏛️",
+          yaw: -40,
+          pitch: -5,
+          sign: "秘密会面",
+          icon: "🏯",
           interior: "/images/mystery/scenes/scene_park.jpg",
           npcInside: null,
           accessible: true,
           clueItems: [
             {
               id: "gazebo-letter",
-              name: "凉亭里的密信",
-              icon: "✉️",
-              x: 45, y: 50,
-              description: "一封藏在凉亭座椅下的信，没有署名：'原版乐谱已安全转移。请勿让R接触。——盟友'",
+              name: "凉亭密信",
+              icon: "💌",
+              x: 50, y: 50,
+              description: "一封藏在凉亭座椅下的密信，上面写着：'修订版已获宫廷批准。原版将不再上演。——N.R-K'笔迹与里姆斯基的完全一致。",
               isKey: true,
-              clue: "有人正在秘密保护穆索尔斯基的原版乐谱不被里姆斯基(R)接触——说明修改与反修改的斗争已秘密展开。"
+              clue: "里姆斯基在密信中确认：修订版已获宫廷批准，原版将被封杀——这是一场精心策划的替换。"
             }
           ]
         },
         {
           id: "lakeside",
-          name: "湖畔小屋",
-          nameRu: "У озера",
-          x: 48,
-          width: 14,
-          sign: "水面映影",
+          name: "湖畔小径",
+          nameRu: "Озёрная тропа",
+          yaw: 30,
+          pitch: -10,
+          sign: "水面倒影",
           icon: "🌊",
-          interior: "/images/mystery/scenes/scene_apartment.jpg",
+          interior: "/images/mystery/scenes/scene_park.jpg",
           npcInside: null,
           accessible: true,
           clueItems: [
@@ -466,8 +440,8 @@ const worldMap = {
           id: "statue-garden",
           name: "雕像群",
           nameRu: "Скульптуры",
-          x: 78,
-          width: 16,
+          yaw: 80,
+          pitch: -5,
           sign: "凝固的证人",
           icon: "🗿",
           interior: "/images/mystery/scenes/scene_park.jpg",
