@@ -195,9 +195,18 @@ export default function MysteryPage() {
       const geometry = new THREE.SphereGeometry(500, 60, 40);
       geometry.scale(-1, 1, 1);
 
+      // 先创建渲染器（纹理anisotropy需要renderer能力信息）
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      container.insertBefore(renderer.domElement, container.firstChild);
+      rendererRef.current = renderer;
+      const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+
       const panoramaUrl = currentDistrict?.panorama || currentDistrict?.background;
 
-      // 加载全景图并做左右边缘渐变融合（消除接缝）
+      // 加载全景图并做左右边缘余弦渐变融合（消除接缝）
       const loadBlendedTexture = (url) => {
         return new Promise((resolve) => {
           const img = new Image();
@@ -209,32 +218,76 @@ export default function MysteryPage() {
             const ctx = cvs.getContext('2d');
             ctx.drawImage(img, 0, 0);
 
-            // 融合区域宽度：图像宽度的5%
-            const blendW = Math.floor(img.width * 0.05);
+            // 融合区域宽度：图像宽度的15%（更宽=更平滑过渡）
+            const blendW = Math.floor(img.width * 0.15);
             const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
             const data = imgData.data;
             const w = cvs.width;
 
+            // 同时保存原始左边缘像素（用于右边缘融合）
+            const leftEdgeData = new Uint8ClampedArray(blendW * cvs.height * 4);
             for (let x = 0; x < blendW; x++) {
-              // alpha从0到1，左边缘用右边缘像素渐变混合
-              const alpha = x / blendW;
-              const mirrorX = w - blendW + x;
               for (let y = 0; y < cvs.height; y++) {
-                const iLeft = (y * w + x) * 4;
-                const iMirror = (y * w + mirrorX) * 4;
-                data[iLeft]     = data[iLeft]     * alpha + data[iMirror]     * (1 - alpha);
-                data[iLeft + 1] = data[iLeft + 1] * alpha + data[iMirror + 1] * (1 - alpha);
-                data[iLeft + 2] = data[iLeft + 2] * alpha + data[iMirror + 2] * (1 - alpha);
+                const srcIdx = (y * w + x) * 4;
+                const dstIdx = (x * cvs.height + y) * 4;
+                leftEdgeData[dstIdx]     = data[srcIdx];
+                leftEdgeData[dstIdx + 1] = data[srcIdx + 1];
+                leftEdgeData[dstIdx + 2] = data[srcIdx + 2];
+                leftEdgeData[dstIdx + 3] = data[srcIdx + 3];
               }
             }
+
+            // 保存右边缘融合区的原始像素
+            const rightEdgeData = new Uint8ClampedArray(blendW * cvs.height * 4);
+            for (let x = 0; x < blendW; x++) {
+              for (let y = 0; y < cvs.height; y++) {
+                const srcIdx = (y * w + (w - blendW + x)) * 4;
+                const dstIdx = (x * cvs.height + y) * 4;
+                rightEdgeData[dstIdx]     = data[srcIdx];
+                rightEdgeData[dstIdx + 1] = data[srcIdx + 1];
+                rightEdgeData[dstIdx + 2] = data[srcIdx + 2];
+                rightEdgeData[dstIdx + 3] = data[srcIdx + 3];
+              }
+            }
+
+            // 左边缘余弦渐变融合：右边缘像素渐变叠加到左边缘
+            for (let x = 0; x < blendW; x++) {
+              const t = x / blendW;
+              const alpha = 0.5 - 0.5 * Math.cos(t * Math.PI);
+              for (let y = 0; y < cvs.height; y++) {
+                const iLeft = (y * w + x) * 4;
+                const iRight = (x * cvs.height + y) * 4;
+                data[iLeft]     = data[iLeft]     * alpha + rightEdgeData[iRight]     * (1 - alpha);
+                data[iLeft + 1] = data[iLeft + 1] * alpha + rightEdgeData[iRight + 1] * (1 - alpha);
+                data[iLeft + 2] = data[iLeft + 2] * alpha + rightEdgeData[iRight + 2] * (1 - alpha);
+              }
+            }
+
+            // 右边缘余弦渐变融合：左边缘像素渐变叠加到右边缘
+            for (let x = 0; x < blendW; x++) {
+              const t = x / blendW;
+              // 右侧：从右边缘向左，alpha从1到0
+              const alpha = 0.5 + 0.5 * Math.cos(t * Math.PI);
+              for (let y = 0; y < cvs.height; y++) {
+                const iRight = (y * w + (w - blendW + x)) * 4;
+                const iLeft = (x * cvs.height + y) * 4;
+                data[iRight]     = data[iRight]     * alpha + leftEdgeData[iLeft]     * (1 - alpha);
+                data[iRight + 1] = data[iRight + 1] * alpha + leftEdgeData[iLeft + 1] * (1 - alpha);
+                data[iRight + 2] = data[iRight + 2] * alpha + leftEdgeData[iLeft + 2] * (1 - alpha);
+              }
+            }
+
             ctx.putImageData(imgData, 0, 0);
 
             const texture = new THREE.CanvasTexture(cvs);
             texture.colorSpace = THREE.SRGBColorSpace;
+            // 设置纹理过滤，减少模糊
+            texture.minFilter = THREE.LinearMipmapLinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.anisotropy = maxAnisotropy;
             resolve(texture);
           };
           img.onerror = () => {
-            // 加载失败时用原始loader
             const fallback = new THREE.TextureLoader().load(url);
             fallback.colorSpace = THREE.SRGBColorSpace;
             resolve(fallback);
@@ -251,14 +304,6 @@ export default function MysteryPage() {
       const sphere = new THREE.Mesh(geometry, material);
       scene.add(sphere);
       sphereRef.current = sphere;
-
-      // 创建渲染器
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
-      container.insertBefore(renderer.domElement, container.firstChild);
-      rendererRef.current = renderer;
 
       // 初始视角
       lonRef.current = currentDistrict?.initialYaw || 0;
