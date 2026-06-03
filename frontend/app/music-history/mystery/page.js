@@ -195,22 +195,57 @@ export default function MysteryPage() {
       const geometry = new THREE.SphereGeometry(500, 60, 40);
       geometry.scale(-1, 1, 1);
 
-      const textureLoader = new THREE.TextureLoader();
       const panoramaUrl = currentDistrict?.panorama || currentDistrict?.background;
 
-      const texture = textureLoader.load(
-        panoramaUrl,
-        () => {
-          setPanoReady(true);
-          setTimeout(() => setHintVisible(false), 4000);
-        },
-        undefined,
-        () => {
-          // 加载失败时也允许交互
-          setPanoReady(true);
-        }
-      );
-      texture.colorSpace = THREE.SRGBColorSpace;
+      // 加载全景图并做左右边缘渐变融合（消除接缝）
+      const loadBlendedTexture = (url) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            const cvs = document.createElement('canvas');
+            cvs.width = img.width;
+            cvs.height = img.height;
+            const ctx = cvs.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            // 融合区域宽度：图像宽度的5%
+            const blendW = Math.floor(img.width * 0.05);
+            const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+            const data = imgData.data;
+            const w = cvs.width;
+
+            for (let x = 0; x < blendW; x++) {
+              // alpha从0到1，左边缘用右边缘像素渐变混合
+              const alpha = x / blendW;
+              const mirrorX = w - blendW + x;
+              for (let y = 0; y < cvs.height; y++) {
+                const iLeft = (y * w + x) * 4;
+                const iMirror = (y * w + mirrorX) * 4;
+                data[iLeft]     = data[iLeft]     * alpha + data[iMirror]     * (1 - alpha);
+                data[iLeft + 1] = data[iLeft + 1] * alpha + data[iMirror + 1] * (1 - alpha);
+                data[iLeft + 2] = data[iLeft + 2] * alpha + data[iMirror + 2] * (1 - alpha);
+              }
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+            const texture = new THREE.CanvasTexture(cvs);
+            texture.colorSpace = THREE.SRGBColorSpace;
+            resolve(texture);
+          };
+          img.onerror = () => {
+            // 加载失败时用原始loader
+            const fallback = new THREE.TextureLoader().load(url);
+            fallback.colorSpace = THREE.SRGBColorSpace;
+            resolve(fallback);
+          };
+          img.src = url;
+        });
+      };
+
+      const texture = await loadBlendedTexture(panoramaUrl);
+      setPanoReady(true);
+      setTimeout(() => setHintVisible(false), 4000);
 
       const material = new THREE.MeshBasicMaterial({ map: texture });
       const sphere = new THREE.Mesh(geometry, material);
