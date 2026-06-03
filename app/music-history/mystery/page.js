@@ -5,24 +5,36 @@ import Link from 'next/link';
 import worldMap from './worldData';
 import './mystery.css';
 
-// 游戏阶段
 const PHASE = {
   INTRO: 'intro',
-  EXPLORE: 'explore',       // 街道探索
-  INTERIOR: 'interior',     // 建筑内部
-  DIALOGUE: 'dialogue',     // NPC对话
-  EVIDENCE: 'evidence',     // 证据板推理
-  VERDICT: 'verdict',       // 结案
-  TRUTH: 'truth'            // 真相
+  EXPLORE: 'explore',
+  INTERIOR: 'interior',
+  DIALOGUE: 'dialogue',
+  EVIDENCE: 'evidence',
+  VERDICT: 'verdict',
+  TRUTH: 'truth',
+  TRANSITION: 'transition'
+};
+
+// 街区氛围配置
+const DISTRICT_MOOD = {
+  nevsky: { icon: '🏛️', color: '#c9a84c', skyClass: 'sky-afternoon' },
+  riverside: { icon: '🌊', color: '#6b8db5', skyClass: 'sky-dusk' },
+  alley: { icon: '🌑', color: '#7a4a3a', skyClass: 'sky-night' },
+  park: { icon: '🍃', color: '#6b9b7a', skyClass: 'sky-dawn' }
 };
 
 export default function MysteryPage() {
   const [phase, setPhase] = useState(PHASE.INTRO);
   const [introStep, setIntroStep] = useState(0);
 
-  // 探索状态
+  // 街区与漫游状态
+  const [currentDistrictId, setCurrentDistrictId] = useState('nevsky');
   const [scrollX, setScrollX] = useState(0);
-  const [playerX, setPlayerX] = useState(50); // 玩家在街道上的位置%
+  const [playerX, setPlayerX] = useState(50);
+  const [playerDirection, setPlayerDirection] = useState('right');
+
+  // 场景状态
   const [currentBuilding, setCurrentBuilding] = useState(null);
   const [currentNpc, setCurrentNpc] = useState(null);
   const [dialogueHistory, setDialogueHistory] = useState({});
@@ -33,6 +45,7 @@ export default function MysteryPage() {
   const [inspectedItems, setInspectedItems] = useState(new Set());
   const [talkedNpcs, setTalkedNpcs] = useState(new Set());
   const [npcRoundsDone, setNpcRoundsDone] = useState({});
+  const [unlockedBuildings, setUnlockedBuildings] = useState(new Set());
 
   // 推理状态
   const [selectedCulprit, setSelectedCulprit] = useState(null);
@@ -40,17 +53,22 @@ export default function MysteryPage() {
   const [verdictResult, setVerdictResult] = useState(null);
 
   // 时间系统
-  const [gameTime, setGameTime] = useState(18); // 从18:00开始
-  const [dayPhase, setDayPhase] = useState('evening'); // morning/afternoon/evening/night
+  const [gameTime, setGameTime] = useState(14);
+  const [dayPhase, setDayPhase] = useState('afternoon');
 
-  // 通知
+  // UI状态
   const [notification, setNotification] = useState(null);
   const [showMinimap, setShowMinimap] = useState(false);
+  const [transitionTarget, setTransitionTarget] = useState(null);
+  const [playerWalking, setPlayerWalking] = useState(false);
 
   const streetRef = useRef(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollStartX = useRef(0);
+  const walkTimer = useRef(null);
+
+  const currentDistrict = worldMap.getDistrict(currentDistrictId);
 
   // 开场动画
   useEffect(() => {
@@ -63,7 +81,7 @@ export default function MysteryPage() {
     return () => timers.forEach(clearTimeout);
   }, [phase]);
 
-  // 通知显示
+  // 通知
   const showNotif = useCallback((text, type = 'info') => {
     setNotification({ text, type });
     setTimeout(() => setNotification(null), 3000);
@@ -81,16 +99,52 @@ export default function MysteryPage() {
     });
   }, []);
 
+  // 检查解锁条件
+  const checkUnlocks = useCallback((newClues) => {
+    const clueIds = newClues.map(c => c.id);
+    Object.entries(worldMap.unlockConditions || {}).forEach(([buildingId, cond]) => {
+      if (unlockedBuildings.has(buildingId)) return;
+      const allFound = cond.requiredClues.every(id => clueIds.includes(id));
+      if (allFound) {
+        setUnlockedBuildings(prev => new Set([...prev, buildingId]));
+        showNotif(cond.message, 'key');
+      }
+    });
+  }, [unlockedBuildings, showNotif]);
+
+  // 切换街区（带转场动画）
+  const travelToDistrict = useCallback((targetId) => {
+    if (targetId === currentDistrictId) return;
+    const target = worldMap.getDistrict(targetId);
+    if (!target) return;
+    setTransitionTarget(targetId);
+    setPhase(PHASE.TRANSITION);
+  }, [currentDistrictId]);
+
+  // 转场结束后进入新街区
+  useEffect(() => {
+    if (phase !== PHASE.TRANSITION || !transitionTarget) return;
+    const timer = setTimeout(() => {
+      setCurrentDistrictId(transitionTarget);
+      setScrollX(0);
+      setPlayerX(50);
+      setTransitionTarget(null);
+      setPhase(PHASE.EXPLORE);
+      advanceTime(0.5);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [phase, transitionTarget, advanceTime]);
+
   // 进入建筑
   const enterBuilding = useCallback((building) => {
-    if (!building.accessible) {
-      showNotif('🔒 门锁着，暂时无法进入', 'locked');
+    if (!building.accessible && !unlockedBuildings.has(building.id)) {
+      showNotif(building.lockedReason || '🔒 门锁着，暂时无法进入', 'locked');
       return;
     }
     setCurrentBuilding(building);
     setPhase(PHASE.INTERIOR);
     advanceTime(0.5);
-  }, [showNotif, advanceTime]);
+  }, [showNotif, advanceTime, unlockedBuildings]);
 
   // 离开建筑
   const leaveBuilding = useCallback(() => {
@@ -104,21 +158,25 @@ export default function MysteryPage() {
       showNotif('已经检查过了', 'info');
       return;
     }
-    setInspectedItems(prev => new Set([...prev, item.id]));
+    const newInspected = new Set([...inspectedItems, item.id]);
+    setInspectedItems(newInspected);
     if (item.isKey) {
-      setCollectedClues(prev => [...prev, {
+      const newClue = {
         id: item.id,
         name: item.name,
         icon: item.icon,
         clue: item.clue,
         source: currentBuilding?.name || '街道'
-      }]);
+      };
+      const newClues = [...collectedClues, newClue];
+      setCollectedClues(newClues);
       showNotif(`🔑 发现关键线索：${item.name}`, 'key');
+      checkUnlocks(newClues);
     } else {
       showNotif(`发现：${item.name}`, 'info');
     }
     advanceTime(0.3);
-  }, [inspectedItems, currentBuilding, showNotif, advanceTime]);
+  }, [inspectedItems, currentBuilding, showNotif, advanceTime, collectedClues, checkUnlocks]);
 
   // 与NPC对话
   const startDialogue = useCallback((npcId) => {
@@ -128,7 +186,7 @@ export default function MysteryPage() {
     setCurrentQuestion(null);
     setPhase(PHASE.DIALOGUE);
     advanceTime(0.3);
-  }, [npcRoundsDone, advanceTime]);
+  }, [advanceTime]);
 
   // 选择问题
   const askQuestion = useCallback((q) => {
@@ -146,7 +204,6 @@ export default function MysteryPage() {
     const newRounds = { ...npcRoundsDone };
     newRounds[currentNpc.id] = (newRounds[currentNpc.id] || 0) + 1;
     setNpcRoundsDone(newRounds);
-
     if (newRounds[currentNpc.id] >= 3) {
       showNotif(`${currentNpc.name} 的审讯已完成`, 'complete');
       setCurrentNpc(null);
@@ -161,7 +218,7 @@ export default function MysteryPage() {
     }
   }, [currentNpc, npcRoundsDone, showNotif, currentBuilding]);
 
-  // 结束对话返回
+  // 退出对话
   const exitDialogue = useCallback(() => {
     setCurrentNpc(null);
     setCurrentQuestion(null);
@@ -172,7 +229,7 @@ export default function MysteryPage() {
     }
   }, [currentBuilding]);
 
-  // 拖拽滚动街道
+  // 拖拽漫游街道
   const handlePointerDown = useCallback((e) => {
     if (phase !== PHASE.EXPLORE) return;
     isDragging.current = true;
@@ -186,8 +243,8 @@ export default function MysteryPage() {
     const maxScroll = 2000;
     const newScroll = Math.max(0, Math.min(maxScroll, scrollStartX.current + delta));
     setScrollX(newScroll);
-    // 更新玩家位置
     setPlayerX(50 + (newScroll / maxScroll) * 50);
+    setPlayerDirection(delta > 0 ? 'right' : 'left');
   }, [phase]);
 
   const handlePointerUp = useCallback(() => {
@@ -207,15 +264,20 @@ export default function MysteryPage() {
     setPhase(PHASE.VERDICT);
   }, [selectedCulprit, selectedEvidence]);
 
-  // 所有NPC的列表
-  const allNpcs = Object.entries(worldMap.characters).map(([id, char]) => ({
-    id,
-    ...char
-  }));
+  // 获取当前街区的有效建筑（处理解锁状态）
+  const getEffectiveBuildings = useCallback((district) => {
+    if (!district) return [];
+    return district.buildings.map(b => ({
+      ...b,
+      accessible: b.accessible || unlockedBuildings.has(b.id)
+    }));
+  }, [unlockedBuildings]);
+
+  const allNpcs = Object.entries(worldMap.characters).map(([id, char]) => ({ id, ...char }));
+  const mood = DISTRICT_MOOD[currentDistrictId] || DISTRICT_MOOD.nevsky;
 
   // ==================== 渲染 ====================
 
-  // 开场动画
   const renderIntro = () => (
     <div className="mystery-intro" onClick={() => setPhase(PHASE.EXPLORE)}>
       <div className="intro-particles">
@@ -236,7 +298,7 @@ export default function MysteryPage() {
           <span className="title-char" style={{ animationDelay: '0.2s' }}>曲</span>
         </h1>
         <p className="intro-subtitle-ru">Дело о Музыке</p>
-        <p className="intro-desc">1881年·圣彼得堡<br />穆索尔斯基被发现死在寓所——你是侦探</p>
+        <p className="intro-desc">1881年·圣彼得堡<br />穆索尔斯基被发现死在寓所——你是侦探<br />四条街区，五名嫌疑人，一个真相</p>
         <button className="intro-enter-btn">
           <span className="btn-icon">🔍</span> 踏入圣彼得堡
         </button>
@@ -244,9 +306,28 @@ export default function MysteryPage() {
     </div>
   );
 
-  // 街道探索
+  // 街区转场动画
+  const renderTransition = () => {
+    const target = worldMap.getDistrict(transitionTarget);
+    if (!target) return null;
+    const targetMood = DISTRICT_MOOD[transitionTarget] || DISTRICT_MOOD.nevsky;
+    return (
+      <div className="district-transition">
+        <div className="transition-overlay" style={{ '--accent': targetMood.color }}>
+          <div className="transition-icon">{targetMood.icon}</div>
+          <div className="transition-name">{target.name}</div>
+          <div className="transition-name-ru">{target.nameRu}</div>
+          <div className="transition-desc">{target.description}</div>
+        </div>
+      </div>
+    );
+  };
+
+  // 街道探索（多街区版）
   const renderExplore = () => {
-    const street = worldMap.street;
+    if (!currentDistrict) return null;
+    const buildings = getEffectiveBuildings(currentDistrict);
+
     return (
       <div className="explore-page">
         {/* HUD */}
@@ -257,6 +338,10 @@ export default function MysteryPage() {
             <span className="hud-case-sub">冬宫之夜的暗奏 · 1881</span>
           </div>
           <div className="hud-stats">
+            <div className="hud-district-badge" style={{ borderColor: mood.color }}>
+              <span>{mood.icon}</span>
+              <span className="hud-district-name">{currentDistrict.name}</span>
+            </div>
             <div className="hud-time">
               <span className="time-icon">{dayPhase === 'night' ? '🌙' : dayPhase === 'evening' ? '🌆' : '☀️'}</span>
               <span className="time-text">{Math.floor(gameTime)}:00</span>
@@ -267,6 +352,9 @@ export default function MysteryPage() {
             </div>
             <button className="hud-evidence-btn" onClick={() => setPhase(PHASE.EVIDENCE)}>
               📋 推理
+            </button>
+            <button className="hud-minimap-btn" onClick={() => setShowMinimap(!showMinimap)}>
+              🗺️
             </button>
           </div>
         </div>
@@ -280,17 +368,13 @@ export default function MysteryPage() {
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerUp}
         >
-          <div
-            className="street-scroll"
-            style={{ transform: `translateX(${-scrollX}px)` }}
-          >
-            {/* 背景图 */}
+          <div className="street-scroll" style={{ transform: `translateX(${-scrollX}px)` }}>
             <div className="street-bg">
-              <img src={street.background} alt="圣彼得堡街道" className="street-bg-img" />
+              <img src={currentDistrict.background} alt={currentDistrict.name} className="street-bg-img" />
             </div>
 
             {/* 建筑热区 */}
-            {street.buildings.map(b => (
+            {buildings.map(b => (
               <div
                 key={b.id}
                 className="building-hotspot"
@@ -298,26 +382,22 @@ export default function MysteryPage() {
                 onClick={() => enterBuilding(b)}
               >
                 <div className="building-sign">
-                  <span className="sign-text">{b.sign}</span>
+                  <span className="sign-text">{b.icon} {b.sign}</span>
                 </div>
                 <div className="building-door">
-                  <span className="door-icon">🚪</span>
+                  <span className="door-icon">{b.accessible ? '🚪' : '🔒'}</span>
                 </div>
                 <div className="building-label">{b.name}</div>
-                {b.npcInside && (
+                {b.npcInside && worldMap.characters[b.npcInside] && (
                   <div className="building-npc-indicator">
-                    <img
-                      src={worldMap.characters[b.npcInside]?.portrait}
-                      alt=""
-                      className="npc-thumb"
-                    />
+                    <img src={worldMap.characters[b.npcInside].portrait} alt="" className="npc-thumb" />
                   </div>
                 )}
               </div>
             ))}
 
             {/* 街道NPC */}
-            {street.npcs.map(npc => (
+            {currentDistrict.npcs.map(npc => (
               <div
                 key={npc.id}
                 className="street-npc"
@@ -326,9 +406,7 @@ export default function MysteryPage() {
               >
                 <div className="street-npc-portrait">
                   <img src={npc.portrait} alt={npc.name} />
-                  {talkedNpcs.has(npc.id) && (
-                    <div className="npc-talked-badge">✓</div>
-                  )}
+                  {talkedNpcs.has(npc.id) && <div className="npc-talked-badge">✓</div>}
                 </div>
                 <div className="street-npc-name">{npc.name}</div>
                 <div className="street-npc-location">{npc.location}</div>
@@ -336,25 +414,46 @@ export default function MysteryPage() {
               </div>
             ))}
 
-            {/* 雪花/氛围粒子 */}
+            {/* 氛围效果 */}
             <div className="street-atmosphere">
-              {[...Array(20)].map((_, i) => (
-                <div key={i} className="snowflake" style={{
+              {currentDistrict.weather === 'snow' && [...Array(25)].map((_, i) => (
+                <div key={`snow-${i}`} className="snowflake" style={{
                   left: `${Math.random() * 100}%`,
                   animationDelay: `${Math.random() * 8}s`,
                   animationDuration: `${4 + Math.random() * 6}s`
                 }} />
               ))}
+              {currentDistrict.weather === 'fog' && [...Array(8)].map((_, i) => (
+                <div key={`fog-${i}`} className="fog-layer" style={{
+                  left: `${i * 15}%`,
+                  animationDelay: `${i * 2}s`,
+                  animationDuration: `${12 + i * 2}s`
+                }} />
+              ))}
             </div>
 
-            {/* 天色渐变 */}
-            <div className={`sky-overlay sky-${dayPhase}`} />
+            {/* 天色 */}
+            <div className={`sky-overlay ${mood.skyClass}`} />
           </div>
+
+          {/* 街区出口指示 */}
+          {currentDistrict.exits.left && (
+            <div className="district-exit district-exit-left" onClick={() => travelToDistrict(currentDistrict.exits.left)}>
+              <span className="exit-arrow">←</span>
+              <span className="exit-label">{worldMap.getDistrict(currentDistrict.exits.left)?.name}</span>
+            </div>
+          )}
+          {currentDistrict.exits.right && (
+            <div className="district-exit district-exit-right" onClick={() => travelToDistrict(currentDistrict.exits.right)}>
+              <span className="exit-label">{worldMap.getDistrict(currentDistrict.exits.right)?.name}</span>
+              <span className="exit-arrow">→</span>
+            </div>
+          )}
 
           {/* 滚动提示 */}
           {scrollX < 100 && (
-            <div className="scroll-hint scroll-hint-right">
-              ← 滑动探索街道 →
+            <div className="scroll-hint scroll-hint-center">
+              ← 滑动漫游街道 →
             </div>
           )}
         </div>
@@ -362,8 +461,11 @@ export default function MysteryPage() {
         {/* 玩家位置指示器 */}
         <div className="player-indicator">
           <div className="player-dot" />
-          <span className="player-label">你在圣彼得堡</span>
+          <span className="player-label">{currentDistrict.name} · {currentDistrict.nameRu}</span>
         </div>
+
+        {/* 小地图 */}
+        {showMinimap && renderMinimap()}
 
         {/* 通知 */}
         {notification && (
@@ -375,6 +477,43 @@ export default function MysteryPage() {
     );
   };
 
+  // 小地图
+  const renderMinimap = () => (
+    <div className="minimap-overlay" onClick={() => setShowMinimap(false)}>
+      <div className="minimap-panel" onClick={e => e.stopPropagation()}>
+        <div className="minimap-title">🗺️ 圣彼得堡地图</div>
+        <div className="minimap-grid">
+          {worldMap.districts.map((d, idx) => {
+            const dMood = DISTRICT_MOOD[d.id];
+            const isCurrent = d.id === currentDistrictId;
+            const hasVisited = true; // 简化：所有区域都可见
+            return (
+              <div
+                key={d.id}
+                className={`minimap-district ${isCurrent ? 'minimap-current' : ''}`}
+                style={{ '--district-color': dMood.color }}
+                onClick={() => {
+                  if (!isCurrent) travelToDistrict(d.id);
+                  setShowMinimap(false);
+                }}
+              >
+                <div className="minimap-district-icon">{dMood.icon}</div>
+                <div className="minimap-district-name">{d.name}</div>
+                <div className="minimap-district-ru">{d.nameRu}</div>
+                <div className="minimap-district-buildings">
+                  {d.buildings.length}个地点
+                  {d.npcs.length > 0 && ` · ${d.npcs.length}人`}
+                </div>
+                {isCurrent && <div className="minimap-you">📍 你在这里</div>}
+              </div>
+            );
+          })}
+        </div>
+        <div className="minimap-hint">点击任意街区前往</div>
+      </div>
+    </div>
+  );
+
   // 建筑内部
   const renderInterior = () => {
     if (!currentBuilding) return null;
@@ -384,7 +523,7 @@ export default function MysteryPage() {
       <div className="interior-page">
         <div className="interior-hud">
           <button className="hud-back" onClick={leaveBuilding}>
-            ← 返回街道
+            ← 返回{currentDistrict?.name || '街道'}
           </button>
           <div className="interior-title">{currentBuilding.name}</div>
           <div className="interior-subtitle">{currentBuilding.nameRu}</div>
@@ -396,7 +535,6 @@ export default function MysteryPage() {
             <div className="interior-overlay" />
           </div>
 
-          {/* 室内物品 */}
           <div className="interior-items">
             {currentBuilding.clueItems?.map(item => (
               <div
@@ -406,17 +544,12 @@ export default function MysteryPage() {
                 onClick={() => inspectItem(item)}
               >
                 <span className="interior-item-icon">{item.icon}</span>
-                {!inspectedItems.has(item.id) && item.isKey && (
-                  <span className="item-sparkle">✨</span>
-                )}
-                {inspectedItems.has(item.id) && (
-                  <span className="item-checked">✓</span>
-                )}
+                {!inspectedItems.has(item.id) && item.isKey && <span className="item-sparkle">✨</span>}
+                {inspectedItems.has(item.id) && <span className="item-checked">✓</span>}
               </div>
             ))}
           </div>
 
-          {/* NPC（如果在室内） */}
           {npc && (
             <div className="interior-npc" onClick={() => startDialogue(currentBuilding.npcInside)}>
               <img src={npc.portrait} alt={npc.name} className="interior-npc-portrait" />
@@ -427,7 +560,6 @@ export default function MysteryPage() {
           )}
         </div>
 
-        {/* 检查中的物品弹窗 */}
         {notification && (
           <div className={`notification notif-${notification.type}`}>
             {notification.text}
@@ -454,12 +586,8 @@ export default function MysteryPage() {
             <img src={currentNpc.portrait} alt={currentNpc.name} className="dialogue-portrait-lg" />
             <div className="dialogue-npc-name">{currentNpc.name}</div>
             <div className="dialogue-npc-ru">{currentNpc.nameRu}</div>
-            <div className="dialogue-round-info">
-              第{currentRound + 1}/3轮
-            </div>
-            <button className="dialogue-exit" onClick={exitDialogue}>
-              ✕ 离开
-            </button>
+            <div className="dialogue-round-info">第{currentRound + 1}/3轮</div>
+            <button className="dialogue-exit" onClick={exitDialogue}>✕ 离开</button>
           </div>
 
           <div className="dialogue-main">
@@ -478,17 +606,13 @@ export default function MysteryPage() {
             ) : (
               <div className="dialogue-response-area">
                 <div className="dialogue-asked-q">
-                  <span className="q-marker">你：</span>
-                  {asked.question}
+                  <span className="q-marker">你：</span>{asked.question}
                 </div>
                 <div className="dialogue-answer">
-                  <span className="a-marker">{currentNpc.name}：</span>
-                  {asked.answer}
+                  <span className="a-marker">{currentNpc.name}：</span>{asked.answer}
                 </div>
                 {asked.hint && (
-                  <div className="dialogue-hint-box">
-                    💡 {asked.hint}
-                  </div>
+                  <div className="dialogue-hint-box">💡 {asked.hint}</div>
                 )}
                 <button className="dialogue-continue" onClick={endDialogueRound}>
                   {currentRound < 2 ? '继续 →' : '结束审讯'}
@@ -516,7 +640,7 @@ export default function MysteryPage() {
           <h3 className="evidence-label">物证线索</h3>
           <div className="evidence-cards">
             {collectedClues.length === 0 ? (
-              <p className="clue-empty">还没有收集到线索，去街道和建筑中探索吧</p>
+              <p className="clue-empty">还没有收集到线索，去四个街区探索吧</p>
             ) : (
               collectedClues.map(clue => (
                 <div
@@ -563,9 +687,7 @@ export default function MysteryPage() {
                 })}
               </div>
             ))}
-            {talkedNpcs.size === 0 && (
-              <p className="clue-empty">还没有与任何人对话</p>
-            )}
+            {talkedNpcs.size === 0 && <p className="clue-empty">还没有与任何人对话</p>}
           </div>
         </div>
       </div>
@@ -602,22 +724,13 @@ export default function MysteryPage() {
         </div>
         <div className="verdict-content">
           {verdictResult === 'perfect' && (
-            <>
-              <h2>🎯 完美破案！</h2>
-              <p>你不仅找到了真凶，还构建了完整的证据链。</p>
-            </>
+            <><h2>🎯 完美破案！</h2><p>你不仅找到了真凶，还构建了完整的证据链。</p></>
           )}
           {verdictResult === 'correct' && (
-            <>
-              <h2>✅ 凶手找对了</h2>
-              <p>但证据链还不够完整。下次多收集一些线索吧。</p>
-            </>
+            <><h2>✅ 凶手找对了</h2><p>但证据链还不够完整。下次多收集一些线索吧。</p></>
           )}
           {verdictResult === 'wrong' && (
-            <>
-              <h2>❌ 误判！</h2>
-              <p>你指认了无辜的人。真凶：<strong>{worldMap.caseResult.culpritName}</strong></p>
-            </>
+            <><h2>❌ 误判！</h2><p>你指认了无辜的人。真凶：<strong>{worldMap.caseResult.culpritName}</strong></p></>
           )}
           <button className="reveal-truth-btn" onClick={() => setPhase(PHASE.TRUTH)}>
             揭示真相 →
@@ -670,12 +783,12 @@ export default function MysteryPage() {
             setSelectedCulprit(null);
             setSelectedEvidence([]);
             setVerdictResult(null);
-            setGameTime(18);
-            setDayPhase('evening');
+            setGameTime(14);
+            setDayPhase('afternoon');
             setScrollX(0);
-          }}>
-            🔄 重新调查
-          </button>
+            setCurrentDistrictId('nevsky');
+            setUnlockedBuildings(new Set());
+          }}>🔄 重新调查</button>
           <Link href="/music-history" className="back-home-btn">🏠 返回音乐史</Link>
         </div>
       </div>
@@ -685,12 +798,13 @@ export default function MysteryPage() {
   return (
     <div className="mystery-app">
       {phase === PHASE.INTRO && renderIntro()}
-      {(phase === PHASE.EXPLORE) && renderExplore()}
+      {phase === PHASE.EXPLORE && renderExplore()}
       {phase === PHASE.INTERIOR && renderInterior()}
       {phase === PHASE.EVIDENCE && renderEvidence()}
       {phase === PHASE.VERDICT && renderVerdict()}
       {phase === PHASE.TRUTH && renderTruth()}
-      {(phase === PHASE.DIALOGUE) && renderDialogue()}
+      {phase === PHASE.TRANSITION && renderTransition()}
+      {phase === PHASE.DIALOGUE && renderDialogue()}
     </div>
   );
 }

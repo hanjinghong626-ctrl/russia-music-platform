@@ -1,4 +1,4 @@
-// 案中曲 - 开放世界地图数据
+// 案中曲 - 开放世界地图数据（多街区版）
 // 1881年圣彼得堡 — 冬宫之夜的暗奏
 
 const worldMap = {
@@ -6,177 +6,495 @@ const worldMap = {
   name: "圣彼得堡",
   nameRu: "Санкт-Петербург",
   year: "1881",
-  // 街道可滚动区域
-  street: {
-    background: "/images/mystery/scenes/scene_street.jpg",
-    width: 4000, // 虚拟像素宽度
-    // 街道上的建筑入口（位置用百分比）
-    buildings: [
-      {
-        id: "musorgsky-apt",
-        name: "穆索尔斯基的寓所",
-        nameRu: "Квартира Мусоргского",
-        x: 8, // %
-        width: 15,
-        sign: "阁楼 · 第三层",
-        interior: "/images/mystery/scenes/scene_apartment.jpg",
-        npcInside: null, // 受害者已死
-        accessible: true,
-        clueItems: [
-          {
-            id: "manuscript",
-            name: "散落的手稿",
-            icon: "🎼",
-            x: 30, y: 45, // 室内位置%
-            description: "《霍万兴那》的配器手稿，上面有两种不同的笔迹。原稿用深棕色墨水，修改处用蓝色铅笔，覆盖了原稿的大段内容。",
-            isKey: true,
-            clue: "手稿上有大量蓝色铅笔修改痕迹，修改者的笔迹工整精确——这不是穆索尔斯基的风格。"
-          },
-          {
-            id: "letter",
-            name: "未寄出的信",
-            icon: "✉️",
-            x: 65, y: 55,
-            description: "一封写给里姆斯基的信，字迹颤抖：'亲爱的尼古拉，我求你，不要再改我的谱子了。那些修改不是我的声音……'",
-            isKey: true,
-            clue: "穆索尔斯基曾明确请求里姆斯基停止修改他的作品，但显然没有得到尊重。"
-          },
-          {
-            id: "candle",
-            name: "打翻的烛台",
-            icon: "🕯️",
-            x: 50, y: 60,
-            description: "烛台倒在地上，蜡油洒在地板上形成凝固的痕迹。附近有一双泥泞的靴印——不是穆索尔斯基的尺寸。",
-            isKey: false,
-            clue: "案发当晚有人来过，从外面带来了泥土。"
-          },
-          {
-            id: "diary",
-            name: "床头的日记",
-            icon: "🗝️",
-            x: 80, y: 50,
-            description: "最后一页写着：'1881年3月，N再次拿走了我的手稿。他说要帮我整理。他不知道，每改一个音符，就离我的灵魂远了一寸。'",
-            isKey: true,
-            clue: "日记中的'N'指尼古拉（Николай），即里姆斯基-科萨科夫。穆索尔斯基将修改比作灵魂的剥离。"
-          },
-          {
-            id: "scores",
-            name: "钢琴上的曲谱",
-            icon: "🎵",
-            x: 20, y: 40,
-            description: "《图画展览会》的钢琴版手稿，边缘有穆索尔斯基自己的注释：'不要配器！让它保持钢琴的样子！'",
-            isKey: false,
-            clue: "穆索尔斯基不希望自己的作品被配器改编，但后来还是被里姆斯基配器了。"
-          },
-          {
-            id: "bottle",
-            name: "空酒瓶",
-            icon: "🍶",
-            x: 45, y: 55,
-            description: "一瓶见底的伏特加。标签上写着一家小酒馆的名字——就是街角的那家。",
-            isKey: false,
-            clue: "穆索尔斯基经常去那家酒馆买酒，距离很近。"
-          },
-          {
-            id: "photo",
-            name: "合影照片",
-            icon: "📷",
-            x: 70, y: 40,
-            description: "一张强力集团的合影，所有人笑容灿烂。但穆索尔斯基的脸被人用铅笔轻轻画了个圈，旁边写着：'天才不应被修改。'",
-            isKey: false,
-            clue: "照片上的文字似乎是穆索尔斯基自己的笔迹。"
-          }
-        ]
+
+  // ===== 四个可探索街区 =====
+  districts: [
+    {
+      id: "nevsky",
+      name: "涅瓦大街",
+      nameRu: "Невский проспект",
+      description: "圣彼得堡最繁华的主干道，音乐学院和书店林立",
+      background: "/images/mystery/scenes/scene_nevsky.jpg",
+      scrollWidth: 4000,
+      atmosphere: "afternoon", // afternoon / dusk / night / dawn
+      weather: "clear",       // clear / snow / fog
+      music: "busy",
+      // 街道两端的出口
+      exits: {
+        left: "alley",   // 向左走→旧巷区
+        right: "riverside" // 向右走→河畔区
       },
-      {
-        id: "tavern",
-        name: "街角酒馆",
-        nameRu: "Трактир",
-        x: 28,
-        width: 12,
-        sign: "伏特加与歌声",
-        interior: "/images/mystery/scenes/scene_tavern.jpg",
-        npcInside: "borodin",
-        accessible: true,
-        clueItems: [
-          {
-            id: "barkeeper-testimony",
-            name: "酒保的证词",
-            icon: "🍺",
-            x: 40, y: 60,
-            description: "酒保说：'穆索尔斯基是常客，最近一个月倒是没怎么来了。不过上周有个戴眼镜的先生来找过他——两人吵了一架，穆索尔斯基摔门走了。'",
-            isKey: true,
-            clue: "酒保提到的'戴眼镜的先生'很可能就是里姆斯基-科萨科夫，两人曾公开争吵。"
-          }
-        ]
+      buildings: [
+        {
+          id: "conservatory",
+          name: "圣彼得堡音乐学院",
+          nameRu: "Консерватория",
+          x: 12,
+          width: 22,
+          sign: "音乐殿堂",
+          icon: "🏛️",
+          interior: "/images/mystery/scenes/scene_conservatory.jpg",
+          npcInside: "rimsky",
+          accessible: true,
+          clueItems: [
+            {
+              id: "rimsky-desk",
+              name: "里姆斯基的课桌",
+              icon: "📝",
+              x: 50, y: 50,
+              description: "课桌上摊开着穆索尔斯基《霍万兴那》的原稿和一份配器修改稿并排摆放。修改稿的标题上写着'修订版·里姆斯基-科萨科夫'。",
+              isKey: true,
+              clue: "里姆斯基正在课堂上公开教授如何'修订'穆索尔斯基的作品——他把修改当成了教学内容。"
+            },
+            {
+              id: "orchestra-score",
+              name: "管弦乐总谱",
+              icon: "🎼",
+              x: 30, y: 40,
+              description: "一份《图画展览会》的管弦乐总谱，封面标注'里姆斯基-科萨科夫配器版'。翻开内页，几乎每一页都有大幅改写。",
+              isKey: true,
+              clue: "《图画展览会》被里姆斯基大规模配器改写，已非穆索尔斯基原意。"
+            },
+            {
+              id: "lesson-notes",
+              name: "教学笔记",
+              icon: "📖",
+              x: 70, y: 55,
+              description: "里姆斯基的教学笔记，其中一段写道：'穆索尔斯基的配器技法粗糙，必须系统纠正。这是我的义务。'",
+              isKey: false,
+              clue: "里姆斯基将修改穆索尔斯基作品视为'义务'，而非选择。"
+            }
+          ]
+        },
+        {
+          id: "bookshop",
+          name: "乐谱书店",
+          nameRu: "Нотный магазин",
+          x: 50,
+          width: 14,
+          sign: "乐谱与文献",
+          icon: "📚",
+          interior: "/images/mystery/scenes/scene_apartment.jpg",
+          npcInside: null,
+          accessible: true,
+          clueItems: [
+            {
+              id: "stasov-article",
+              name: "斯塔索夫的旧文",
+              icon: "📰",
+              x: 45, y: 50,
+              description: "一本旧杂志，翻到斯塔索夫的文章《论俄罗斯音乐之魂——致穆索尔斯基》：'有人以完善之名行篡改之实，这是对天才最大的不敬。'",
+              isKey: false,
+              clue: "斯塔索夫公开发文批评里姆斯基对穆索尔斯基作品的修改。"
+            },
+            {
+              id: "cui-review",
+              name: "居伊的乐评",
+              icon: "✍️",
+              x: 65, y: 42,
+              description: "居伊撰写的一篇乐评，评论穆索尔斯基作品：'那种粗糙里有一种生命力，是精致永远替代不了的。'旁边有里姆斯基用铅笔画的问号。",
+              isKey: true,
+              clue: "居伊公开称赞穆索尔斯基的原创性，里姆斯基对此表示不满——铅笔问号暴露了他的态度。"
+            }
+          ]
+        },
+        {
+          id: "cafe",
+          name: "文学咖啡馆",
+          nameRu: "Литературное кафе",
+          x: 82,
+          width: 12,
+          sign: "咖啡与思想",
+          icon: "☕",
+          interior: "/images/mystery/scenes/scene_tavern.jpg",
+          npcInside: "cui",
+          accessible: true,
+          clueItems: [
+            {
+              id: "cafe-gossip",
+              name: "侍者的耳语",
+              icon: "🤫",
+              x: 40, y: 60,
+              description: "侍者悄悄告诉你：'里姆斯基教授上周在这里跟人争论，说穆索尔斯基的作品如果不经他修改，根本就不该上演。他越说越激动，摔了咖啡杯。'",
+              isKey: true,
+              clue: "里姆斯基公开主张：未经他修改的穆索尔斯基作品'不该上演'——这是对原作者的否定。"
+            }
+          ]
+        }
+      ],
+      npcs: [
+        {
+          id: "cui",
+          name: "居伊",
+          nameRu: "Ц. А. Кюи",
+          portrait: "/images/mystery/portraits/portrait_cui.jpg",
+          x: 82,
+          location: "在咖啡馆里",
+          greeting: "哦？一位调查员？我正好写完一篇乐评。你想聊聊穆索尔斯基的事？"
+        }
+      ]
+    },
+    {
+      id: "riverside",
+      name: "河畔区",
+      nameRu: "Набережная",
+      description: "涅瓦河畔，冬宫倒影，黄昏壮丽",
+      background: "/images/mystery/scenes/scene_riverside.jpg",
+      scrollWidth: 4000,
+      atmosphere: "dusk",
+      weather: "clear",
+      music: "melancholy",
+      exits: {
+        left: "nevsky",
+        right: "park"
       },
-      {
-        id: "conservatory",
-        name: "音乐学院",
-        nameRu: "Консерватория",
-        x: 55,
-        width: 20,
-        sign: "圣彼得堡音乐学院",
-        interior: "/images/mystery/scenes/scene_conservatory.jpg",
-        npcInside: "rimsky",
-        accessible: true,
-        clueItems: [
-          {
-            id: "rimsky-desk",
-            name: "里姆斯基的课桌",
-            icon: "📝",
-            x: 50, y: 50,
-            description: "课桌上摊开着穆索尔斯基《霍万兴那》的原稿和一份配器修改稿并排摆放。修改稿的标题上写着'修订版·里姆斯基-科萨科夫'。",
-            isKey: true,
-            clue: "里姆斯基正在课堂上公开教授如何'修订'穆索尔斯基的作品——他把修改当成了教学内容。"
-          }
-        ]
+      buildings: [
+        {
+          id: "winter-palace",
+          name: "冬宫外观",
+          nameRu: "Зимний дворец",
+          x: 10,
+          width: 25,
+          sign: "帝国之巅",
+          icon: "🏰",
+          interior: "/images/mystery/scenes/scene_conservatory.jpg",
+          npcInside: null,
+          accessible: true,
+          clueItems: [
+            {
+              id: "palace-document",
+              name: "宫廷演出记录",
+              icon: "📜",
+              x: 50, y: 50,
+              description: "一份宫廷演出安排的副本，上面记录着：'《霍万兴那》——里姆斯基-科萨科夫修订版，宫廷批准上演。原版：不予演出。'",
+              isKey: true,
+              clue: "宫廷只批准里姆斯基修订版上演，穆索尔斯基原版被明确禁止——里姆斯基的修改成了官方认可的'唯一版本'。"
+            }
+          ]
+        },
+        {
+          id: "dock",
+          name: "码头仓库",
+          nameRu: "Причал",
+          x: 48,
+          width: 14,
+          sign: "货物与秘密",
+          icon: "⚓",
+          interior: "/images/mystery/scenes/scene_apartment.jpg",
+          npcInside: null,
+          accessible: true,
+          clueItems: [
+            {
+              id: "shipment-box",
+              name: "可疑的木箱",
+              icon: "📦",
+              x: 45, y: 55,
+              description: "一个贴着'音乐学院·里姆斯基教授收'标签的木箱，里面装着穆索尔斯基的原始手稿，被随意堆放在箱底，上面压着里姆斯基的配器草稿。",
+              isKey: true,
+              clue: "穆索尔斯基的原始手稿被当作'原材料'随意装箱——在里姆斯基眼中，它们只是修改的底本。"
+            }
+          ]
+        },
+        {
+          id: "riverside-bench",
+          name: "河畔长椅",
+          nameRu: "Скамья у реки",
+          x: 78,
+          width: 16,
+          sign: "独白与秘密",
+          icon: "🪑",
+          interior: "/images/mystery/scenes/scene_park.jpg",
+          npcInside: "stasov",
+          accessible: true,
+          clueItems: [
+            {
+              id: "riverside-note",
+              name: "河边的纸条",
+              icon: "📄",
+              x: 55, y: 65,
+              description: "一张被风吹到长椅下的纸条，上面写着：'原版配器绝非缺陷，而是有意为之。证据就在对比之中。——V'",
+              isKey: false,
+              clue: "署名V的纸条——很可能出自斯塔索夫(Владимир)，他在秘密收集证据。"
+            }
+          ]
+        }
+      ],
+      npcs: [
+        {
+          id: "stasov",
+          name: "斯塔索夫",
+          nameRu: "В. В. Стасов",
+          portrait: "/images/mystery/portraits/portrait_stasov.jpg",
+          x: 78,
+          location: "坐在河畔长椅旁",
+          greeting: "你终于来了。我已经等了很久——穆索尔斯基的死不是简单的病逝，你最好仔细查。"
+        }
+      ]
+    },
+    {
+      id: "alley",
+      name: "旧巷区",
+      nameRu: "Переулки",
+      description: "窄巷深处，穆索尔斯基的寓所和街角酒馆",
+      background: "/images/mystery/scenes/scene_alley.jpg",
+      scrollWidth: 4000,
+      atmosphere: "night",
+      weather: "fog",
+      music: "tense",
+      exits: {
+        left: "park",
+        right: "nevsky"
       },
-      {
-        id: "park",
-        name: "涅瓦河畔公园",
-        nameRu: "Набережная",
-        x: 82,
-        width: 15,
-        sign: "白桦林小径",
-        interior: "/images/mystery/scenes/scene_park.jpg",
-        npcInside: "stasov",
-        accessible: true,
-        clueItems: [
-          {
-            id: "newspaper",
-            name: "报纸残页",
-            icon: "📰",
-            x: 30, y: 65,
-            description: "一份旧报纸的艺术版，上面有斯塔索夫的文章，标题为《论俄罗斯音乐之魂——致穆索尔斯基》。文章写道：'有人以完善之名行篡改之实，这是对天才最大的不敬。'",
-            isKey: false,
-            clue: "斯塔索夫公开发文批评里姆斯基对穆索尔斯基作品的修改。"
-          }
-        ]
-      }
-    ],
-    // 街道上的NPC（站在特定位置）
-    npcs: [
-      {
-        id: "cui",
-        name: "居伊",
-        nameRu: "Кюи",
-        portrait: "/images/mystery/portraits/portrait_cui.jpg",
-        x: 38, // 在街道上的位置%
-        location: "站在音乐学院门口",
-        greeting: "哦？一位调查员？我正好写完一篇乐评。你想聊聊穆索尔斯基的事？"
+      buildings: [
+        {
+          id: "musorgsky-apt",
+          name: "穆索尔斯基的寓所",
+          nameRu: "Квартира Мусоргского",
+          x: 8,
+          width: 18,
+          sign: "阁楼 · 第三层",
+          icon: "🏚️",
+          interior: "/images/mystery/scenes/scene_apartment.jpg",
+          npcInside: null,
+          accessible: true,
+          clueItems: [
+            {
+              id: "manuscript",
+              name: "散落的手稿",
+              icon: "🎼",
+              x: 30, y: 45,
+              description: "《霍万兴那》的配器手稿，上面有两种不同的笔迹。原稿用深棕色墨水，修改处用蓝色铅笔，覆盖了原稿的大段内容。",
+              isKey: true,
+              clue: "手稿上有大量蓝色铅笔修改痕迹，修改者的笔迹工整精确——这不是穆索尔斯基的风格。"
+            },
+            {
+              id: "letter",
+              name: "未寄出的信",
+              icon: "✉️",
+              x: 65, y: 55,
+              description: "一封写给里姆斯基的信，字迹颤抖：'亲爱的尼古拉，我求你，不要再改我的谱子了。那些修改不是我的声音……'",
+              isKey: true,
+              clue: "穆索尔斯基曾明确请求里姆斯基停止修改他的作品，但显然没有得到尊重。"
+            },
+            {
+              id: "candle",
+              name: "打翻的烛台",
+              icon: "🕯️",
+              x: 50, y: 60,
+              description: "烛台倒在地上，蜡油洒在地板上形成凝固的痕迹。附近有一双泥泞的靴印——不是穆索尔斯基的尺寸。",
+              isKey: false,
+              clue: "案发当晚有人来过，从外面带来了泥土。"
+            },
+            {
+              id: "diary",
+              name: "床头的日记",
+              icon: "🗝️",
+              x: 80, y: 50,
+              description: "最后一页写着：'1881年3月，N再次拿走了我的手稿。他说要帮我整理。他不知道，每改一个音符，就离我的灵魂远了一寸。'",
+              isKey: true,
+              clue: "日记中的'N'指尼古拉（Николай），即里姆斯基-科萨科夫。穆索尔斯基将修改比作灵魂的剥离。"
+            },
+            {
+              id: "scores",
+              name: "钢琴上的曲谱",
+              icon: "🎵",
+              x: 20, y: 40,
+              description: "《图画展览会》的钢琴版手稿，边缘有穆索尔斯基自己的注释：'不要配器！让它保持钢琴的样子！'",
+              isKey: false,
+              clue: "穆索尔斯基不希望自己的作品被配器改编，但后来还是被里姆斯基配器了。"
+            },
+            {
+              id: "bottle",
+              name: "空酒瓶",
+              icon: "🍶",
+              x: 45, y: 55,
+              description: "一瓶见底的伏特加。标签上写着一家小酒馆的名字——就是街角的那家。",
+              isKey: false,
+              clue: "穆索尔斯基经常去那家酒馆买酒，距离很近。"
+            },
+            {
+              id: "photo",
+              name: "合影照片",
+              icon: "📷",
+              x: 70, y: 40,
+              description: "一张强力集团的合影，所有人笑容灿烂。但穆索尔斯基的脸被人用铅笔轻轻画了个圈，旁边写着：'天才不应被修改。'",
+              isKey: false,
+              clue: "照片上的文字似乎是穆索尔斯基自己的笔迹。"
+            }
+          ]
+        },
+        {
+          id: "tavern",
+          name: "街角酒馆",
+          nameRu: "Трактир",
+          x: 42,
+          width: 16,
+          sign: "伏特加与歌声",
+          icon: "🍺",
+          interior: "/images/mystery/scenes/scene_tavern.jpg",
+          npcInside: "borodin",
+          accessible: true,
+          clueItems: [
+            {
+              id: "barkeeper-testimony",
+              name: "酒保的证词",
+              icon: "🍺",
+              x: 40, y: 60,
+              description: "酒保说：'穆索尔斯基是常客，最近一个月倒是没怎么来了。不过上周有个戴眼镜的先生来找过他——两人吵了一架，穆索尔斯基摔门走了。'",
+              isKey: true,
+              clue: "酒保提到的'戴眼镜的先生'很可能就是里姆斯基-科萨科夫，两人曾公开争吵。"
+            },
+            {
+              id: "tavern-matchbook",
+              name: "火柴盒",
+              icon: "🔥",
+              x: 70, y: 48,
+              description: "一个音乐学院的火柴盒，酒保说：'那位戴眼镜的先生落下的。他每次来都坐那个角落的位置。'",
+              isKey: false,
+              clue: "里姆斯基经常来这家酒馆找穆索尔斯基——他的到访是常态。"
+            }
+          ]
+        },
+        {
+          id: "basement",
+          name: "地下室",
+          nameRu: "Подвал",
+          x: 75,
+          width: 14,
+          sign: "锁住了……",
+          icon: "🔒",
+          interior: "/images/mystery/scenes/scene_apartment.jpg",
+          npcInside: null,
+          accessible: false,
+          lockedReason: "铁门紧锁，需要找到钥匙",
+          clueItems: [
+            {
+              id: "hidden-letters",
+              name: "藏在暗格的信件",
+              icon: "📨",
+              x: 50, y: 50,
+              description: "一叠穆索尔斯基写给巴拉基列夫的未寄出信件，其中一封写道：'如果有一天我死了，请确保我的作品不被篡改。这是我最后的心愿。'",
+              isKey: true,
+              clue: "穆索尔斯基预感自己可能不久于人世，并明确请求巴拉基列夫保护他的作品不被修改。"
+            }
+          ]
+        }
+      ],
+      npcs: [
+        {
+          id: "borodin",
+          name: "鲍罗丁",
+          nameRu: "А. П. Бородин",
+          portrait: "/images/mystery/portraits/portrait_borodin.jpg",
+          x: 42,
+          location: "在酒馆里",
+          greeting: "唉……又是关于穆索尔斯基的事？我正喝着闷酒呢。你想问什么就问吧。"
+        },
+        {
+          id: "balakirev",
+          name: "巴拉基列夫",
+          nameRu: "М. А. Балакирев",
+          portrait: "/images/mystery/portraits/portrait_balakirev.jpg",
+          x: 25,
+          location: "站在公寓楼下",
+          greeting: "……你是谁？如果是来谈强力集团的往事，我已经没什么好说的了。"
+        }
+      ]
+    },
+    {
+      id: "park",
+      name: "公园区",
+      nameRu: "Летний сад",
+      description: "夏园晨雾，白桦林间隐秘的对话",
+      background: "/images/mystery/scenes/scene_park.jpg",
+      scrollWidth: 4000,
+      atmosphere: "dawn",
+      weather: "fog",
+      music: "serene",
+      exits: {
+        left: "riverside",
+        right: "alley"
       },
-      {
-        id: "balakirev",
-        name: "巴拉基列夫",
-        nameRu: "Балакирев",
-        portrait: "/images/mystery/portraits/portrait_balakirev.jpg",
-        x: 20,
-        location: "站在公寓楼下",
-        greeting: "……你是谁？如果是来谈强力集团的往事，我已经没什么好说的了。"
-      }
-    ]
+      buildings: [
+        {
+          id: "gazebo",
+          name: "花园凉亭",
+          nameRu: "Беседка",
+          x: 10,
+          width: 16,
+          sign: "密会之地",
+          icon: "🏛️",
+          interior: "/images/mystery/scenes/scene_park.jpg",
+          npcInside: null,
+          accessible: true,
+          clueItems: [
+            {
+              id: "gazebo-letter",
+              name: "凉亭里的密信",
+              icon: "✉️",
+              x: 45, y: 50,
+              description: "一封藏在凉亭座椅下的信，没有署名：'原版乐谱已安全转移。请勿让R接触。——盟友'",
+              isKey: true,
+              clue: "有人正在秘密保护穆索尔斯基的原版乐谱不被里姆斯基(R)接触——说明修改与反修改的斗争已秘密展开。"
+            }
+          ]
+        },
+        {
+          id: "lakeside",
+          name: "湖畔小屋",
+          nameRu: "У озера",
+          x: 48,
+          width: 14,
+          sign: "水面映影",
+          icon: "🌊",
+          interior: "/images/mystery/scenes/scene_apartment.jpg",
+          npcInside: null,
+          accessible: true,
+          clueItems: [
+            {
+              id: "discarded-ink",
+              name: "丢弃的墨水瓶",
+              icon: "🖋️",
+              x: 55, y: 60,
+              description: "一个被摔碎的墨水瓶，蓝色墨水洒了一地。跟穆索尔斯基公寓里手稿上的蓝色铅笔修改痕迹颜色一致。",
+              isKey: true,
+              clue: "蓝色墨水的颜色与穆索尔斯基手稿上的修改痕迹一致——修改者曾在此活动。"
+            }
+          ]
+        },
+        {
+          id: "statue-garden",
+          name: "雕像群",
+          nameRu: "Скульптуры",
+          x: 78,
+          width: 16,
+          sign: "凝固的证人",
+          icon: "🗿",
+          interior: "/images/mystery/scenes/scene_park.jpg",
+          npcInside: null,
+          accessible: true,
+          clueItems: [
+            {
+              id: "statue-engraving",
+              name: "雕像底座刻字",
+              icon: "🔍",
+              x: 50, y: 70,
+              description: "一座维纳斯雕像的底座上被人用小刀刻了一行字：'谁控制了配器，谁就控制了灵魂。——N.R-K'",
+              isKey: true,
+              clue: "'N.R-K'——尼古拉·里姆斯基-科萨科夫（Николай Римский-Корсаков）的缩写。他自己写下了这句令人不寒而栗的话。"
+            }
+          ]
+        }
+      ],
+      npcs: []
+    }
+  ],
+
+  // 获取某个街区的数据
+  getDistrict(id) {
+    return this.districts.find(d => d.id === id);
   },
+
   // NPC详细对话数据
   characters: {
     rimsky: {
@@ -184,6 +502,8 @@ const worldMap = {
       nameRu: "Н. А. Римский-Корсаков",
       portrait: "/images/mystery/portraits/portrait_rimsky.jpg",
       location: "音乐学院·教授办公室",
+      district: "nevsky",
+      buildingId: "conservatory",
       isCulprit: true,
       dialogues: {
         round1: [
@@ -244,6 +564,7 @@ const worldMap = {
       nameRu: "М. А. Балакирев",
       portrait: "/images/mystery/portraits/portrait_balakirev.jpg",
       location: "公寓楼下",
+      district: "alley",
       isCulprit: false,
       dialogues: {
         round1: [
@@ -303,7 +624,9 @@ const worldMap = {
       name: "居伊",
       nameRu: "Ц. А. Кюи",
       portrait: "/images/mystery/portraits/portrait_cui.jpg",
-      location: "音乐学院门口",
+      location: "文学咖啡馆",
+      district: "nevsky",
+      buildingId: "cafe",
       isCulprit: false,
       dialogues: {
         round1: [
@@ -364,6 +687,8 @@ const worldMap = {
       nameRu: "А. П. Бородин",
       portrait: "/images/mystery/portraits/portrait_borodin.jpg",
       location: "街角酒馆",
+      district: "alley",
+      buildingId: "tavern",
       isCulprit: false,
       dialogues: {
         round1: [
@@ -423,7 +748,9 @@ const worldMap = {
       name: "斯塔索夫",
       nameRu: "В. В. Стасов",
       portrait: "/images/mystery/portraits/portrait_stasov.jpg",
-      location: "涅瓦河畔公园",
+      location: "涅瓦河畔",
+      district: "riverside",
+      buildingId: "riverside-bench",
       isCulprit: false,
       dialogues: {
         round1: [
@@ -480,6 +807,15 @@ const worldMap = {
       }
     }
   },
+
+  // 地下室解锁条件
+  unlockConditions: {
+    basement: {
+      requiredClues: ["manuscript", "letter"],
+      message: "你用穆索尔斯基公寓里找到的钥匙打开了地下室的铁门……"
+    }
+  },
+
   // 案件结论
   caseResult: {
     culprit: "rimsky",
