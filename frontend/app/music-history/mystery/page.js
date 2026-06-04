@@ -273,7 +273,7 @@ export default function MysteryPage() {
       let prevMoveLat = 0;
       const SENSITIVITY = 0.15;  // 拖拽灵敏度
       const FRICTION = 0.92;     // 惯性衰减
-      const LON_LIMIT = 150;     // 水平旋转限制
+      const LON_LIMIT = 180;     // 水平360度自由旋转
       const LAT_LIMIT = 75;      // 垂直旋转限制
 
       const onPointerDown = (e) => {
@@ -305,24 +305,18 @@ export default function MysteryPage() {
         const newLon = onPointerDownLon - dx * SENSITIVITY;
         const newLat = onPointerDownLat + dy * SENSITIVITY;
 
-        // 边界软阻力：越接近边界，移动越困难
-        let finalLon = newLon;
-        if (newLon > LON_LIMIT) {
-          const over = newLon - LON_LIMIT;
-          finalLon = LON_LIMIT + over * 0.2;
-        } else if (newLon < -LON_LIMIT) {
-          const over = -LON_LIMIT - newLon;
-          finalLon = -LON_LIMIT - over * 0.2;
-        }
+        // 水平360度自由旋转（无边界限制），垂直限制
         const finalLat = Math.max(-LAT_LIMIT, Math.min(LAT_LIMIT, newLat));
 
-        // 基于实际位移计算速度（不受clamp影响）
-        velocityLon = finalLon - prevMoveLon;
+        // 基于实际位移计算速度
+        velocityLon = newLon - prevMoveLon;
         velocityLat = finalLat - prevMoveLat;
-        prevMoveLon = finalLon;
+        // 处理速度跳变（跨360度时）
+        if (Math.abs(velocityLon) > 180) velocityLon = 0;
+        prevMoveLon = newLon;
         prevMoveLat = finalLat;
 
-        lonRef.current = finalLon;
+        lonRef.current = newLon;
         latRef.current = finalLat;
       };
 
@@ -349,14 +343,7 @@ export default function MysteryPage() {
           velocityLon *= FRICTION;
           velocityLat *= FRICTION;
 
-          // 到达边界时直接停住，不回弹
-          if (lonRef.current > LON_LIMIT) {
-            lonRef.current = LON_LIMIT;
-            velocityLon = 0;
-          } else if (lonRef.current < -LON_LIMIT) {
-            lonRef.current = -LON_LIMIT;
-            velocityLon = 0;
-          }
+          // 垂直边界停住
           if (latRef.current > LAT_LIMIT) {
             latRef.current = LAT_LIMIT;
             velocityLat = 0;
@@ -367,13 +354,6 @@ export default function MysteryPage() {
 
           if (Math.abs(velocityLon) < 0.005) velocityLon = 0;
           if (Math.abs(velocityLat) < 0.005) velocityLat = 0;
-        } else {
-          // 拖拽中：边界附近缓慢回正（消除软阻力的overshoot）
-          if (lonRef.current > LON_LIMIT) {
-            lonRef.current -= (lonRef.current - LON_LIMIT) * 0.1;
-          } else if (lonRef.current < -LON_LIMIT) {
-            lonRef.current += (-LON_LIMIT - lonRef.current) * 0.1;
-          }
         }
 
         // 相机朝向
