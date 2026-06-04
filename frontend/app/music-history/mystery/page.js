@@ -206,82 +206,105 @@ export default function MysteryPage() {
 
       const panoramaUrl = currentDistrict?.panorama || currentDistrict?.background;
 
-      // 加载全景图并做左右边缘余弦渐变融合（消除接缝）
+      // 加载全景图并做接缝融合处理
+      // 策略：1) 转为2:1等距柱状投影 2) 偏移180°让接缝在玩家背后 3) 双向余弦渐变融合
       const loadBlendedTexture = (url) => {
         return new Promise((resolve) => {
           const img = new Image();
           img.crossOrigin = 'anonymous';
           img.onload = () => {
+            // 1. 创建2:1比例的canvas（等距柱状投影标准）
+            const targetH = img.height;
+            const targetW = targetH * 2;
             const cvs = document.createElement('canvas');
-            cvs.width = img.width;
-            cvs.height = img.height;
+            cvs.width = targetW;
+            cvs.height = targetH;
             const ctx = cvs.getContext('2d');
-            ctx.drawImage(img, 0, 0);
 
-            // 融合区域宽度：图像宽度的15%（更宽=更平滑过渡）
-            const blendW = Math.floor(img.width * 0.15);
-            const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+            // 将原始图像绘制到2:1 canvas中（居中，保持比例）
+            const srcRatio = img.width / img.height;
+            if (srcRatio >= 2) {
+              // 原图比2:1更宽，裁剪两侧
+              const cropW = img.height * 2;
+              const cropX = (img.width - cropW) / 2;
+              ctx.drawImage(img, cropX, 0, cropW, img.height, 0, 0, targetW, targetH);
+            } else {
+              // 原图比2:1更窄，拉伸到2:1
+              ctx.drawImage(img, 0, 0, targetW, targetH);
+            }
+
+            // 2. 偏移180°：把图像左半和右半互换，让接缝位置到图像中心
+            //    这样Three.js映射到球面时，接缝在玩家背后（lon=180°处）
+            const shiftCanvas = document.createElement('canvas');
+            shiftCanvas.width = targetW;
+            shiftCanvas.height = targetH;
+            const shiftCtx = shiftCanvas.getContext('2d');
+            const halfW = targetW / 2;
+            // 右半→左半
+            shiftCtx.drawImage(cvs, halfW, 0, halfW, targetH, 0, 0, halfW, targetH);
+            // 左半→右半
+            shiftCtx.drawImage(cvs, 0, 0, halfW, targetH, halfW, 0, halfW, targetH);
+
+            // 3. 在新的接缝处（图像中心，即原图的左右边缘交界）做余弦融合
+            const imgData = shiftCtx.getImageData(0, 0, targetW, targetH);
             const data = imgData.data;
-            const w = cvs.width;
+            const w = targetW;
+            const blendW = Math.floor(w * 0.20); // 20%融合区
 
-            // 同时保存原始左边缘像素（用于右边缘融合）
-            const leftEdgeData = new Uint8ClampedArray(blendW * cvs.height * 4);
+            // 保存接缝左侧原始像素
+            const seamLeftData = new Uint8ClampedArray(blendW * targetH * 4);
             for (let x = 0; x < blendW; x++) {
-              for (let y = 0; y < cvs.height; y++) {
-                const srcIdx = (y * w + x) * 4;
-                const dstIdx = (x * cvs.height + y) * 4;
-                leftEdgeData[dstIdx]     = data[srcIdx];
-                leftEdgeData[dstIdx + 1] = data[srcIdx + 1];
-                leftEdgeData[dstIdx + 2] = data[srcIdx + 2];
-                leftEdgeData[dstIdx + 3] = data[srcIdx + 3];
+              for (let y = 0; y < targetH; y++) {
+                const srcIdx = (y * w + (halfW - blendW + x)) * 4;
+                const dstIdx = (x * targetH + y) * 4;
+                seamLeftData[dstIdx]     = data[srcIdx];
+                seamLeftData[dstIdx + 1] = data[srcIdx + 1];
+                seamLeftData[dstIdx + 2] = data[srcIdx + 2];
               }
             }
 
-            // 保存右边缘融合区的原始像素
-            const rightEdgeData = new Uint8ClampedArray(blendW * cvs.height * 4);
+            // 保存接缝右侧原始像素
+            const seamRightData = new Uint8ClampedArray(blendW * targetH * 4);
             for (let x = 0; x < blendW; x++) {
-              for (let y = 0; y < cvs.height; y++) {
-                const srcIdx = (y * w + (w - blendW + x)) * 4;
-                const dstIdx = (x * cvs.height + y) * 4;
-                rightEdgeData[dstIdx]     = data[srcIdx];
-                rightEdgeData[dstIdx + 1] = data[srcIdx + 1];
-                rightEdgeData[dstIdx + 2] = data[srcIdx + 2];
-                rightEdgeData[dstIdx + 3] = data[srcIdx + 3];
+              for (let y = 0; y < targetH; y++) {
+                const srcIdx = (y * w + (halfW + x)) * 4;
+                const dstIdx = (x * targetH + y) * 4;
+                seamRightData[dstIdx]     = data[srcIdx];
+                seamRightData[dstIdx + 1] = data[srcIdx + 1];
+                seamRightData[dstIdx + 2] = data[srcIdx + 2];
               }
             }
 
-            // 左边缘余弦渐变融合：右边缘像素渐变叠加到左边缘
+            // 接缝左侧：用右侧像素渐变覆盖
             for (let x = 0; x < blendW; x++) {
               const t = x / blendW;
               const alpha = 0.5 - 0.5 * Math.cos(t * Math.PI);
-              for (let y = 0; y < cvs.height; y++) {
-                const iLeft = (y * w + x) * 4;
-                const iRight = (x * cvs.height + y) * 4;
-                data[iLeft]     = data[iLeft]     * alpha + rightEdgeData[iRight]     * (1 - alpha);
-                data[iLeft + 1] = data[iLeft + 1] * alpha + rightEdgeData[iRight + 1] * (1 - alpha);
-                data[iLeft + 2] = data[iLeft + 2] * alpha + rightEdgeData[iRight + 2] * (1 - alpha);
+              for (let y = 0; y < targetH; y++) {
+                const iPixel = (y * w + (halfW - blendW + x)) * 4;
+                const iRight = (x * targetH + y) * 4;
+                data[iPixel]     = data[iPixel]     * alpha + seamRightData[iRight]     * (1 - alpha);
+                data[iPixel + 1] = data[iPixel + 1] * alpha + seamRightData[iRight + 1] * (1 - alpha);
+                data[iPixel + 2] = data[iPixel + 2] * alpha + seamRightData[iRight + 2] * (1 - alpha);
               }
             }
 
-            // 右边缘余弦渐变融合：左边缘像素渐变叠加到右边缘
+            // 接缝右侧：用左侧像素渐变覆盖
             for (let x = 0; x < blendW; x++) {
               const t = x / blendW;
-              // 右侧：从右边缘向左，alpha从1到0
               const alpha = 0.5 + 0.5 * Math.cos(t * Math.PI);
-              for (let y = 0; y < cvs.height; y++) {
-                const iRight = (y * w + (w - blendW + x)) * 4;
-                const iLeft = (x * cvs.height + y) * 4;
-                data[iRight]     = data[iRight]     * alpha + leftEdgeData[iLeft]     * (1 - alpha);
-                data[iRight + 1] = data[iRight + 1] * alpha + leftEdgeData[iLeft + 1] * (1 - alpha);
-                data[iRight + 2] = data[iRight + 2] * alpha + leftEdgeData[iLeft + 2] * (1 - alpha);
+              for (let y = 0; y < targetH; y++) {
+                const iPixel = (y * w + (halfW + x)) * 4;
+                const iLeft = (x * targetH + y) * 4;
+                data[iPixel]     = data[iPixel]     * alpha + seamLeftData[iLeft]     * (1 - alpha);
+                data[iPixel + 1] = data[iPixel + 1] * alpha + seamLeftData[iLeft + 1] * (1 - alpha);
+                data[iPixel + 2] = data[iPixel + 2] * alpha + seamLeftData[iLeft + 2] * (1 - alpha);
               }
             }
 
-            ctx.putImageData(imgData, 0, 0);
+            shiftCtx.putImageData(imgData, 0, 0);
 
-            const texture = new THREE.CanvasTexture(cvs);
+            const texture = new THREE.CanvasTexture(shiftCanvas);
             texture.colorSpace = THREE.SRGBColorSpace;
-            // 设置纹理过滤，减少模糊
             texture.minFilter = THREE.LinearMipmapLinearFilter;
             texture.magFilter = THREE.LinearFilter;
             texture.anisotropy = maxAnisotropy;
