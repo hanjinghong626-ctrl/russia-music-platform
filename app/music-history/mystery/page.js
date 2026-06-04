@@ -269,6 +269,10 @@ export default function MysteryPage() {
       // 惯性
       let velocityLon = 0;
       let velocityLat = 0;
+      const SENSITIVITY = 0.2;  // 拖拽灵敏度
+      const FRICTION = 0.95;    // 惯性衰减系数（越接近1滑得越远）
+      const LON_LIMIT = 150;    // 水平旋转限制
+      const LAT_LIMIT = 75;     // 垂直旋转限制
 
       const onPointerDown = (e) => {
         // 忽略hotspot上的事件
@@ -292,15 +296,15 @@ export default function MysteryPage() {
         const dx = clientX - onPointerDownX;
         const dy = clientY - onPointerDownY;
 
-        const newLon = onPointerDownLon - dx * 0.15;
-        const newLat = Math.max(-85, Math.min(85, onPointerDownLat + dy * 0.15));
+        const newLon = onPointerDownLon - dx * SENSITIVITY;
+        const newLat = onPointerDownLat + dy * SENSITIVITY;
 
         velocityLon = lonRef.current - newLon;
         velocityLat = latRef.current - newLat;
 
-        // 限制水平旋转：±150°（总300°视野，接缝在±180°永远看不到）
-        lonRef.current = Math.max(-150, Math.min(150, newLon));
-        latRef.current = newLat;
+        // 限制水平旋转
+        lonRef.current = Math.max(-LON_LIMIT, Math.min(LON_LIMIT, newLon));
+        latRef.current = Math.max(-LAT_LIMIT, Math.min(LAT_LIMIT, newLat));
       };
 
       const onPointerUp = () => {
@@ -323,13 +327,19 @@ export default function MysteryPage() {
         if (!isUserInteracting) {
           lonRef.current += velocityLon;
           latRef.current += velocityLat;
-          velocityLon *= 0.92;
-          velocityLat *= 0.92;
+          velocityLon *= FRICTION;
+          velocityLat *= FRICTION;
           if (Math.abs(velocityLon) < 0.001) velocityLon = 0;
           if (Math.abs(velocityLat) < 0.001) velocityLat = 0;
-          // 限制水平旋转范围
-          lonRef.current = Math.max(-150, Math.min(150, lonRef.current));
-          latRef.current = Math.max(-85, Math.min(85, latRef.current));
+          // 限制旋转范围，超出边界时阻尼减速
+          if (lonRef.current > LON_LIMIT) {
+            lonRef.current = LON_LIMIT + (lonRef.current - LON_LIMIT) * 0.3;
+            velocityLon *= 0.5;
+          } else if (lonRef.current < -LON_LIMIT) {
+            lonRef.current = -LON_LIMIT + (lonRef.current + LON_LIMIT) * 0.3;
+            velocityLon *= 0.5;
+          }
+          latRef.current = Math.max(-LAT_LIMIT, Math.min(LAT_LIMIT, latRef.current));
         }
 
         // 相机朝向
