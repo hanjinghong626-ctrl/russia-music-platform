@@ -269,10 +269,12 @@ export default function MysteryPage() {
       // 惯性
       let velocityLon = 0;
       let velocityLat = 0;
-      const SENSITIVITY = 0.2;  // 拖拽灵敏度
-      const FRICTION = 0.95;    // 惯性衰减系数（越接近1滑得越远）
-      const LON_LIMIT = 150;    // 水平旋转限制
-      const LAT_LIMIT = 75;     // 垂直旋转限制
+      let prevMoveLon = 0;
+      let prevMoveLat = 0;
+      const SENSITIVITY = 0.15;  // 拖拽灵敏度
+      const FRICTION = 0.92;     // 惯性衰减
+      const LON_LIMIT = 150;     // 水平旋转限制
+      const LAT_LIMIT = 75;      // 垂直旋转限制
 
       const onPointerDown = (e) => {
         // 忽略hotspot上的事件
@@ -282,6 +284,8 @@ export default function MysteryPage() {
         isUserInteracting = true;
         velocityLon = 0;
         velocityLat = 0;
+        prevMoveLon = lonRef.current;
+        prevMoveLat = latRef.current;
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         onPointerDownX = clientX;
@@ -301,12 +305,25 @@ export default function MysteryPage() {
         const newLon = onPointerDownLon - dx * SENSITIVITY;
         const newLat = onPointerDownLat + dy * SENSITIVITY;
 
-        velocityLon = lonRef.current - newLon;
-        velocityLat = latRef.current - newLat;
+        // 边界软阻力：越接近边界，移动越困难
+        let finalLon = newLon;
+        if (newLon > LON_LIMIT) {
+          const over = newLon - LON_LIMIT;
+          finalLon = LON_LIMIT + over * 0.2;
+        } else if (newLon < -LON_LIMIT) {
+          const over = -LON_LIMIT - newLon;
+          finalLon = -LON_LIMIT - over * 0.2;
+        }
+        const finalLat = Math.max(-LAT_LIMIT, Math.min(LAT_LIMIT, newLat));
 
-        // 限制水平旋转
-        lonRef.current = Math.max(-LON_LIMIT, Math.min(LON_LIMIT, newLon));
-        latRef.current = Math.max(-LAT_LIMIT, Math.min(LAT_LIMIT, newLat));
+        // 基于实际位移计算速度（不受clamp影响）
+        velocityLon = finalLon - prevMoveLon;
+        velocityLat = finalLat - prevMoveLat;
+        prevMoveLon = finalLon;
+        prevMoveLat = finalLat;
+
+        lonRef.current = finalLon;
+        latRef.current = finalLat;
       };
 
       const onPointerUp = () => {
@@ -331,17 +348,32 @@ export default function MysteryPage() {
           latRef.current += velocityLat;
           velocityLon *= FRICTION;
           velocityLat *= FRICTION;
-          if (Math.abs(velocityLon) < 0.001) velocityLon = 0;
-          if (Math.abs(velocityLat) < 0.001) velocityLat = 0;
-          // 限制旋转范围，超出边界时阻尼减速
+
+          // 到达边界时直接停住，不回弹
           if (lonRef.current > LON_LIMIT) {
-            lonRef.current = LON_LIMIT + (lonRef.current - LON_LIMIT) * 0.3;
-            velocityLon *= 0.5;
+            lonRef.current = LON_LIMIT;
+            velocityLon = 0;
           } else if (lonRef.current < -LON_LIMIT) {
-            lonRef.current = -LON_LIMIT + (lonRef.current + LON_LIMIT) * 0.3;
-            velocityLon *= 0.5;
+            lonRef.current = -LON_LIMIT;
+            velocityLon = 0;
           }
-          latRef.current = Math.max(-LAT_LIMIT, Math.min(LAT_LIMIT, latRef.current));
+          if (latRef.current > LAT_LIMIT) {
+            latRef.current = LAT_LIMIT;
+            velocityLat = 0;
+          } else if (latRef.current < -LAT_LIMIT) {
+            latRef.current = -LAT_LIMIT;
+            velocityLat = 0;
+          }
+
+          if (Math.abs(velocityLon) < 0.005) velocityLon = 0;
+          if (Math.abs(velocityLat) < 0.005) velocityLat = 0;
+        } else {
+          // 拖拽中：边界附近缓慢回正（消除软阻力的overshoot）
+          if (lonRef.current > LON_LIMIT) {
+            lonRef.current -= (lonRef.current - LON_LIMIT) * 0.1;
+          } else if (lonRef.current < -LON_LIMIT) {
+            lonRef.current += (-LON_LIMIT - lonRef.current) * 0.1;
+          }
         }
 
         // 相机朝向
