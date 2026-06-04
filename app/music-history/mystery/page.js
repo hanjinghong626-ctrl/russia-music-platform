@@ -59,22 +59,13 @@ export default function MysteryPage() {
   const [transitionTarget, setTransitionTarget] = useState(null);
   const [panoReady, setPanoReady] = useState(false);
   const [hintVisible, setHintVisible] = useState(true);
+  const [panoOffset, setPanoOffset] = useState(0);
 
-  // === 360全景相关 refs ===
-  const panoRef = useRef(null);
-  const threeModuleRef = useRef(null);
-  const rendererRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
-  const sphereRef = useRef(null);
+  // === CSS全景卷轴相关 refs ===
+  const panoContainerRef = useRef(null);
+  const panoStripRef = useRef(null);
   const hotspotsRef = useRef({});
   const compassNeedleRef = useRef(null);
-  const lonRef = useRef(0);
-  const latRef = useRef(0);
-  const isInteractingRef = useRef(false);
-  const pointerStartRef = useRef({ x: 0, y: 0, lon: 0, lat: 0 });
-  const animFrameRef = useRef(null);
-  const panoContainerRef = useRef(null);
 
   const currentDistrict = worldMap.getDistrict(currentDistrictId);
 
@@ -141,338 +132,160 @@ export default function MysteryPage() {
     return () => clearTimeout(timer);
   }, [phase, transitionTarget, advanceTime]);
 
-  // === Three.js 360全景初始化 ===
+  // === CSS全景卷轴 ===
   useEffect(() => {
     if (phase !== PHASE.EXPLORE) {
-      // 清理
-      if (animFrameRef.current) {
-        cancelAnimationFrame(animFrameRef.current);
-        animFrameRef.current = null;
-      }
-      if (rendererRef.current) {
-        rendererRef.current.dispose();
-        const canvas = rendererRef.current.domElement;
-        if (canvas && canvas.parentNode) {
-          canvas.parentNode.removeChild(canvas);
-        }
-        rendererRef.current = null;
-      }
-      sceneRef.current = null;
-      cameraRef.current = null;
-      sphereRef.current = null;
       setPanoReady(false);
       return;
     }
 
-    let cancelled = false;
+    const container = panoContainerRef.current;
+    const strip = panoStripRef.current;
+    if (!container || !strip) return;
 
-    const init = async () => {
-      const THREE = await import('three');
-      if (cancelled) return;
-      threeModuleRef.current = THREE;
+    setPanoReady(true);
+    setTimeout(() => setHintVisible(false), 4000);
 
-      const container = panoContainerRef.current;
-      if (!container) return;
+    // 图片宽度（像素），用于循环计算
+    const imgWidth = strip.scrollWidth / 3; // 3份拼接，每份宽度相同
 
-      // 清理旧的canvas
-      const oldCanvas = container.querySelector('canvas');
-      if (oldCanvas) oldCanvas.remove();
+    // 初始偏移
+    let offset = currentDistrict?.initialYaw ? -(currentDistrict.initialYaw / 360) * imgWidth : 0;
+    strip.style.transform = `translateX(${offset}px)`;
 
-      // 创建场景
-      const scene = new THREE.Scene();
-      sceneRef.current = scene;
+    // 惯性
+    let velocity = 0;
+    const FRICTION = 0.92;
+    const SENSITIVITY = 1.2;
+    let isDragging = false;
+    let startX = 0;
+    let startOffset = 0;
+    let lastX = 0;
+    let lastTime = 0;
+    let animId = null;
 
-      // 创建相机
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        container.clientWidth / container.clientHeight,
-        1,
-        1100
-      );
-      cameraRef.current = camera;
-
-      // 创建球体（内表面贴图）
-      const geometry = new THREE.SphereGeometry(500, 60, 40);
-      geometry.scale(-1, 1, 1);
-
-      // 先创建渲染器（纹理anisotropy需要renderer能力信息）
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
-      container.insertBefore(renderer.domElement, container.firstChild);
-      rendererRef.current = renderer;
-      const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
-
-      const panoramaUrl = currentDistrict?.panorama || currentDistrict?.background;
-
-      // 简单加载全景图，转为2:1比例后直接贴球面
-      // 接缝问题通过限制旋转角度解决（玩家看不到接缝处）
-      const loadPanoramaTexture = (url) => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          img.onload = () => {
-            // 转为2:1 canvas
-            const targetH = img.height;
-            const targetW = targetH * 2;
-            const cvs = document.createElement('canvas');
-            cvs.width = targetW;
-            cvs.height = targetH;
-            const ctx = cvs.getContext('2d');
-
-            const srcRatio = img.width / img.height;
-            if (srcRatio >= 2) {
-              const cropW = img.height * 2;
-              const cropX = (img.width - cropW) / 2;
-              ctx.drawImage(img, cropX, 0, cropW, img.height, 0, 0, targetW, targetH);
-            } else {
-              ctx.drawImage(img, 0, 0, targetW, targetH);
-            }
-
-            const texture = new THREE.CanvasTexture(cvs);
-            texture.colorSpace = THREE.SRGBColorSpace;
-            texture.minFilter = THREE.LinearMipmapLinearFilter;
-            texture.magFilter = THREE.LinearFilter;
-            texture.anisotropy = maxAnisotropy;
-            resolve(texture);
-          };
-          img.onerror = () => {
-            const fallback = new THREE.TextureLoader().load(url);
-            fallback.colorSpace = THREE.SRGBColorSpace;
-            resolve(fallback);
-          };
-          img.src = url;
-        });
-      };
-
-      const texture = await loadPanoramaTexture(panoramaUrl);
-      setPanoReady(true);
-      setTimeout(() => setHintVisible(false), 4000);
-
-      const material = new THREE.MeshBasicMaterial({ map: texture });
-      const sphere = new THREE.Mesh(geometry, material);
-      scene.add(sphere);
-      sphereRef.current = sphere;
-
-      // 初始视角
-      lonRef.current = currentDistrict?.initialYaw || 0;
-      latRef.current = 0;
-
-      // 触摸/鼠标交互
-      let isUserInteracting = false;
-      let onPointerDownLon = 0;
-      let onPointerDownLat = 0;
-      let onPointerDownX = 0;
-      let onPointerDownY = 0;
-
-      // 惯性
-      let velocityLon = 0;
-      let velocityLat = 0;
-      let prevMoveLon = 0;
-      let prevMoveLat = 0;
-      const SENSITIVITY = 0.15;  // 拖拽灵敏度
-      const FRICTION = 0.92;     // 惯性衰减
-      const LON_LIMIT = 180;     // 水平360度自由旋转
-      const LAT_LIMIT = 75;      // 垂直旋转限制
-
-      const onPointerDown = (e) => {
-        // 忽略hotspot上的事件
-        if (e.target.closest('.pano-hotspot, .district-exit, .explore-hud, .pano-compass-wrap')) return;
-        e.preventDefault();
-
-        isUserInteracting = true;
-        velocityLon = 0;
-        velocityLat = 0;
-        prevMoveLon = lonRef.current;
-        prevMoveLat = latRef.current;
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        onPointerDownX = clientX;
-        onPointerDownY = clientY;
-        onPointerDownLon = lonRef.current;
-        onPointerDownLat = latRef.current;
-      };
-
-      const onPointerMove = (e) => {
-        if (!isUserInteracting) return;
-        e.preventDefault();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        const dx = clientX - onPointerDownX;
-        const dy = clientY - onPointerDownY;
-
-        const newLon = onPointerDownLon - dx * SENSITIVITY;
-        const newLat = onPointerDownLat + dy * SENSITIVITY;
-
-        // 水平360度自由旋转（无边界限制），垂直限制
-        const finalLat = Math.max(-LAT_LIMIT, Math.min(LAT_LIMIT, newLat));
-
-        // 基于实际位移计算速度
-        velocityLon = newLon - prevMoveLon;
-        velocityLat = finalLat - prevMoveLat;
-        // 处理速度跳变（跨360度时）
-        if (Math.abs(velocityLon) > 180) velocityLon = 0;
-        prevMoveLon = newLon;
-        prevMoveLat = finalLat;
-
-        lonRef.current = newLon;
-        latRef.current = finalLat;
-      };
-
-      const onPointerUp = () => {
-        isUserInteracting = false;
-      };
-
-      container.addEventListener('mousedown', onPointerDown);
-      document.addEventListener('mousemove', onPointerMove);
-      document.addEventListener('mouseup', onPointerUp);
-      container.addEventListener('touchstart', onPointerDown, { passive: false });
-      container.addEventListener('touchmove', onPointerMove, { passive: false });
-      container.addEventListener('touchend', onPointerUp, { passive: false });
-
-      // 动画循环
-      const animate = () => {
-        if (cancelled) return;
-        animFrameRef.current = requestAnimationFrame(animate);
-
-        // 惯性衰减
-        if (!isUserInteracting) {
-          lonRef.current += velocityLon;
-          latRef.current += velocityLat;
-          velocityLon *= FRICTION;
-          velocityLat *= FRICTION;
-
-          // 垂直边界停住
-          if (latRef.current > LAT_LIMIT) {
-            latRef.current = LAT_LIMIT;
-            velocityLat = 0;
-          } else if (latRef.current < -LAT_LIMIT) {
-            latRef.current = -LAT_LIMIT;
-            velocityLat = 0;
-          }
-
-          if (Math.abs(velocityLon) < 0.005) velocityLon = 0;
-          if (Math.abs(velocityLat) < 0.005) velocityLat = 0;
-        }
-
-        // 相机朝向
-        const phi = THREE.MathUtils.degToRad(90 - latRef.current);
-        const theta = THREE.MathUtils.degToRad(lonRef.current);
-
-        const target = new THREE.Vector3(
-          500 * Math.sin(phi) * Math.cos(theta),
-          500 * Math.cos(phi),
-          500 * Math.sin(phi) * Math.sin(theta)
-        );
-
-        camera.lookAt(target);
-        renderer.render(scene, camera);
-
-        // 更新热点位置
-        updateHotspotPositions(camera, container);
-
-        // 更新罗盘
-        if (compassNeedleRef.current) {
-          compassNeedleRef.current.style.transform = `rotate(${-lonRef.current}deg)`;
-        }
-      };
-
-      animate();
-
-      // 窗口resize
-      const onResize = () => {
-        if (!container || !camera || !renderer) return;
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-      };
-      window.addEventListener('resize', onResize);
-
-      // 清理函数
-      return () => {
-        cancelled = true;
-        isUserInteracting = false;
-        container.removeEventListener('mousedown', onPointerDown);
-        document.removeEventListener('mousemove', onPointerMove);
-        document.removeEventListener('mouseup', onPointerUp);
-        container.removeEventListener('touchstart', onPointerDown);
-        container.removeEventListener('touchmove', onPointerMove);
-        container.removeEventListener('touchend', onPointerUp);
-        window.removeEventListener('resize', onResize);
-        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-        renderer.dispose();
-        geometry.dispose();
-        material.dispose();
-        texture.dispose();
-        const canvas = renderer.domElement;
-        if (canvas && canvas.parentNode) canvas.parentNode.removeChild(canvas);
-      };
+    const onDown = (e) => {
+      if (e.target.closest('.pano-hotspot, .district-exit, .explore-hud, .pano-compass-wrap')) return;
+      e.preventDefault();
+      isDragging = true;
+      velocity = 0;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      startX = clientX;
+      startOffset = offset;
+      lastX = clientX;
+      lastTime = Date.now();
     };
 
-    const cleanup = init();
+    const onMove = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const dx = clientX - startX;
+      offset = startOffset + dx * SENSITIVITY;
 
-    return () => {
-      cancelled = true;
-      cleanup && cleanup.then && cleanup.then(fn => fn && fn());
+      // 计算即时速度
+      const now = Date.now();
+      const dt = now - lastTime;
+      if (dt > 0) {
+        velocity = (clientX - lastX) * SENSITIVITY / dt * 16; // 归一化到每帧
+      }
+      lastX = clientX;
+      lastTime = now;
+
+      strip.style.transform = `translateX(${offset}px)`;
+      updateHotspots();
     };
-  }, [phase, currentDistrictId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 更新热点位置（3D→2D投影）
-  const updateHotspotPositions = (camera, container) => {
-    const THREE = threeModuleRef.current;
-    if (!THREE || !camera || !container) return;
+    const onUp = () => {
+      isDragging = false;
+    };
 
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-
-    // 更新建筑热点
-    const district = worldMap.getDistrict(currentDistrictId);
-    if (!district) return;
-
-    const allHotspots = [
-      ...district.buildings.map(b => ({ id: b.id, yaw: b.yaw, pitch: b.pitch })),
-      ...district.npcs.map(n => ({ id: `npc_${n.id}`, yaw: n.yaw, pitch: n.pitch }))
-    ];
-
-    allHotspots.forEach(({ id, yaw, pitch }) => {
-      const el = hotspotsRef.current[id];
-      if (!el) return;
-
-      const phi = THREE.MathUtils.degToRad(90 - (pitch || 0));
-      const theta = THREE.MathUtils.degToRad(yaw || 0);
-
-      const pos = new THREE.Vector3(
-        500 * Math.sin(phi) * Math.cos(theta),
-        500 * Math.cos(phi),
-        500 * Math.sin(phi) * Math.sin(theta)
-      );
-
-      pos.project(camera);
-
-      // 检查是否在视野内
-      if (pos.z > 1 || pos.x < -1.2 || pos.x > 1.2 || pos.y < -1.2 || pos.y > 1.2) {
-        el.style.display = 'none';
-        return;
+    // 惯性动画
+    const animate = () => {
+      if (!isDragging) {
+        offset += velocity;
+        velocity *= FRICTION;
+        if (Math.abs(velocity) < 0.3) velocity = 0;
+        strip.style.transform = `translateX(${offset}px)`;
+        updateHotspots();
       }
 
-      const x = (pos.x * 0.5 + 0.5) * w;
-      const y = (-pos.y * 0.5 + 0.5) * h;
+      // 循环：偏移超出范围时跳回
+      if (offset > 0) offset -= imgWidth;
+      else if (offset < -imgWidth) offset += imgWidth;
 
-      // 距离中心越远越小/越透明
-      const dx = pos.x;
-      const dy = pos.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const scale = Math.max(0.5, 1 - dist * 0.4);
-      const opacity = Math.max(0.3, 1 - dist * 0.6);
+      // 更新罗盘
+      if (compassNeedleRef.current) {
+        const deg = (-offset / imgWidth) * 360;
+        compassNeedleRef.current.style.transform = `rotate(${deg}deg)`;
+      }
 
-      el.style.display = 'flex';
-      el.style.left = x + 'px';
-      el.style.top = y + 'px';
-      el.style.transform = `translate(-50%, -50%) scale(${scale})`;
-      el.style.opacity = opacity;
-    });
-  };
+      animId = requestAnimationFrame(animate);
+    };
+    animId = requestAnimationFrame(animate);
+
+    // 热点位置更新：基于偏移量计算
+    const updateHotspots = () => {
+      const district = worldMap.getDistrict(currentDistrictId);
+      if (!district) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+
+      const allHotspots = [
+        ...district.buildings.map(b => ({ id: b.id, yaw: b.yaw })),
+        ...district.npcs.map(n => ({ id: `npc_${n.id}`, yaw: n.yaw }))
+      ];
+
+      allHotspots.forEach(({ id, yaw }) => {
+        const el = hotspotsRef.current[id];
+        if (!el) return;
+
+        // yaw角度对应的屏幕X位置
+        const yawRad = (yaw || 0) * Math.PI / 180;
+        // 当前视角中心对应的偏移
+        const viewDeg = (-offset / imgWidth) * 360;
+        const relDeg = yaw - viewDeg;
+        // 归一化到 -180~180
+        const normDeg = ((relDeg + 180) % 360 + 360) % 360 - 180;
+
+        // 视场角约90度
+        const fov = 90;
+        if (Math.abs(normDeg) > fov) {
+          el.style.display = 'none';
+          return;
+        }
+
+        const x = w / 2 + (normDeg / fov) * (w / 2);
+        const dist = Math.abs(normDeg) / fov;
+        const scale = Math.max(0.6, 1 - dist * 0.5);
+        const opacity = Math.max(0.3, 1 - dist * 0.7);
+
+        el.style.display = 'flex';
+        el.style.left = x + 'px';
+        el.style.top = (h * 0.55) + 'px';
+        el.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        el.style.opacity = opacity;
+      });
+    };
+
+    container.addEventListener('mousedown', onDown);
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    container.addEventListener('touchstart', onDown, { passive: false });
+    container.addEventListener('touchmove', onMove, { passive: false });
+    container.addEventListener('touchend', onUp, { passive: false });
+
+    return () => {
+      isDragging = false;
+      if (animId) cancelAnimationFrame(animId);
+      container.removeEventListener('mousedown', onDown);
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      container.removeEventListener('touchstart', onDown);
+      container.removeEventListener('touchmove', onMove);
+      container.removeEventListener('touchend', onUp);
+    };
+  }, [phase, currentDistrictId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 进入建筑
   const enterBuilding = useCallback((building) => {
@@ -656,7 +469,12 @@ export default function MysteryPage() {
 
         {/* 360全景视口 */}
         <div className="pano-viewport" ref={panoContainerRef}>
-          {/* Three.js canvas will be inserted here */}
+          {/* 全景卷轴 - 图片拼接3份实现无缝循环 */}
+          <div className="pano-strip" ref={panoStripRef}>
+            <img src={currentDistrict?.panorama || currentDistrict?.background} alt="" className="pano-img" />
+            <img src={currentDistrict?.panorama || currentDistrict?.background} alt="" className="pano-img" />
+            <img src={currentDistrict?.panorama || currentDistrict?.background} alt="" className="pano-img" />
+          </div>
 
           {/* 建筑热点 */}
           {district?.buildings.map(b => {

@@ -1811,10 +1811,21 @@
   background: #050d18;
 }
 .pano-viewport:active { cursor: grabbing; }
-.pano-viewport canvas {
-  display: block;
-  width: 100% !important;
-  height: 100% !important;
+
+/* 全景卷轴 - 3份图片拼接无缝循环 */
+.pano-strip {
+  display: flex;
+  height: 100%;
+  will-change: transform;
+}
+.pano-img {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 }
 
 /* ===== 全景热点 ===== */
