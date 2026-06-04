@@ -59,13 +59,19 @@ export default function MysteryPage() {
   const [transitionTarget, setTransitionTarget] = useState(null);
   const [panoReady, setPanoReady] = useState(false);
   const [hintVisible, setHintVisible] = useState(true);
-  const [panoOffset, setPanoOffset] = useState(0);
 
-  // === CSS全景卷轴相关 refs ===
+  // === 360全景相关 refs ===
   const panoContainerRef = useRef(null);
-  const panoStripRef = useRef(null);
+  const threeModuleRef = useRef(null);
+  const rendererRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const sphereRef = useRef(null);
   const hotspotsRef = useRef({});
   const compassNeedleRef = useRef(null);
+  const lonRef = useRef(0);
+  const latRef = useRef(0);
+  const animFrameRef = useRef(null);
 
   const currentDistrict = worldMap.getDistrict(currentDistrictId);
 
@@ -132,160 +138,229 @@ export default function MysteryPage() {
     return () => clearTimeout(timer);
   }, [phase, transitionTarget, advanceTime]);
 
-  // === CSS全景卷轴 ===
+  // === Three.js 360全景 ===
   useEffect(() => {
     if (phase !== PHASE.EXPLORE) {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      if (rendererRef.current) {
+        rendererRef.current.dispose();
+        const c = rendererRef.current.domElement;
+        if (c?.parentNode) c.parentNode.removeChild(c);
+        rendererRef.current = null;
+      }
+      sceneRef.current = null;
+      cameraRef.current = null;
+      sphereRef.current = null;
       setPanoReady(false);
       return;
     }
 
-    const container = panoContainerRef.current;
-    const strip = panoStripRef.current;
-    if (!container || !strip) return;
+    let cancelled = false;
 
-    setPanoReady(true);
-    setTimeout(() => setHintVisible(false), 4000);
+    const init = async () => {
+      const THREE = await import('three');
+      if (cancelled) return;
+      threeModuleRef.current = THREE;
 
-    // 图片宽度（像素），用于循环计算
-    const imgWidth = strip.scrollWidth / 3; // 3份拼接，每份宽度相同
+      const container = panoContainerRef.current;
+      if (!container) return;
 
-    // 初始偏移
-    let offset = currentDistrict?.initialYaw ? -(currentDistrict.initialYaw / 360) * imgWidth : 0;
-    strip.style.transform = `translateX(${offset}px)`;
+      const oldCanvas = container.querySelector('canvas');
+      if (oldCanvas) oldCanvas.remove();
 
-    // 惯性
-    let velocity = 0;
-    const FRICTION = 0.92;
-    const SENSITIVITY = 1.2;
-    let isDragging = false;
-    let startX = 0;
-    let startOffset = 0;
-    let lastX = 0;
-    let lastTime = 0;
-    let animId = null;
+      const scene = new THREE.Scene();
+      sceneRef.current = scene;
 
-    const onDown = (e) => {
-      if (e.target.closest('.pano-hotspot, .district-exit, .explore-hud, .pano-compass-wrap')) return;
-      e.preventDefault();
-      isDragging = true;
-      velocity = 0;
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      startX = clientX;
-      startOffset = offset;
-      lastX = clientX;
-      lastTime = Date.now();
-    };
+      const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 1, 1100);
+      cameraRef.current = camera;
 
-    const onMove = (e) => {
-      if (!isDragging) return;
-      e.preventDefault();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const dx = clientX - startX;
-      offset = startOffset + dx * SENSITIVITY;
+      const geometry = new THREE.SphereGeometry(500, 60, 40);
+      geometry.scale(-1, 1, 1);
 
-      // 计算即时速度
-      const now = Date.now();
-      const dt = now - lastTime;
-      if (dt > 0) {
-        velocity = (clientX - lastX) * SENSITIVITY / dt * 16; // 归一化到每帧
-      }
-      lastX = clientX;
-      lastTime = now;
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      container.insertBefore(renderer.domElement, container.firstChild);
+      rendererRef.current = renderer;
 
-      strip.style.transform = `translateX(${offset}px)`;
-      updateHotspots();
-    };
+      const panoramaUrl = currentDistrict?.panorama || currentDistrict?.background;
 
-    const onUp = () => {
-      isDragging = false;
-    };
+      const texture = await new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const cvs = document.createElement('canvas');
+          cvs.width = img.height * 2;
+          cvs.height = img.height;
+          const ctx = cvs.getContext('2d');
+          const srcRatio = img.width / img.height;
+          if (srcRatio >= 2) {
+            const cropW = img.height * 2;
+            const cropX = (img.width - cropW) / 2;
+            ctx.drawImage(img, cropX, 0, cropW, img.height, 0, 0, cvs.width, cvs.height);
+          } else {
+            ctx.drawImage(img, 0, 0, cvs.width, cvs.height);
+          }
+          const t = new THREE.CanvasTexture(cvs);
+          t.colorSpace = THREE.SRGBColorSpace;
+          t.minFilter = THREE.LinearMipmapLinearFilter;
+          t.magFilter = THREE.LinearFilter;
+          t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+          resolve(t);
+        };
+        img.onerror = () => {
+          const t = new THREE.TextureLoader().load(panoramaUrl);
+          t.colorSpace = THREE.SRGBColorSpace;
+          resolve(t);
+        };
+        img.src = panoramaUrl;
+      });
 
-    // 惯性动画
-    const animate = () => {
-      if (!isDragging) {
-        offset += velocity;
-        velocity *= FRICTION;
-        if (Math.abs(velocity) < 0.3) velocity = 0;
-        strip.style.transform = `translateX(${offset}px)`;
-        updateHotspots();
-      }
+      setPanoReady(true);
+      setTimeout(() => setHintVisible(false), 4000);
 
-      // 循环：偏移超出范围时跳回
-      if (offset > 0) offset -= imgWidth;
-      else if (offset < -imgWidth) offset += imgWidth;
+      const material = new THREE.MeshBasicMaterial({ map: texture });
+      const sphere = new THREE.Mesh(geometry, material);
+      scene.add(sphere);
+      sphereRef.current = sphere;
 
-      // 更新罗盘
-      if (compassNeedleRef.current) {
-        const deg = (-offset / imgWidth) * 360;
-        compassNeedleRef.current.style.transform = `rotate(${deg}deg)`;
-      }
+      lonRef.current = currentDistrict?.initialYaw || 0;
+      latRef.current = 0;
 
-      animId = requestAnimationFrame(animate);
-    };
-    animId = requestAnimationFrame(animate);
+      // 交互
+      let isInteracting = false;
+      let downX = 0, downY = 0, downLon = 0, downLat = 0;
+      let velocityLon = 0, velocityLat = 0;
+      let prevLon = 0, prevLat = 0;
+      const SENS = 0.15, FRIC = 0.92, LAT_LIM = 75;
 
-    // 热点位置更新：基于偏移量计算
-    const updateHotspots = () => {
-      const district = worldMap.getDistrict(currentDistrictId);
-      if (!district) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
+      const onDown = (e) => {
+        if (e.target.closest('.pano-hotspot, .district-exit, .explore-hud, .pano-compass-wrap, .pano-vignette')) return;
+        e.preventDefault();
+        isInteracting = true;
+        velocityLon = velocityLat = 0;
+        prevLon = lonRef.current;
+        prevLat = latRef.current;
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        downX = cx; downY = cy;
+        downLon = lonRef.current; downLat = latRef.current;
+      };
 
-      const allHotspots = [
-        ...district.buildings.map(b => ({ id: b.id, yaw: b.yaw })),
-        ...district.npcs.map(n => ({ id: `npc_${n.id}`, yaw: n.yaw }))
-      ];
+      const onMove = (e) => {
+        if (!isInteracting) return;
+        e.preventDefault();
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        const newLon = downLon - (cx - downX) * SENS;
+        const newLat = Math.max(-LAT_LIM, Math.min(LAT_LIM, downLat + (cy - downY) * SENS));
+        velocityLon = newLon - prevLon;
+        velocityLat = newLat - prevLat;
+        prevLon = newLon; prevLat = newLat;
+        lonRef.current = newLon;
+        latRef.current = newLat;
+      };
 
-      allHotspots.forEach(({ id, yaw }) => {
-        const el = hotspotsRef.current[id];
-        if (!el) return;
+      const onUp = () => { isInteracting = false; };
 
-        // yaw角度对应的屏幕X位置
-        const yawRad = (yaw || 0) * Math.PI / 180;
-        // 当前视角中心对应的偏移
-        const viewDeg = (-offset / imgWidth) * 360;
-        const relDeg = yaw - viewDeg;
-        // 归一化到 -180~180
-        const normDeg = ((relDeg + 180) % 360 + 360) % 360 - 180;
+      container.addEventListener('mousedown', onDown);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      container.addEventListener('touchstart', onDown, { passive: false });
+      container.addEventListener('touchmove', onMove, { passive: false });
+      container.addEventListener('touchend', onUp, { passive: false });
 
-        // 视场角约90度
-        const fov = 90;
-        if (Math.abs(normDeg) > fov) {
-          el.style.display = 'none';
-          return;
+      // 动画
+      const animate = () => {
+        if (cancelled) return;
+        animFrameRef.current = requestAnimationFrame(animate);
+
+        if (!isInteracting) {
+          lonRef.current += velocityLon;
+          latRef.current += velocityLat;
+          velocityLon *= FRIC;
+          velocityLat *= FRIC;
+          if (latRef.current > LAT_LIM) { latRef.current = LAT_LIM; velocityLat = 0; }
+          else if (latRef.current < -LAT_LIM) { latRef.current = -LAT_LIM; velocityLat = 0; }
+          if (Math.abs(velocityLon) < 0.005) velocityLon = 0;
+          if (Math.abs(velocityLat) < 0.005) velocityLat = 0;
         }
 
-        const x = w / 2 + (normDeg / fov) * (w / 2);
-        const dist = Math.abs(normDeg) / fov;
-        const scale = Math.max(0.6, 1 - dist * 0.5);
-        const opacity = Math.max(0.3, 1 - dist * 0.7);
+        const phi = THREE.MathUtils.degToRad(90 - latRef.current);
+        const theta = THREE.MathUtils.degToRad(lonRef.current);
+        camera.lookAt(new THREE.Vector3(
+          500 * Math.sin(phi) * Math.cos(theta),
+          500 * Math.cos(phi),
+          500 * Math.sin(phi) * Math.sin(theta)
+        ));
+        renderer.render(scene, camera);
 
-        el.style.display = 'flex';
-        el.style.left = x + 'px';
-        el.style.top = (h * 0.55) + 'px';
-        el.style.transform = `translate(-50%, -50%) scale(${scale})`;
-        el.style.opacity = opacity;
-      });
+        // 热点
+        updateHotspots(camera, container);
+
+        // 罗盘
+        if (compassNeedleRef.current) {
+          compassNeedleRef.current.style.transform = `rotate(${-lonRef.current}deg)`;
+        }
+      };
+      animate();
+
+      const onResize = () => {
+        if (!container || !camera || !renderer) return;
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      };
+      window.addEventListener('resize', onResize);
+
+      return () => {
+        cancelled = true;
+        isInteracting = false;
+        container.removeEventListener('mousedown', onDown);
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        container.removeEventListener('touchstart', onDown);
+        container.removeEventListener('touchmove', onMove);
+        container.removeEventListener('touchend', onUp);
+        window.removeEventListener('resize', onResize);
+        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+        renderer.dispose(); geometry.dispose(); material.dispose(); texture.dispose();
+        const c = renderer.domElement;
+        if (c?.parentNode) c.parentNode.removeChild(c);
+      };
     };
 
-    container.addEventListener('mousedown', onDown);
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-    container.addEventListener('touchstart', onDown, { passive: false });
-    container.addEventListener('touchmove', onMove, { passive: false });
-    container.addEventListener('touchend', onUp, { passive: false });
-
-    return () => {
-      isDragging = false;
-      if (animId) cancelAnimationFrame(animId);
-      container.removeEventListener('mousedown', onDown);
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-      container.removeEventListener('touchstart', onDown);
-      container.removeEventListener('touchmove', onMove);
-      container.removeEventListener('touchend', onUp);
-    };
+    const cleanup = init();
+    return () => { cancelled = true; cleanup?.then?.(fn => fn?.()); };
   }, [phase, currentDistrictId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 热点3D→2D投影
+  const updateHotspots = (camera, container) => {
+    const THREE = threeModuleRef.current;
+    if (!THREE || !camera || !container) return;
+    const w = container.clientWidth, h = container.clientHeight;
+    const district = worldMap.getDistrict(currentDistrictId);
+    if (!district) return;
+
+    [...district.buildings.map(b => ({ id: b.id, yaw: b.yaw, pitch: b.pitch })),
+     ...district.npcs.map(n => ({ id: `npc_${n.id}`, yaw: n.yaw, pitch: n.pitch }))]
+    .forEach(({ id, yaw, pitch }) => {
+      const el = hotspotsRef.current[id];
+      if (!el) return;
+      const phi = THREE.MathUtils.degToRad(90 - (pitch || 0));
+      const theta = THREE.MathUtils.degToRad(yaw || 0);
+      const pos = new THREE.Vector3(500 * Math.sin(phi) * Math.cos(theta), 500 * Math.cos(phi), 500 * Math.sin(phi) * Math.sin(theta));
+      pos.project(camera);
+      if (pos.z > 1 || Math.abs(pos.x) > 1.2 || Math.abs(pos.y) > 1.2) { el.style.display = 'none'; return; }
+      const dist = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
+      el.style.display = 'flex';
+      el.style.left = ((pos.x * 0.5 + 0.5) * w) + 'px';
+      el.style.top = ((-pos.y * 0.5 + 0.5) * h) + 'px';
+      el.style.transform = `translate(-50%, -50%) scale(${Math.max(0.5, 1 - dist * 0.4)})`;
+      el.style.opacity = Math.max(0.3, 1 - dist * 0.6);
+    });
+  };
 
   // 进入建筑
   const enterBuilding = useCallback((building) => {
@@ -469,12 +544,9 @@ export default function MysteryPage() {
 
         {/* 360全景视口 */}
         <div className="pano-viewport" ref={panoContainerRef}>
-          {/* 全景卷轴 - 图片拼接3份实现无缝循环 */}
-          <div className="pano-strip" ref={panoStripRef}>
-            <img src={currentDistrict?.panorama || currentDistrict?.background} alt="" className="pano-img" />
-            <img src={currentDistrict?.panorama || currentDistrict?.background} alt="" className="pano-img" />
-            <img src={currentDistrict?.panorama || currentDistrict?.background} alt="" className="pano-img" />
-          </div>
+          {/* Three.js canvas inserted here */}
+          {/* 暗角遮罩 - 隐藏接缝区域 */}
+          <div className="pano-vignette" />
 
           {/* 建筑热点 */}
           {district?.buildings.map(b => {

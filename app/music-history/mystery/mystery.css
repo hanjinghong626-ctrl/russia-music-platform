@@ -1811,21 +1811,26 @@
   background: #050d18;
 }
 .pano-viewport:active { cursor: grabbing; }
-
-/* 全景卷轴 - 3份图片拼接无缝循环 */
-.pano-strip {
-  display: flex;
-  height: 100%;
-  will-change: transform;
+.pano-viewport canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
 }
-.pano-img {
-  height: 100%;
-  width: auto;
-  object-fit: contain;
-  flex-shrink: 0;
-  user-select: none;
-  -webkit-user-drag: none;
+
+/* 暗角遮罩 - 让边缘自然变暗，隐藏接缝 */
+.pano-vignette {
+  position: absolute;
+  inset: 0;
   pointer-events: none;
+  z-index: 10;
+  background: radial-gradient(
+    ellipse 70% 80% at center,
+    transparent 50%,
+    rgba(5, 13, 24, 0.15) 65%,
+    rgba(5, 13, 24, 0.4) 80%,
+    rgba(5, 13, 24, 0.75) 95%,
+    rgba(5, 13, 24, 0.95) 100%
+  );
 }
 
 /* ===== 全景热点 ===== */
