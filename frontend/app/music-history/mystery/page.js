@@ -277,6 +277,7 @@ export default function MysteryPage() {
       const onPointerDown = (e) => {
         // 忽略hotspot上的事件
         if (e.target.closest('.pano-hotspot, .district-exit, .explore-hud, .pano-compass-wrap')) return;
+        e.preventDefault();
 
         isUserInteracting = true;
         velocityLon = 0;
@@ -291,6 +292,7 @@ export default function MysteryPage() {
 
       const onPointerMove = (e) => {
         if (!isUserInteracting) return;
+        e.preventDefault();
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         const dx = clientX - onPointerDownX;
@@ -314,9 +316,9 @@ export default function MysteryPage() {
       container.addEventListener('mousedown', onPointerDown);
       document.addEventListener('mousemove', onPointerMove);
       document.addEventListener('mouseup', onPointerUp);
-      container.addEventListener('touchstart', onPointerDown, { passive: true });
-      container.addEventListener('touchmove', onPointerMove, { passive: true });
-      container.addEventListener('touchend', onPointerUp);
+      container.addEventListener('touchstart', onPointerDown, { passive: false });
+      container.addEventListener('touchmove', onPointerMove, { passive: false });
+      container.addEventListener('touchend', onPointerUp, { passive: false });
 
       // 动画循环
       const animate = () => {
