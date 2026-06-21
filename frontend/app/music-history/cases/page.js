@@ -1,4 +1,3 @@
-// v1
 'use client';
 
 import Link from 'next/link';
