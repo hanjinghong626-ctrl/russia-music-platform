@@ -57,7 +57,7 @@ export default function MusicHistoryPage() {
           <Link href="/music-history/glossary" className="nav-link">术语库</Link>
           <Link href="/music-history/topics/romance" className="nav-link">浪漫曲</Link>
           <Link href="/music-history/topics/opera" className="nav-link">歌剧</Link>
-          <Link href="/music-history/mystery" className="nav-link">🎭 剧本杀</Link>
+          <Link href="/music-history/cases" className="nav-link">🎭 案中曲</Link>
         </nav>
       </header>
 
