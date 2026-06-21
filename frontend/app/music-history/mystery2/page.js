@@ -332,7 +332,7 @@ export default function MysteryPage() {
       <div className="explore-page">
         {/* HUD */}
         <div className="explore-hud">
-          <Link href="/music-history" className="hud-back">← 返回</Link>
+          <Link href="/music-history/cases" className="hud-back">← 案件选择</Link>
           <div className="hud-case-info">
             <span className="hud-case-title">案中曲</span>
             <span className="hud-case-sub">莫斯科的回声 · 1893</span>
@@ -798,7 +798,7 @@ export default function MysteryPage() {
             setCurrentDistrictId('nevsky');
             setUnlockedBuildings(new Set());
           }}>🔄 重新调查</button>
-          <Link href="/music-history" className="back-home-btn">🏠 返回音乐史</Link>
+          <Link href="/music-history/cases" className="back-home-btn">🏠 返回案件选择</Link>
         </div>
       </div>
     </div>
