@@ -517,7 +517,7 @@ export default function MysteryPage() {
       <div className="explore-page">
         {/* HUD */}
         <div className="explore-hud">
-          <Link href="/music-history" className="hud-back">← 音乐史</Link>
+          <Link href="/music-history/cases" className="hud-back">← 案件选择</Link>
           <div className="hud-case-info">
             <div className="hud-case-title">冬宫暗奏</div>
             <div className="hud-case-sub">Санкт-Петербург · 1881</div>
@@ -969,7 +969,7 @@ export default function MysteryPage() {
             setCurrentDistrictId('nevsky');
             setUnlockedBuildings(new Set());
           }}>🔄 重新调查</button>
-          <Link href="/music-history" className="back-home-btn">🏠 返回音乐史</Link>
+          <Link href="/music-history/cases" className="back-home-btn">🏠 返回案件选择</Link>
         </div>
       </div>
     </div>
