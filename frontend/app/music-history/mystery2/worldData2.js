@@ -17,10 +17,12 @@ const worldMap = {
       nameRu: "Театральная площадь",
       description: "莫斯科大剧院金碧辉煌，芭蕾与歌剧的不夜城",
       background: "/images/mystery2/scenes/scene_theater_district.jpg",
+      panorama: "/images/mystery2/panoramas/pano_theater.jpg",
       scrollWidth: 4000,
       atmosphere: "night",
       weather: "clear",
       music: "grand",
+      initialYaw: 0,
       exits: {
         left: "conservatory",
         right: "mansion"
@@ -37,6 +39,8 @@ const worldMap = {
           interior: "/images/mystery2/scenes/scene_bolshoi_interior.jpg",
           npcInside: null,
           accessible: true,
+          yaw: -60,
+          pitch: -5,
           clueItems: [
             {
               id: "program-note",
@@ -78,6 +82,8 @@ const worldMap = {
           interior: "/images/mystery2/scenes/scene_backstage.jpg",
           npcInside: "rachmaninoff",
           accessible: true,
+          yaw: 20,
+          pitch: -8,
           clueItems: [
             {
               id: "rachmaninoff-letter",
@@ -110,6 +116,8 @@ const worldMap = {
           interior: "/images/mystery2/scenes/scene_vip_box.jpg",
           npcInside: null,
           accessible: true,
+          yaw: 80,
+          pitch: -5,
           clueItems: [
             {
               id: "court-invitation",
@@ -138,6 +146,8 @@ const worldMap = {
           name: "拉赫玛尼诺夫",
           nameRu: "С. В. Рахманинов",
           portrait: "/images/mystery2/portraits/portrait_rachmaninoff.jpg",
+          yaw: 25,
+          pitch: -5,
           x: 42,
           location: "在大剧院后台",
           greeting: "柴可夫斯基……他最后一次听我弹琴时，目光里有一种我无法理解的东西。现在我终于懂了——那是告别。"
@@ -150,10 +160,12 @@ const worldMap = {
       nameRu: "Консерватория",
       description: "莫斯科音乐学院，柴可夫斯基执教二十年的地方",
       background: "/images/mystery2/scenes/scene_conservatory_district.jpg",
+      panorama: "/images/mystery2/panoramas/pano_conservatory.jpg",
       scrollWidth: 4000,
       atmosphere: "dusk",
       weather: "fog",
       music: "solemn",
+      initialYaw: 0,
       exits: {
         left: "riverbank",
         right: "theater"
@@ -170,6 +182,8 @@ const worldMap = {
           interior: "/images/mystery2/scenes/scene_tchaikovsky_office.jpg",
           npcInside: "taneyev",
           accessible: true,
+          yaw: -50,
+          pitch: -8,
           clueItems: [
             {
               id: "sixth-symphony-draft",
@@ -211,6 +225,8 @@ const worldMap = {
           interior: "/images/mystery2/scenes/scene_archive.jpg",
           npcInside: null,
           accessible: true,
+          yaw: 30,
+          pitch: -5,
           clueItems: [
             {
               id: "court-martial-file",
@@ -243,6 +259,8 @@ const worldMap = {
           interior: "/images/mystery2/scenes/scene_practice_room.jpg",
           npcInside: null,
           accessible: true,
+          yaw: 80,
+          pitch: -5,
           clueItems: [
             {
               id: "piano-score",
@@ -262,6 +280,8 @@ const worldMap = {
           name: "塔涅耶夫",
           nameRu: "С. И. Танеев",
           portrait: "/images/mystery2/portraits/portrait_taneyev.jpg",
+          yaw: -45,
+          pitch: -5,
           x: 10,
           location: "在柴可夫斯基的办公室",
           greeting: "老师走了，但他的音乐里藏着答案。你听到了吗？《悲怆》的最后几个小节——那不是终结，那是控诉。"
@@ -274,10 +294,12 @@ const worldMap = {
       nameRu: "Особняки",
       description: "莫斯科河畔的富人宅邸，冯·梅克夫人的领地",
       background: "/images/mystery2/scenes/scene_mansion_district.jpg",
+      panorama: "/images/mystery2/panoramas/pano_mansion.jpg",
       scrollWidth: 4000,
       atmosphere: "afternoon",
       weather: "clear",
       music: "elegant",
+      initialYaw: 0,
       exits: {
         left: "theater",
         right: "riverbank"
@@ -294,6 +316,8 @@ const worldMap = {
           interior: "/images/mystery2/scenes/scene_von_meck_salon.jpg",
           npcInside: "von-meck",
           accessible: true,
+          yaw: -60,
+          pitch: -5,
           clueItems: [
             {
               id: "love-letters",
@@ -335,6 +359,8 @@ const worldMap = {
           interior: "/images/mystery2/scenes/scene_salon.jpg",
           npcInside: "modest",
           accessible: true,
+          yaw: 20,
+          pitch: -5,
           clueItems: [
             {
               id: "modest-manuscript",
@@ -367,6 +393,8 @@ const worldMap = {
           interior: "/images/mystery2/scenes/scene_publisher.jpg",
           npcInside: "jurgenson",
           accessible: true,
+          yaw: 70,
+          pitch: -8,
           clueItems: [
             {
               id: "contract",
@@ -395,6 +423,8 @@ const worldMap = {
           name: "莫杰斯特·柴可夫斯基",
           nameRu: "М. И. Чайковский",
           portrait: "/images/mystery2/portraits/portrait_modest.jpg",
+          yaw: 25,
+          pitch: -5,
           x: 45,
           location: "在文学沙龙",
           greeting: "你是来调查我兄长的死因？我可以告诉你一切——但有些真相，说出来比埋葬它更残忍。"
@@ -407,10 +437,12 @@ const worldMap = {
       nameRu: "Набережная Москвы-реки",
       description: "莫斯科河畔，清晨薄雾，茶馆与墓园",
       background: "/images/mystery2/scenes/scene_riverbank.jpg",
+      panorama: "/images/mystery2/panoramas/pano_riverbank.jpg",
       scrollWidth: 4000,
       atmosphere: "dawn",
       weather: "fog",
       music: "mournful",
+      initialYaw: 0,
       exits: {
         left: "mansion",
         right: "conservatory"
@@ -427,6 +459,8 @@ const worldMap = {
           interior: "/images/mystery2/scenes/scene_teahouse.jpg",
           npcInside: "rubinstein",
           accessible: true,
+          yaw: -40,
+          pitch: -5,
           clueItems: [
             {
               id: "gossip-newspaper",
@@ -459,6 +493,8 @@ const worldMap = {
           interior: "/images/mystery2/scenes/scene_cemetery.jpg",
           npcInside: null,
           accessible: true,
+          yaw: 60,
+          pitch: -5,
           clueItems: [
             {
               id: "grave-flowers",
@@ -491,6 +527,8 @@ const worldMap = {
           interior: "/images/mystery2/scenes/scene_chapel.jpg",
           npcInside: null,
           accessible: true,
+          yaw: 90,
+          pitch: -8,
           clueItems: [
             {
               id: "confession-record",
@@ -510,6 +548,8 @@ const worldMap = {
           name: "鲁宾斯坦",
           nameRu: "А. Г. Рубинштейн",
           portrait: "/images/mystery2/portraits/portrait_rubinstein.jpg",
+          yaw: -35,
+          pitch: -5,
           x: 8,
           location: "在河边茶馆",
           greeting: "柴可夫斯基……我们之间有过恩怨，但他不该那样死去。不管官方怎么说——那杯水不是意外。"
@@ -554,6 +594,8 @@ const worldMap = {
       name: "冯·梅克夫人",
       nameRu: "Н. Ф. фон Мекк",
       portrait: "/images/mystery2/portraits/portrait_von_meck.jpg",
+      yaw: -55,
+      pitch: -5,
       location: "自家宅邸",
       district: "mansion",
       buildingId: "von-meck-house",
