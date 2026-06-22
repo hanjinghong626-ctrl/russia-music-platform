@@ -28,11 +28,8 @@ export default function MysteryPage() {
   const [phase, setPhase] = useState(PHASE.INTRO);
   const [introStep, setIntroStep] = useState(0);
 
-  // 街区与漫游状态
+  // 街区状态
   const [currentDistrictId, setCurrentDistrictId] = useState('theater');
-  const [scrollX, setScrollX] = useState(0);
-  const [playerX, setPlayerX] = useState(50);
-  const [playerDirection, setPlayerDirection] = useState('right');
 
   // 场景状态
   const [currentBuilding, setCurrentBuilding] = useState(null);
@@ -60,13 +57,21 @@ export default function MysteryPage() {
   const [notification, setNotification] = useState(null);
   const [showMinimap, setShowMinimap] = useState(false);
   const [transitionTarget, setTransitionTarget] = useState(null);
-  const [playerWalking, setPlayerWalking] = useState(false);
+  const [panoReady, setPanoReady] = useState(false);
+  const [hintVisible, setHintVisible] = useState(true);
 
-  const streetRef = useRef(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollStartX = useRef(0);
-  const walkTimer = useRef(null);
+  // === 360全景相关 refs ===
+  const panoContainerRef = useRef(null);
+  const threeModuleRef = useRef(null);
+  const rendererRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const sphereRef = useRef(null);
+  const hotspotsRef = useRef({});
+  const compassNeedleRef = useRef(null);
+  const lonRef = useRef(0);
+  const latRef = useRef(0);
+  const animFrameRef = useRef(null);
 
   const currentDistrict = worldMap.getDistrict(currentDistrictId);
 
@@ -112,7 +117,7 @@ export default function MysteryPage() {
     });
   }, [unlockedBuildings, showNotif]);
 
-  // 切换街区（带转场动画）
+  // 切换街区
   const travelToDistrict = useCallback((targetId) => {
     if (targetId === currentDistrictId) return;
     const target = worldMap.getDistrict(targetId);
@@ -126,14 +131,236 @@ export default function MysteryPage() {
     if (phase !== PHASE.TRANSITION || !transitionTarget) return;
     const timer = setTimeout(() => {
       setCurrentDistrictId(transitionTarget);
-      setScrollX(0);
-      setPlayerX(50);
       setTransitionTarget(null);
       setPhase(PHASE.EXPLORE);
       advanceTime(0.5);
     }, 1200);
     return () => clearTimeout(timer);
   }, [phase, transitionTarget, advanceTime]);
+
+  // === Three.js 360全景 ===
+  useEffect(() => {
+    if (phase !== PHASE.EXPLORE) {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      if (rendererRef.current) {
+        rendererRef.current.dispose();
+        const c = rendererRef.current.domElement;
+        if (c?.parentNode) c.parentNode.removeChild(c);
+        rendererRef.current = null;
+      }
+      sceneRef.current = null;
+      cameraRef.current = null;
+      sphereRef.current = null;
+      setPanoReady(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const init = async () => {
+      const THREE = await import('three');
+      if (cancelled) return;
+      threeModuleRef.current = THREE;
+
+      const container = panoContainerRef.current;
+      if (!container) return;
+
+      const oldCanvas = container.querySelector('canvas');
+      if (oldCanvas) oldCanvas.remove();
+
+      const scene = new THREE.Scene();
+      sceneRef.current = scene;
+
+      const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 1, 1100);
+      cameraRef.current = camera;
+
+      const geometry = new THREE.SphereGeometry(500, 60, 40);
+      geometry.scale(-1, 1, 1);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      container.insertBefore(renderer.domElement, container.firstChild);
+      rendererRef.current = renderer;
+
+      const panoramaUrl = currentDistrict?.panorama || currentDistrict?.background;
+
+      const texture = await new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const cvs = document.createElement('canvas');
+          cvs.width = img.height * 2;
+          cvs.height = img.height;
+          const ctx = cvs.getContext('2d');
+          const srcRatio = img.width / img.height;
+          if (srcRatio >= 2) {
+            const cropW = img.height * 2;
+            const cropX = (img.width - cropW) / 2;
+            ctx.drawImage(img, cropX, 0, cropW, img.height, 0, 0, cvs.width, cvs.height);
+          } else {
+            ctx.drawImage(img, 0, 0, cvs.width, cvs.height);
+          }
+          const t = new THREE.CanvasTexture(cvs);
+          t.colorSpace = THREE.SRGBColorSpace;
+          t.minFilter = THREE.LinearMipmapLinearFilter;
+          t.magFilter = THREE.LinearFilter;
+          t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+          resolve(t);
+        };
+        img.onerror = () => {
+          const t = new THREE.TextureLoader().load(panoramaUrl);
+          t.colorSpace = THREE.SRGBColorSpace;
+          resolve(t);
+        };
+        img.src = panoramaUrl;
+      });
+
+      setPanoReady(true);
+      setTimeout(() => setHintVisible(false), 4000);
+
+      const material = new THREE.MeshBasicMaterial({ map: texture });
+      const sphere = new THREE.Mesh(geometry, material);
+      scene.add(sphere);
+      sphereRef.current = sphere;
+
+      lonRef.current = currentDistrict?.initialYaw || 0;
+      latRef.current = 0;
+
+      // 交互
+      let isInteracting = false;
+      let downX = 0, downY = 0, downLon = 0, downLat = 0;
+      let velocityLon = 0, velocityLat = 0;
+      let prevLon = 0, prevLat = 0;
+      const SENS = 0.15, FRIC = 0.92, LAT_LIM = 75;
+
+      const onDown = (e) => {
+        if (e.target.closest('.pano-hotspot, .district-exit, .explore-hud, .pano-compass-wrap, .pano-vignette')) return;
+        e.preventDefault();
+        isInteracting = true;
+        velocityLon = velocityLat = 0;
+        prevLon = lonRef.current;
+        prevLat = latRef.current;
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        downX = cx; downY = cy;
+        downLon = lonRef.current; downLat = latRef.current;
+      };
+
+      const onMove = (e) => {
+        if (!isInteracting) return;
+        e.preventDefault();
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        const newLon = downLon - (cx - downX) * SENS;
+        const newLat = Math.max(-LAT_LIM, Math.min(LAT_LIM, downLat + (cy - downY) * SENS));
+        velocityLon = newLon - prevLon;
+        velocityLat = newLat - prevLat;
+        prevLon = newLon; prevLat = newLat;
+        lonRef.current = newLon;
+        latRef.current = newLat;
+      };
+
+      const onUp = () => { isInteracting = false; };
+
+      container.addEventListener('mousedown', onDown);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      container.addEventListener('touchstart', onDown, { passive: false });
+      container.addEventListener('touchmove', onMove, { passive: false });
+      container.addEventListener('touchend', onUp, { passive: false });
+
+      // 动画
+      const animate = () => {
+        if (cancelled) return;
+        animFrameRef.current = requestAnimationFrame(animate);
+
+        if (!isInteracting) {
+          lonRef.current += velocityLon;
+          latRef.current += velocityLat;
+          velocityLon *= FRIC;
+          velocityLat *= FRIC;
+          if (latRef.current > LAT_LIM) { latRef.current = LAT_LIM; velocityLat = 0; }
+          else if (latRef.current < -LAT_LIM) { latRef.current = -LAT_LIM; velocityLat = 0; }
+          if (Math.abs(velocityLon) < 0.005) velocityLon = 0;
+          if (Math.abs(velocityLat) < 0.005) velocityLat = 0;
+        }
+
+        const phi = THREE.MathUtils.degToRad(90 - latRef.current);
+        const theta = THREE.MathUtils.degToRad(lonRef.current);
+        camera.lookAt(new THREE.Vector3(
+          500 * Math.sin(phi) * Math.cos(theta),
+          500 * Math.cos(phi),
+          500 * Math.sin(phi) * Math.sin(theta)
+        ));
+        renderer.render(scene, camera);
+
+        // 热点
+        updateHotspots(camera, container);
+
+        // 罗盘
+        if (compassNeedleRef.current) {
+          compassNeedleRef.current.style.transform = `rotate(${-lonRef.current}deg)`;
+        }
+      };
+      animate();
+
+      const onResize = () => {
+        if (!container || !camera || !renderer) return;
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      };
+      window.addEventListener('resize', onResize);
+
+      return () => {
+        cancelled = true;
+        isInteracting = false;
+        container.removeEventListener('mousedown', onDown);
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        container.removeEventListener('touchstart', onDown);
+        container.removeEventListener('touchmove', onMove);
+        container.removeEventListener('touchend', onUp);
+        window.removeEventListener('resize', onResize);
+        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+        renderer.dispose(); geometry.dispose(); material.dispose(); texture.dispose();
+        const c = renderer.domElement;
+        if (c?.parentNode) c.parentNode.removeChild(c);
+      };
+    };
+
+    const cleanup = init();
+    return () => { cancelled = true; cleanup?.then?.(fn => fn?.()); };
+  }, [phase, currentDistrictId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 热点3D→2D投影
+  const updateHotspots = (camera, container) => {
+    const THREE = threeModuleRef.current;
+    if (!THREE || !camera || !container) return;
+    const w = container.clientWidth, h = container.clientHeight;
+    const district = worldMap.getDistrict(currentDistrictId);
+    if (!district) return;
+
+    [...district.buildings.map(b => ({ id: b.id, yaw: b.yaw, pitch: b.pitch })),
+     ...district.npcs.map(n => ({ id: `npc_${n.id}`, yaw: n.yaw, pitch: n.pitch }))]
+    .forEach(({ id, yaw, pitch }) => {
+      const el = hotspotsRef.current[id];
+      if (!el) return;
+      const phi = THREE.MathUtils.degToRad(90 - (pitch || 0));
+      const theta = THREE.MathUtils.degToRad(yaw || 0);
+      const pos = new THREE.Vector3(500 * Math.sin(phi) * Math.cos(theta), 500 * Math.cos(phi), 500 * Math.sin(phi) * Math.sin(theta));
+      pos.project(camera);
+      if (pos.z > 1 || Math.abs(pos.x) > 1.2 || Math.abs(pos.y) > 1.2) { el.style.display = 'none'; return; }
+      const dist = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
+      el.style.display = 'flex';
+      el.style.left = ((pos.x * 0.5 + 0.5) * w) + 'px';
+      el.style.top = ((-pos.y * 0.5 + 0.5) * h) + 'px';
+      el.style.transform = `translate(-50%, -50%) scale(${Math.max(0.5, 1 - dist * 0.4)})`;
+      el.style.opacity = Math.max(0.3, 1 - dist * 0.6);
+    });
+  };
 
   // 进入建筑
   const enterBuilding = useCallback((building) => {
@@ -229,59 +456,34 @@ export default function MysteryPage() {
     }
   }, [currentBuilding]);
 
-  // 拖拽漫游街道
-  const handlePointerDown = useCallback((e) => {
-    if (phase !== PHASE.EXPLORE) return;
-    isDragging.current = true;
-    startX.current = e.clientX;
-    scrollStartX.current = scrollX;
-  }, [phase, scrollX]);
-
-  const handlePointerMove = useCallback((e) => {
-    if (!isDragging.current || phase !== PHASE.EXPLORE) return;
-    const delta = startX.current - e.clientX;
-    const maxScroll = 2000;
-    const newScroll = Math.max(0, Math.min(maxScroll, scrollStartX.current + delta));
-    setScrollX(newScroll);
-    setPlayerX(50 + (newScroll / maxScroll) * 50);
-    setPlayerDirection(delta > 0 ? 'right' : 'left');
-  }, [phase]);
-
-  const handlePointerUp = useCallback(() => {
-    isDragging.current = false;
-  }, []);
-
   // 提交指认
   const submitVerdict = useCallback(() => {
     if (!selectedCulprit) return;
     const isCorrect = selectedCulprit === worldMap.caseResult.culprit;
-    const hasEvidence = selectedEvidence.length > 0;
-    let result;
-    if (isCorrect && hasEvidence) result = 'perfect';
-    else if (isCorrect) result = 'correct';
-    else result = 'wrong';
-    setVerdictResult(result);
+    const hasAllEvidence = selectedEvidence.length >= 3;
+    if (isCorrect && hasAllEvidence) {
+      setVerdictResult('perfect');
+    } else if (isCorrect) {
+      setVerdictResult('correct');
+    } else {
+      setVerdictResult('wrong');
+    }
     setPhase(PHASE.VERDICT);
   }, [selectedCulprit, selectedEvidence]);
 
-  // 获取当前街区的有效建筑（处理解锁状态）
-  const getEffectiveBuildings = useCallback((district) => {
-    if (!district) return [];
-    return district.buildings.map(b => ({
-      ...b,
-      accessible: b.accessible || unlockedBuildings.has(b.id)
-    }));
-  }, [unlockedBuildings]);
+  // 所有NPC列表
+  const allNpcs = Object.entries(worldMap.characters).map(([id, char]) => ({
+    id,
+    ...char
+  }));
 
-  const allNpcs = Object.entries(worldMap.characters).map(([id, char]) => ({ id, ...char }));
-  const mood = DISTRICT_MOOD[currentDistrictId] || DISTRICT_MOOD.nevsky;
+  // ===== 渲染函数 =====
 
-  // ==================== 渲染 ====================
-
+  // 开场
   const renderIntro = () => (
-    <div className="mystery-intro" onClick={() => setPhase(PHASE.EXPLORE)}>
+    <div className="mystery-intro" onClick={() => phase === PHASE.INTRO && introStep >= 2 && setPhase(PHASE.EXPLORE)}>
       <div className="intro-particles">
-        {[...Array(30)].map((_, i) => (
+        {Array.from({ length: 30 }, (_, i) => (
           <div key={i} className="particle" style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
@@ -291,42 +493,25 @@ export default function MysteryPage() {
         ))}
       </div>
       <div className="intro-silhouette" />
-      <div className={`intro-text intro-step-${introStep}`}>
-        <h1 className="intro-title">
-          <span className="title-char" style={{ animationDelay: '0s' }}>案</span>
-          <span className="title-char" style={{ animationDelay: '0.1s' }}>中</span>
-          <span className="title-char" style={{ animationDelay: '0.2s' }}>曲</span>
-        </h1>
-        <p className="intro-subtitle-ru">Эхо Москвы</p>
-        <p className="intro-desc">1893年·莫斯科<br />柴可夫斯基首演《悲怆》九日后离世——你是侦探<br />四个街区，六名关联人，一个被掩盖的真相</p>
-        <button className="intro-enter-btn">
-          <span className="btn-icon">🔍</span> 踏入莫斯科
+      <div className={`intro-text ${introStep >= 1 ? 'intro-step-1' : ''} ${introStep >= 2 ? 'intro-step-2' : ''} ${introStep >= 3 ? 'intro-step-3' : ''}`}>
+        <div className="intro-title">
+          {'莫斯科的回声'.split('').map((ch, i) => (
+            <span key={i} className="title-char" style={{ animationDelay: `${0.3 + i * 0.1}s` }}>{ch}</span>
+          ))}
+        </div>
+        <div className="intro-subtitle-ru">Эхо Москвы</div>
+        <div className="intro-desc">1893年，莫斯科。柴可夫斯基在《悲怆》首演九天后突然去世。<br />官方说是霍乱，但真相远比这复杂。</div>
+        <button className="intro-enter-btn" onClick={() => setPhase(PHASE.EXPLORE)}>
+          <span className="btn-icon">🕯️</span> 开始调查
         </button>
       </div>
     </div>
   );
 
-  // 街区转场动画
-  const renderTransition = () => {
-    const target = worldMap.getDistrict(transitionTarget);
-    if (!target) return null;
-    const targetMood = DISTRICT_MOOD[transitionTarget] || DISTRICT_MOOD.nevsky;
-    return (
-      <div className="district-transition">
-        <div className="transition-overlay" style={{ '--accent': targetMood.color }}>
-          <div className="transition-icon">{targetMood.icon}</div>
-          <div className="transition-name">{target.name}</div>
-          <div className="transition-name-ru">{target.nameRu}</div>
-          <div className="transition-desc">{target.description}</div>
-        </div>
-      </div>
-    );
-  };
-
-  // 街道探索（多街区版）
+  // ===== 360全景街道探索 =====
   const renderExplore = () => {
-    if (!currentDistrict) return null;
-    const buildings = getEffectiveBuildings(currentDistrict);
+    const mood = DISTRICT_MOOD[currentDistrictId] || DISTRICT_MOOD.theater;
+    const district = currentDistrict;
 
     return (
       <div className="explore-page">
@@ -334,16 +519,16 @@ export default function MysteryPage() {
         <div className="explore-hud">
           <Link href="/music-history/cases" className="hud-back">← 案件选择</Link>
           <div className="hud-case-info">
-            <span className="hud-case-title">案中曲</span>
-            <span className="hud-case-sub">莫斯科的回声 · 1893</span>
+            <div className="hud-case-title">莫斯科的回声</div>
+            <div className="hud-case-sub">Москва · 1893</div>
+          </div>
+          <div className="hud-district-badge" style={{ borderColor: mood.color, color: mood.color }}>
+            <span>{mood.icon}</span>
+            <span className="hud-district-name">{district?.name}</span>
           </div>
           <div className="hud-stats">
-            <div className="hud-district-badge" style={{ borderColor: mood.color }}>
-              <span>{mood.icon}</span>
-              <span className="hud-district-name">{currentDistrict.name}</span>
-            </div>
             <div className="hud-time">
-              <span className="time-icon">{dayPhase === 'night' ? '🌙' : dayPhase === 'evening' ? '🌆' : '☀️'}</span>
+              <span className="time-icon">🕐</span>
               <span className="time-text">{Math.floor(gameTime)}:00</span>
             </div>
             <div className="hud-clues">
@@ -351,118 +536,102 @@ export default function MysteryPage() {
               <span>{collectedClues.length}</span>
             </div>
             <button className="hud-evidence-btn" onClick={() => setPhase(PHASE.EVIDENCE)}>
-              📋 推理
+              推理 ⚖️
             </button>
-            <button className="hud-minimap-btn" onClick={() => setShowMinimap(!showMinimap)}>
-              🗺️
-            </button>
+            <button className="hud-minimap-btn" onClick={() => setShowMinimap(true)}>🗺️</button>
           </div>
         </div>
 
-        {/* 街道场景 */}
-        <div
-          className="street-viewport"
-          ref={streetRef}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerLeave={handlePointerUp}
-        >
-          <div className="street-scroll" style={{ transform: `translateX(${-scrollX}px)` }}>
-            <div className="street-bg">
-              <img src={currentDistrict.background} alt={currentDistrict.name} className="street-bg-img" />
-            </div>
+        {/* 360全景视口 */}
+        <div className="pano-viewport" ref={panoContainerRef}>
+          {/* Three.js canvas inserted here */}
+          {/* 暗角遮罩 */}
+          <div className="pano-vignette" />
 
-            {/* 建筑热区 */}
-            {buildings.map(b => (
+          {/* 建筑热点 */}
+          {district?.buildings.map(b => {
+            const isLocked = !b.accessible && !unlockedBuildings.has(b.id);
+            return (
               <div
                 key={b.id}
-                className="building-hotspot"
-                style={{ left: `${b.x}%`, width: `${b.width}%` }}
-                onClick={() => enterBuilding(b)}
+                ref={el => { hotspotsRef.current[b.id] = el; }}
+                className={`pano-hotspot hotspot-building ${isLocked ? 'hotspot-locked' : ''}`}
+                onClick={(e) => { e.stopPropagation(); enterBuilding(b); }}
               >
-                <div className="building-sign">
-                  <span className="sign-text">{b.icon} {b.sign}</span>
-                </div>
-                <div className="building-door">
-                  <span className="door-icon">{b.accessible ? '🚪' : '🔒'}</span>
-                </div>
-                <div className="building-label">{b.name}</div>
-                {b.npcInside && worldMap.characters[b.npcInside] && (
-                  <div className="building-npc-indicator">
-                    <img src={worldMap.characters[b.npcInside].portrait} alt="" className="npc-thumb" />
-                  </div>
-                )}
+                <div className="hotspot-icon">{b.icon}</div>
+                <div className="hotspot-name">{b.name}</div>
+                <div className="hotspot-sign">{b.sign}</div>
+                {isLocked && <div className="hotspot-lock">🔒</div>}
+                <div className="hotspot-pulse" />
               </div>
-            ))}
+            );
+          })}
 
-            {/* 街道NPC */}
-            {currentDistrict.npcs.map(npc => (
-              <div
-                key={npc.id}
-                className="street-npc"
-                style={{ left: `${npc.x}%` }}
-                onClick={() => startDialogue(npc.id)}
-              >
-                <div className="street-npc-portrait">
-                  <img src={npc.portrait} alt={npc.name} />
-                  {talkedNpcs.has(npc.id) && <div className="npc-talked-badge">✓</div>}
-                </div>
-                <div className="street-npc-name">{npc.name}</div>
-                <div className="street-npc-location">{npc.location}</div>
-                <div className="npc-pulse" />
-              </div>
-            ))}
-
-            {/* 氛围效果 */}
-            <div className="street-atmosphere">
-              {currentDistrict.weather === 'snow' && [...Array(25)].map((_, i) => (
-                <div key={`snow-${i}`} className="snowflake" style={{
-                  left: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 8}s`,
-                  animationDuration: `${4 + Math.random() * 6}s`
-                }} />
-              ))}
-              {currentDistrict.weather === 'fog' && [...Array(8)].map((_, i) => (
-                <div key={`fog-${i}`} className="fog-layer" style={{
-                  left: `${i * 15}%`,
-                  animationDelay: `${i * 2}s`,
-                  animationDuration: `${12 + i * 2}s`
-                }} />
-              ))}
+          {/* 街道NPC热点 */}
+          {district?.npcs.map(npc => (
+            <div
+              key={`npc_${npc.id}`}
+              ref={el => { hotspotsRef.current[`npc_${npc.id}`] = el; }}
+              className="pano-hotspot hotspot-npc"
+              onClick={(e) => { e.stopPropagation(); startDialogue(npc.id); }}
+            >
+              <img src={npc.portrait} alt={npc.name} className="hotspot-portrait" />
+              <div className="hotspot-name">{npc.name}</div>
+              <div className="hotspot-npc-location">{npc.location}</div>
+              <div className="hotspot-pulse" />
             </div>
+          ))}
 
-            {/* 天色 */}
-            <div className={`sky-overlay ${mood.skyClass}`} />
+          {/* 罗盘 */}
+          <div className="pano-compass-wrap">
+            <div className="pano-compass">
+              <div className="compass-ring">
+                <div className="compass-needle" ref={compassNeedleRef}>
+                  <div className="compass-n">N</div>
+                  <div className="compass-s">S</div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* 街区出口指示 */}
-          {currentDistrict.exits.left && (
-            <div className="district-exit district-exit-left" onClick={() => travelToDistrict(currentDistrict.exits.left)}>
-              <span className="exit-arrow">←</span>
-              <span className="exit-label">{worldMap.getDistrict(currentDistrict.exits.left)?.name}</span>
-            </div>
-          )}
-          {currentDistrict.exits.right && (
-            <div className="district-exit district-exit-right" onClick={() => travelToDistrict(currentDistrict.exits.right)}>
-              <span className="exit-label">{worldMap.getDistrict(currentDistrict.exits.right)?.name}</span>
-              <span className="exit-arrow">→</span>
+          {/* 拖拽提示 */}
+          {panoReady && hintVisible && (
+            <div className="pano-hint">
+              <span className="pano-hint-icon">👆</span>
+              拖拽环顾四周 · 点击地点探索
             </div>
           )}
 
-          {/* 滚动提示 */}
-          {scrollX < 100 && (
-            <div className="scroll-hint scroll-hint-center">
-              ← 滑动漫游街道 →
+          {/* 雾效 */}
+          {(currentDistrictId === 'conservatory' || currentDistrictId === 'riverbank') && (
+            <div className="fog-layer fog-left" />
+          )}
+          {currentDistrictId === 'riverbank' && (
+            <div className="fog-layer fog-right" style={{ animationDelay: '-7s' }} />
+          )}
+
+          {/* 加载指示 */}
+          {!panoReady && (
+            <div className="pano-loading">
+              <div className="pano-loading-spinner" />
+              <div>加载全景中…</div>
             </div>
           )}
         </div>
 
-        {/* 玩家位置指示器 */}
-        <div className="player-indicator">
-          <div className="player-dot" />
-          <span className="player-label">{currentDistrict.name} · {currentDistrict.nameRu}</span>
-        </div>
+        {/* 街区出口 */}
+        {district?.exits?.left && (
+          <div className="district-exit district-exit-left" onClick={() => travelToDistrict(district.exits.left)}>
+            <div className="exit-arrow">◀</div>
+            <div className="exit-label">{worldMap.getDistrict(district.exits.left)?.name}</div>
+          </div>
+        )}
+        {district?.exits?.right && (
+          <div className="district-exit district-exit-right" onClick={() => travelToDistrict(district.exits.right)}>
+            <div className="exit-arrow">▶</div>
+            <div className="exit-label">{worldMap.getDistrict(district.exits.right)?.name}</div>
+          </div>
+        )}
 
         {/* 小地图 */}
         {showMinimap && renderMinimap()}
@@ -481,23 +650,19 @@ export default function MysteryPage() {
   const renderMinimap = () => (
     <div className="minimap-overlay" onClick={() => setShowMinimap(false)}>
       <div className="minimap-panel" onClick={e => e.stopPropagation()}>
-        <div className="minimap-title">🗺️ 圣彼得堡地图</div>
+        <div className="minimap-title">🗺️ 莫斯科街区</div>
         <div className="minimap-grid">
-          {worldMap.districts.map((d, idx) => {
-            const dMood = DISTRICT_MOOD[d.id];
+          {worldMap.districts.map(d => {
             const isCurrent = d.id === currentDistrictId;
-            const hasVisited = true; // 简化：所有区域都可见
+            const mood = DISTRICT_MOOD[d.id];
             return (
               <div
                 key={d.id}
                 className={`minimap-district ${isCurrent ? 'minimap-current' : ''}`}
-                style={{ '--district-color': dMood.color }}
-                onClick={() => {
-                  if (!isCurrent) travelToDistrict(d.id);
-                  setShowMinimap(false);
-                }}
+                style={{ '--district-color': mood.color }}
+                onClick={() => { travelToDistrict(d.id); setShowMinimap(false); }}
               >
-                <div className="minimap-district-icon">{dMood.icon}</div>
+                <div className="minimap-district-icon">{mood.icon}</div>
                 <div className="minimap-district-name">{d.name}</div>
                 <div className="minimap-district-ru">{d.nameRu}</div>
                 <div className="minimap-district-buildings">
@@ -513,6 +678,22 @@ export default function MysteryPage() {
       </div>
     </div>
   );
+
+  // 转场
+  const renderTransition = () => {
+    const target = worldMap.getDistrict(transitionTarget);
+    const mood = DISTRICT_MOOD[transitionTarget];
+    return (
+      <div className="district-transition">
+        <div className="transition-overlay">
+          <div className="transition-icon">{mood?.icon || '🏛️'}</div>
+          <div className="transition-name" style={{ color: mood?.color }}>{target?.name}</div>
+          <div className="transition-name-ru">{target?.nameRu}</div>
+          <div className="transition-desc">{target?.description}</div>
+        </div>
+      </div>
+    );
+  };
 
   // 建筑内部
   const renderInterior = () => {
@@ -693,8 +874,7 @@ export default function MysteryPage() {
       </div>
 
       <div className="verdict-section">
-        <h3 className="verdict-label">谁杀死了柴可夫斯基？</h3>
-        <p className="verdict-hint" style={{color: 'var(--mystery-text-dim)', fontSize: '0.85rem', marginBottom: '1rem'}}>仔细思考——凶手可能不只是一个具体的人</p>
+        <h3 className="verdict-label">指认凶手</h3>
         <div className="culprit-select">
           {allNpcs.map(npc => (
             <div
@@ -707,8 +887,9 @@ export default function MysteryPage() {
               {selectedCulprit === npc.id && <span className="culprit-check">✓</span>}
             </div>
           ))}
+          {/* 体制选项 */}
           <div
-            className={`culprit-option culprit-option-system ${selectedCulprit === 'system' ? 'culprit-selected' : ''}`}
+            className={`culprit-option ${selectedCulprit === 'system' ? 'culprit-selected' : ''}`}
             onClick={() => setSelectedCulprit('system')}
           >
             <div className="culprit-system-icon">⚖️</div>
@@ -717,7 +898,7 @@ export default function MysteryPage() {
           </div>
         </div>
         <button className="submit-verdict-btn" onClick={submitVerdict} disabled={!selectedCulprit}>
-          提交判断 ⚖️
+          提交指认 ⚖️
         </button>
       </div>
     </div>
@@ -733,13 +914,13 @@ export default function MysteryPage() {
         </div>
         <div className="verdict-content">
           {verdictResult === 'perfect' && (
-            <><h2>🎯 完美破案！</h2><p>你不仅找到了真凶，还构建了完整的证据链。</p></>
+            <><h2>🎯 完美破案！</h2><p>你不仅找到了真相，还构建了完整的证据链。</p></>
           )}
           {verdictResult === 'correct' && (
-            <><h2>✅ 凶手找对了</h2><p>但证据链还不够完整。下次多收集一些线索吧。</p></>
+            <><h2>✅ 真相找对了</h2><p>但证据链还不够完整。下次多收集一些线索吧。</p></>
           )}
           {verdictResult === 'wrong' && (
-            <><h2>❌ 误判！</h2><p>你指认了无辜的人。真凶：<strong>{worldMap.caseResult.culpritName}</strong></p></>
+            <><h2>❌ 误判！</h2><p>你指认了错误的对象。真相应更深层。</p></>
           )}
           <button className="reveal-truth-btn" onClick={() => setPhase(PHASE.TRUTH)}>
             揭示真相 →
@@ -761,9 +942,9 @@ export default function MysteryPage() {
             <span className="truth-label">受害者</span>
           </div>
           <div className="truth-culprit">
-            <div className="truth-system-icon" style={{width: 100, height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', background: 'rgba(139,34,82,0.3)', borderRadius: '8px', border: '2px solid var(--mystery-blood)'}}>⚖️</div>
-            <p>{worldMap.caseResult.culpritName}</p>
-            <span className="truth-label culprit-label">共谋者</span>
+            <div className="truth-system-icon-lg">⚖️</div>
+            <p>整个体制</p>
+            <span className="truth-label culprit-label">真凶</span>
           </div>
         </div>
         <div className="truth-text">
@@ -794,8 +975,7 @@ export default function MysteryPage() {
             setVerdictResult(null);
             setGameTime(14);
             setDayPhase('afternoon');
-            setScrollX(0);
-            setCurrentDistrictId('nevsky');
+            setCurrentDistrictId('theater');
             setUnlockedBuildings(new Set());
           }}>🔄 重新调查</button>
           <Link href="/music-history/cases" className="back-home-btn">🏠 返回案件选择</Link>
