@@ -171,7 +171,7 @@ export default function MysteryPage() {
       const scene = new THREE.Scene();
       sceneRef.current = scene;
 
-      const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 1, 1100);
+      const camera = new THREE.PerspectiveCamera(90, container.clientWidth / container.clientHeight, 1, 1100);
       cameraRef.current = camera;
 
       const geometry = new THREE.SphereGeometry(500, 60, 40);
