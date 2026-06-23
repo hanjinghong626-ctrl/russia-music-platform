@@ -171,7 +171,7 @@ export default function MysteryPage() {
       const scene = new THREE.Scene();
       sceneRef.current = scene;
 
-      const camera = new THREE.PerspectiveCamera(90, container.clientWidth / container.clientHeight, 1, 1100);
+      const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 1, 1100);
       cameraRef.current = camera;
 
       const geometry = new THREE.SphereGeometry(500, 60, 40);
@@ -750,7 +750,7 @@ export default function MysteryPage() {
     );
   };
 
-  // 对话
+  // 对话 — 沉浸式视觉小说风格
   const renderDialogue = () => {
     if (!currentNpc) return null;
     const roundsDone = npcRoundsDone[currentNpc.id] || 0;
@@ -762,41 +762,52 @@ export default function MysteryPage() {
 
     return (
       <div className="dialogue-overlay">
-        <div className="dialogue-container">
-          <div className="dialogue-portrait-side">
-            <img src={currentNpc.portrait} alt={currentNpc.name} className="dialogue-portrait-lg" />
-            <div className="dialogue-npc-name">{currentNpc.name}</div>
-            <div className="dialogue-npc-ru">{currentNpc.nameRu}</div>
-            <div className="dialogue-round-info">第{currentRound + 1}/3轮</div>
-            <button className="dialogue-exit" onClick={exitDialogue}>✕ 离开</button>
+        <div className="dialogue-scene">
+          {/* NPC 氛围层 — 大肖像做半透明背景 */}
+          <div className="dialogue-atmosphere">
+            <img src={currentNpc.portrait} alt={currentNpc.name} className="dialogue-portrait-bg" />
+            <div className="dialogue-atmos-fade" />
           </div>
 
-          <div className="dialogue-main">
+          {/* 对话面板 — 底部 */}
+          <div className="dialogue-panel">
+            <div className="dialogue-header">
+              <div className="dialogue-speaker">
+                <span className="dialogue-name">{currentNpc.name}</span>
+                <span className="dialogue-name-ru">{currentNpc.nameRu}</span>
+              </div>
+              <button className="dialogue-leave-btn" onClick={exitDialogue} title="离开">✕</button>
+            </div>
+
             {!asked ? (
-              <div className="dialogue-questions">
-                <div className="dialogue-greeting">
-                  {currentNpc.greeting || `${currentNpc.name}看着你，等待你的提问。`}
+              <div className="dialogue-body">
+                <div className="dialogue-narrative">
+                  {currentNpc.greeting || `${currentNpc.name}看着你，等待着。`}
                 </div>
-                {questions.map((q, idx) => (
-                  <button key={idx} className="dialogue-question-btn" onClick={() => askQuestion(q)}>
-                    <span className="q-num">{idx + 1}</span>
-                    <span className="q-text">{q.question}</span>
-                  </button>
-                ))}
+                <div className="dialogue-choices">
+                  {questions.map((q, idx) => (
+                    <button key={idx} className="dialogue-choice" onClick={() => askQuestion(q)}>
+                      <span className="choice-text">{q.question}</span>
+                      <span className="choice-arrow">▸</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             ) : (
-              <div className="dialogue-response-area">
-                <div className="dialogue-asked-q">
-                  <span className="q-marker">你：</span>{asked.question}
+              <div className="dialogue-body">
+                <div className="dialogue-line dialogue-player-line">
+                  <span className="line-speaker">你</span>
+                  <span className="line-text">「{asked.question}」</span>
                 </div>
-                <div className="dialogue-answer">
-                  <span className="a-marker">{currentNpc.name}：</span>{asked.answer}
+                <div className="dialogue-line dialogue-npc-line">
+                  <span className="line-speaker">{currentNpc.name}</span>
+                  <span className="line-text">{asked.answer}</span>
                 </div>
                 {asked.hint && (
-                  <div className="dialogue-hint-box">💡 {asked.hint}</div>
+                  <div className="dialogue-insight">💭 {asked.hint}</div>
                 )}
-                <button className="dialogue-continue" onClick={endDialogueRound}>
-                  {currentRound < 2 ? '继续 →' : '结束审讯'}
+                <button className="dialogue-next-btn" onClick={endDialogueRound}>
+                  {currentRound < 2 ? '继续…' : '告辞'}
                 </button>
               </div>
             )}
