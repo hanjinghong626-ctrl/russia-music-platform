@@ -22,7 +22,7 @@ const worldMap = {
       atmosphere: "night",
       weather: "clear",
       music: "grand",
-      initialYaw: 0,
+      initialYaw: 15,
       exits: {
         left: "conservatory",
         right: "mansion"
@@ -165,7 +165,7 @@ const worldMap = {
       atmosphere: "dusk",
       weather: "fog",
       music: "solemn",
-      initialYaw: 0,
+      initialYaw: 5,
       exits: {
         left: "riverbank",
         right: "theater"
@@ -299,7 +299,7 @@ const worldMap = {
       atmosphere: "afternoon",
       weather: "clear",
       music: "elegant",
-      initialYaw: 0,
+      initialYaw: 15,
       exits: {
         left: "theater",
         right: "riverbank"
@@ -442,7 +442,7 @@ const worldMap = {
       atmosphere: "dawn",
       weather: "fog",
       music: "mournful",
-      initialYaw: 0,
+      initialYaw: 20,
       exits: {
         left: "mansion",
         right: "conservatory"
