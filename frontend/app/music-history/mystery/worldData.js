@@ -147,7 +147,7 @@ const worldMap = {
       atmosphere: "dusk",
       weather: "clear",
       music: "melancholy",
-      initialYaw: 0,
+      initialYaw: 10,
       exits: {
         left: "nevsky",
         right: "park"
