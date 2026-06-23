@@ -783,16 +783,15 @@
 }
 
 /* ===================================
-   对话系统 - 全屏覆盖
+   对话系统 — 视觉小说风格
    =================================== */
 .dialogue-overlay {
   position: fixed;
   inset: 0;
   z-index: 500;
-  background: rgba(5, 10, 20, 0.92);
-  backdrop-filter: blur(12px);
+  background: rgba(5, 10, 20, 0.95);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   animation: overlayIn 0.4s ease;
 }
@@ -802,192 +801,268 @@
   to { opacity: 1; }
 }
 
-.dialogue-container {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 24px;
-  max-width: 1000px;
-  width: 90%;
-  max-height: 80vh;
-  animation: dialogueIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes dialogueIn {
-  from { opacity: 0; transform: translateY(30px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.dialogue-portrait-side {
+.dialogue-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* NPC 大肖像氛围层 */
+.dialogue-atmosphere {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.dialogue-portrait-bg {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  height: 65vh;
+  max-width: 90%;
+  object-fit: contain;
+  filter: brightness(0.5) contrast(1.1) sepia(0.15);
+  opacity: 0.6;
+  animation: portraitFadeIn 1.2s ease forwards;
+}
+
+@keyframes portraitFadeIn {
+  from { opacity: 0; transform: translateX(-50%) scale(1.05); }
+  to { opacity: 0.6; transform: translateX(-50%) scale(1); }
+}
+
+.dialogue-atmos-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 10, 20, 0.4) 0%,
+    rgba(5, 10, 20, 0.2) 30%,
+    rgba(5, 10, 20, 0.5) 55%,
+    rgba(5, 10, 20, 0.95) 100%
+  );
+}
+
+/* 对话面板 */
+.dialogue-panel {
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(180deg, rgba(10, 22, 40, 0.6) 0%, rgba(10, 22, 40, 0.92) 100%);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(212, 165, 116, 0.12);
+  padding: 20px 28px 28px;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  animation: panelSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes panelSlideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dialogue-header {
+  display: flex;
   align-items: center;
-  padding: 24px;
-  background: rgba(17, 29, 51, 0.5);
-  border-radius: 16px;
-  border: 1px solid rgba(212, 165, 116, 0.08);
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
-.dialogue-portrait-lg {
-  width: 180px;
-  height: 240px;
-  object-fit: cover;
-  border-radius: 12px;
-  border: 3px solid var(--portrait-frame);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
-  margin-bottom: 16px;
-  filter: sepia(0.05) brightness(0.9);
+.dialogue-speaker {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }
 
-.dialogue-npc-name {
+.dialogue-name {
+  font-family: 'Cinzel', 'Noto Serif SC', serif;
   font-size: 17px;
-  color: var(--mystery-text);
-  margin-bottom: 2px;
+  color: var(--mystery-gold);
+  letter-spacing: 0.08em;
 }
 
-.dialogue-npc-ru {
+.dialogue-name-ru {
+  font-family: 'Playfair Display', serif;
   font-size: 12px;
   color: var(--mystery-text-dim);
   font-style: italic;
-  margin-bottom: 10px;
 }
 
-.dialogue-round-info {
-  font-size: 12px;
-  color: var(--mystery-gold);
-  background: rgba(212, 165, 116, 0.08);
-  padding: 4px 12px;
-  border-radius: 20px;
-  margin-bottom: 16px;
-}
-
-.dialogue-exit {
-  margin-top: auto;
+.dialogue-leave-btn {
   background: none;
-  border: 1px solid rgba(212, 165, 116, 0.2);
+  border: 1px solid rgba(212, 165, 116, 0.15);
   color: var(--mystery-text-dim);
-  padding: 8px 16px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
   cursor: pointer;
-  font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.3s;
 }
-.dialogue-exit:hover { color: var(--mystery-gold); border-color: var(--mystery-gold); }
-
-.dialogue-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 24px;
+.dialogue-leave-btn:hover {
+  color: var(--mystery-gold);
+  border-color: var(--mystery-gold);
 }
 
-.dialogue-greeting {
+.dialogue-body {
+  animation: bodyFadeIn 0.4s ease;
+}
+
+@keyframes bodyFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 叙述文本 */
+.dialogue-narrative {
   font-size: 15px;
   color: var(--mystery-text-dim);
   font-style: italic;
-  margin-bottom: 20px;
-  padding: 12px 16px;
+  margin-bottom: 18px;
+  padding: 10px 16px;
   background: rgba(212, 165, 116, 0.03);
-  border-left: 3px solid rgba(212, 165, 116, 0.2);
+  border-left: 2px solid rgba(212, 165, 116, 0.2);
   border-radius: 0 8px 8px 0;
+  line-height: 1.7;
 }
 
-.dialogue-questions {
+/* 选项列表 — 视觉小说风格 */
+.dialogue-choices {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
-.dialogue-question-btn {
-  background: rgba(17, 29, 51, 0.8);
-  border: 1px solid rgba(212, 165, 116, 0.15);
+.dialogue-choice {
+  background: rgba(17, 29, 51, 0.5);
+  border: 1px solid rgba(212, 165, 116, 0.1);
   color: var(--mystery-text);
-  padding: 16px 20px;
-  border-radius: 12px;
+  padding: 14px 18px;
+  border-radius: 10px;
   cursor: pointer;
   font-family: 'Noto Serif SC', serif;
   font-size: 15px;
   text-align: left;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
 }
 
-.dialogue-question-btn:hover {
+.dialogue-choice:hover {
   border-color: var(--mystery-gold);
-  background: rgba(212, 165, 116, 0.08);
+  background: rgba(212, 165, 116, 0.06);
   transform: translateX(6px);
-  box-shadow: 0 4px 20px rgba(212, 165, 116, 0.1);
+  box-shadow: 0 2px 16px rgba(212, 165, 116, 0.08);
 }
 
-.q-num {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: rgba(212, 165, 116, 0.1);
+.choice-text {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.choice-arrow {
   color: var(--mystery-gold);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  flex-shrink: 0;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: all 0.3s;
+  font-size: 14px;
 }
 
-/* 对话回答 */
-.dialogue-response-area {
-  animation: responseAppear 0.5s ease;
+.dialogue-choice:hover .choice-arrow {
+  opacity: 0.8;
+  transform: translateX(0);
 }
 
-@keyframes responseAppear {
-  from { opacity: 0; transform: translateY(10px); }
+/* 对话台词 */
+.dialogue-line {
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  animation: lineAppear 0.5s ease forwards;
+  opacity: 0;
+}
+
+@keyframes lineAppear {
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.dialogue-asked-q {
-  font-size: 14px;
-  color: var(--mystery-ice);
-  margin-bottom: 16px;
-  padding-left: 16px;
-  border-left: 3px solid var(--mystery-ice);
+.dialogue-player-line {
+  background: rgba(74, 122, 181, 0.06);
+  border-left: 2px solid rgba(74, 122, 181, 0.3);
+  animation-delay: 0.1s;
 }
 
-.q-marker, .a-marker { font-weight: 600; margin-right: 6px; }
+.dialogue-npc-line {
+  background: rgba(212, 165, 116, 0.04);
+  border-left: 2px solid rgba(212, 165, 116, 0.25);
+  animation-delay: 0.4s;
+}
 
-.dialogue-answer {
-  font-size: 16px;
+.line-speaker {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.dialogue-player-line .line-speaker { color: var(--mystery-ice); }
+.dialogue-npc-line .line-speaker { color: var(--mystery-gold); }
+
+.line-text {
+  font-size: 15px;
+  line-height: 1.8;
   color: var(--mystery-text);
-  line-height: 1.9;
-  margin-bottom: 16px;
-  padding: 20px;
-  background: rgba(212, 165, 116, 0.03);
-  border-radius: 12px;
-  border: 1px solid rgba(212, 165, 116, 0.08);
 }
 
-.dialogue-hint-box {
+.dialogue-player-line .line-text { color: rgba(232, 224, 212, 0.85); }
+
+/* 灵感/洞察提示 */
+.dialogue-insight {
   font-size: 13px;
   color: var(--mystery-gold);
-  background: rgba(212, 165, 116, 0.06);
+  background: rgba(212, 165, 116, 0.05);
   padding: 10px 14px;
   border-radius: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   font-style: italic;
+  animation: lineAppear 0.5s ease 0.7s forwards;
+  opacity: 0;
 }
 
-.dialogue-continue {
-  align-self: flex-end;
-  background: linear-gradient(135deg, rgba(212, 165, 116, 0.15), rgba(212, 165, 116, 0.05));
-  border: 1px solid rgba(212, 165, 116, 0.25);
+/* 继续按钮 */
+.dialogue-next-btn {
+  display: block;
+  margin-left: auto;
+  background: none;
+  border: 1px solid rgba(212, 165, 116, 0.2);
   color: var(--mystery-gold);
-  padding: 10px 24px;
-  border-radius: 10px;
+  padding: 8px 22px;
+  border-radius: 8px;
   cursor: pointer;
   font-family: 'Noto Serif SC', serif;
   font-size: 14px;
+  letter-spacing: 0.1em;
   transition: all 0.3s;
+  animation: lineAppear 0.4s ease 0.9s forwards;
+  opacity: 0;
 }
-.dialogue-continue:hover {
-  background: linear-gradient(135deg, rgba(212, 165, 116, 0.25), rgba(212, 165, 116, 0.1));
+.dialogue-next-btn:hover {
+  background: rgba(212, 165, 116, 0.08);
+  border-color: var(--mystery-gold);
 }
 
 /* ===================================
@@ -1421,13 +1496,8 @@
    响应式
    =================================== */
 @media (max-width: 1024px) {
-  .dialogue-container { grid-template-columns: 1fr; }
-  .dialogue-portrait-side {
-    flex-direction: row;
-    gap: 16px;
-    padding: 16px;
-  }
-  .dialogue-portrait-lg { width: 100px; height: 133px; margin-bottom: 0; }
+  .dialogue-portrait-bg { height: 50vh; }
+  .dialogue-panel { max-width: 100%; padding: 16px 20px 22px; }
   .evidence-board { grid-template-columns: 1fr; }
 }
 
