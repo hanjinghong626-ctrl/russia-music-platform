@@ -20,7 +20,7 @@ const worldMap = {
       atmosphere: "afternoon",
       weather: "clear",
       music: "busy",
-      initialYaw: -60,
+      initialYaw: 0,
       exits: {
         left: "alley",
         right: "riverside"
@@ -147,7 +147,7 @@ const worldMap = {
       atmosphere: "dusk",
       weather: "clear",
       music: "melancholy",
-      initialYaw: -70,
+      initialYaw: 0,
       exits: {
         left: "nevsky",
         right: "park"
@@ -247,7 +247,7 @@ const worldMap = {
       atmosphere: "night",
       weather: "fog",
       music: "tense",
-      initialYaw: -50,
+      initialYaw: 0,
       exits: {
         left: "park",
         right: "nevsky"
@@ -384,7 +384,7 @@ const worldMap = {
       atmosphere: "dawn",
       weather: "fog",
       music: "mystery",
-      initialYaw: -40,
+      initialYaw: 0,
       exits: {
         left: "riverside",
         right: "alley"
