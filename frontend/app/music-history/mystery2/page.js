@@ -575,10 +575,14 @@ export default function MysteryPage() {
               className="pano-hotspot hotspot-npc"
               onClick={(e) => { e.stopPropagation(); startDialogue(npc.id); }}
             >
-              <img src={npc.portrait} alt={npc.name} className="hotspot-portrait" />
-              <div className="hotspot-name">{npc.name}</div>
-              <div className="hotspot-npc-location">{npc.location}</div>
-              <div className="hotspot-pulse" />
+              <div className="npc-figure">
+                <img src={npc.portrait} alt={npc.name} className="hotspot-portrait-lg" />
+                <div className="npc-shadow" />
+              </div>
+              <div className="hotspot-npc-label">
+                <div className="hotspot-name">{npc.name}</div>
+                <div className="hotspot-npc-location">{npc.location}</div>
+              </div>
             </div>
           ))}
 
@@ -724,8 +728,12 @@ export default function MysteryPage() {
                 style={{ left: `${item.x}%`, top: `${item.y}%` }}
                 onClick={() => inspectItem(item)}
               >
-                <span className="interior-item-icon">{item.icon}</span>
-                {!inspectedItems.has(item.id) && item.isKey && <span className="item-sparkle">✨</span>}
+                {item.image ? (
+                  <img src={item.image} alt={item.name} className="interior-item-img" />
+                ) : (
+                  <span className="interior-item-icon">{item.icon}</span>
+                )}
+                {!inspectedItems.has(item.id) && <div className="item-glow" />}
                 {inspectedItems.has(item.id) && <span className="item-checked">✓</span>}
               </div>
             ))}
