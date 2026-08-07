@@ -1,201 +1,112 @@
 'use client';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import './BasilCathedral.css';
 
-const CANVAS_W = 280;
-const CANVAS_H = 380;
-const DRAW_DURATION = 19000; // 19 seconds for cathedral drawing
+const ARTWORKS = ['cathedral', 'reindeer', 'gum', 'bolshoi', 'msu', 'soviet', 'st-isaac'];
+const STORAGE_KEY = 'basil-cycle-start';
+
+function getDrawDuration(artwork) {
+  return artwork === 'reindeer' ? 8000 : 19000;
+}
+
+function getArtworkDuration(artwork) {
+  return 2000 + getDrawDuration(artwork) + 30000 + 3000 + 10000;
+}
+
+const FULL_CYCLE_MS = ARTWORKS.reduce((sum, a) => sum + getArtworkDuration(a), 0);
+
+function getImageUrl(artwork) {
+  const map = {
+    cathedral: '/images/basil-golden-lineart.png',
+    reindeer: '/images/golden-reindeer-lineart.png',
+    gum: '/images/gum-golden-lineart.png',
+    bolshoi: '/images/bolshoi-golden-lineart.png',
+    msu: '/images/msu-golden-lineart.png',
+    soviet: '/images/soviet-palace-golden-lineart.png',
+    'st-isaac': '/images/st-isaac-golden-lineart.png',
+  };
+  return map[artwork] || map.cathedral;
+}
+
+function calcState(elapsed) {
+  let t = ((elapsed % FULL_CYCLE_MS) + FULL_CYCLE_MS) % FULL_CYCLE_MS;
+  for (const artwork of ARTWORKS) {
+    const dur = getArtworkDuration(artwork);
+    if (t < dur) {
+      const dd = getDrawDuration(artwork);
+      if (t < 2000) return { artwork, phase: 'waiting' };
+      t -= 2000;
+      if (t < dd) return { artwork, phase: 'drawing' };
+      t -= dd;
+      if (t < 30000) return { artwork, phase: 'holding' };
+      t -= 30000;
+      if (t < 3000) return { artwork, phase: 'fading' };
+      return { artwork, phase: 'gone' };
+    }
+    t -= dur;
+  }
+  return { artwork: 'cathedral', phase: 'waiting' };
+}
 
 export default function BasilCathedral({ cityActive }) {
-  const [phase, setPhase] = useState('waiting');
-  const [artwork, setArtwork] = useState('cathedral');
-  const [dataReady, setDataReady] = useState(false);
-  const canvasRef = useRef(null);
-  const animFrameRef = useRef(null);
-  const strokeDataRef = useRef(null);
-  const drawnPointsRef = useRef(0);
+  const containerRef = useRef(null);
+  const imageRef = useRef(null);
+  const penRef = useRef(null);
+  const rafRef = useRef(null);
+  const lastRenderedRef = useRef('');
 
-  // Load stroke data once on mount
   useEffect(() => {
-    fetch('/images/basil-stroke-data.json')
-      .then(r => r.json())
-      .then(data => {
-        strokeDataRef.current = data;
-        setDataReady(true);
-      })
-      .catch(err => console.error('Failed to load stroke data:', err));
-  }, []);
+    // Get or create cycle start timestamp in sessionStorage
+    let startTime;
+    try {
+      const val = sessionStorage.getItem(STORAGE_KEY);
+      startTime = val ? parseInt(val, 10) : null;
+    } catch (e) { startTime = null; }
 
-  // Canvas drawing animation loop (cathedral only)
-  useEffect(() => {
-    if (artwork !== 'cathedral' || phase !== 'drawing' || !dataReady) return;
-
-    const canvas = canvasRef.current;
-    const data = strokeDataRef.current;
-    if (!canvas || !data) return;
-
-    const ctx = canvas.getContext('2d');
-
-    // Clear canvas and reset progress
-    ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
-    drawnPointsRef.current = 0;
-
-    // Set up drawing style
-    ctx.strokeStyle = '#D4AF37';
-    ctx.lineWidth = 2.5;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.shadowColor = 'rgba(212, 175, 55, 0.6)';
-    ctx.shadowBlur = 4;
-
-    const strokes = data.strokes;
-    let totalPoints = 0;
-    for (const s of strokes) {
-      totalPoints += s.points.length;
+    if (!startTime) {
+      startTime = Date.now();
+      try { sessionStorage.setItem(STORAGE_KEY, String(startTime)); } catch (e) { /* */ }
     }
 
-    const startTime = performance.now();
+    function update() {
+      if (!containerRef.current || !imageRef.current || !penRef.current) return;
 
-    const animate = (timestamp) => {
-      const elapsed = timestamp - startTime;
-      const progress = Math.min(elapsed / DRAW_DURATION, 1.0);
-      const targetPoint = Math.floor(progress * totalPoints);
+      const elapsed = Date.now() - startTime;
+      const { artwork, phase } = calcState(elapsed);
 
-      if (targetPoint > drawnPointsRef.current) {
-        // Incrementally draw only new line segments
-        let pointCount = 0;
-        const drawnPoints = drawnPointsRef.current;
+      // Build a cache key to avoid redundant DOM updates
+      const key = `${artwork}|${phase}`;
+      if (key !== lastRenderedRef.current) {
+        lastRenderedRef.current = key;
 
-        for (let si = 0; si < strokes.length; si++) {
-          const pts = strokes[si].points;
-          const strokeStart = pointCount;
-          const strokeEnd = pointCount + pts.length;
+        const drawDirection = artwork === 'reindeer' ? 'horizontal' : 'vertical';
 
-          // Skip fully drawn strokes
-          if (strokeEnd <= drawnPoints) {
-            pointCount = strokeEnd;
-            continue;
-          }
-          // Skip strokes not yet reached
-          if (strokeStart >= targetPoint) break;
+        // Update container classes
+        containerRef.current.className = `basil-container phase-${phase} draw-${drawDirection}${cityActive ? ' city-active' : ''}`;
 
-          // Calculate the range to draw within this stroke
-          const fromIdx = Math.max(0, drawnPoints - strokeStart);
-          const toIdx = Math.min(pts.length, targetPoint - strokeStart);
+        // Update image
+        imageRef.current.style.backgroundImage = `url(${getImageUrl(artwork)})`;
 
-          if (fromIdx === 0 && toIdx > 0) {
-            // New stroke beginning - draw a small dot at start point
-            ctx.beginPath();
-            ctx.moveTo(pts[0][0], pts[0][1]);
-            ctx.lineTo(pts[0][0] + 0.1, pts[0][1]);
-            ctx.stroke();
-          }
-
-          for (let i = Math.max(1, fromIdx); i < toIdx; i++) {
-            ctx.beginPath();
-            ctx.moveTo(pts[i - 1][0], pts[i - 1][1]);
-            ctx.lineTo(pts[i][0], pts[i][1]);
-            ctx.stroke();
-          }
-
-          pointCount = strokeEnd;
-        }
-
-        drawnPointsRef.current = targetPoint;
+        // Update pen visibility
+        penRef.current.style.display = phase === 'drawing' ? '' : 'none';
+        penRef.current.className = `basil-pen-light draw-${drawDirection}`;
       }
 
-      if (progress < 1.0) {
-        animFrameRef.current = requestAnimationFrame(animate);
-      }
-    };
+      rafRef.current = requestAnimationFrame(update);
+    }
 
-    animFrameRef.current = requestAnimationFrame(animate);
+    // Start the animation loop
+    rafRef.current = requestAnimationFrame(update);
 
     return () => {
-      if (animFrameRef.current) {
-        cancelAnimationFrame(animFrameRef.current);
-      }
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [artwork, phase, dataReady]);
-
-  // Reset canvas when switching back to cathedral
-  useEffect(() => {
-    if (artwork === 'cathedral') {
-      const canvas = canvasRef.current;
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
-      }
-      drawnPointsRef.current = 0;
-    }
-  }, [artwork]);
-
-  // Phase cycle
-  useEffect(() => {
-    let timers = [];
-
-    function startCycle() {
-      const drawDuration = artwork === 'reindeer' ? 8000 : 19000;
-
-      setPhase('waiting');
-      timers.push(setTimeout(() => setPhase('drawing'), 2000));
-
-      const holdingStart = 2000 + drawDuration;
-      timers.push(setTimeout(() => setPhase('holding'), holdingStart));
-
-      const fadingStart = holdingStart + 30000;
-      timers.push(setTimeout(() => setPhase('fading'), fadingStart));
-
-      const goneStart = fadingStart + 3000;
-      timers.push(setTimeout(() => {
-        setPhase('gone');
-        timers.push(setTimeout(() => {
-          setArtwork(prev =>
-            prev === 'cathedral' ? 'reindeer'
-            : prev === 'reindeer' ? 'gum'
-            : prev === 'gum' ? 'bolshoi'
-            : prev === 'bolshoi' ? 'msu'
-            : prev === 'msu' ? 'soviet'
-            : prev === 'soviet' ? 'st-isaac'
-            : 'cathedral'
-          );
-          startCycle();
-        }, 10000));
-      }, goneStart));
-    }
-
-    startCycle();
-    return () => timers.forEach(clearTimeout);
-  }, [artwork]);
-
-  const imageSrc = artwork === 'cathedral'
-    ? '/images/basil-golden-lineart.png'
-    : artwork === 'reindeer'
-    ? '/images/golden-reindeer-lineart.png'
-    : artwork === 'gum'
-    ? '/images/gum-golden-lineart.png'
-    : artwork === 'bolshoi'
-    ? '/images/bolshoi-golden-lineart.png'
-    : artwork === 'msu'
-    ? '/images/msu-golden-lineart.png'
-    : artwork === 'soviet'
-    ? '/images/soviet-palace-golden-lineart.png'
-    : '/images/st-isaac-golden-lineart.png';
-
-  const drawDirection = artwork === 'reindeer' ? 'horizontal' : 'vertical';
+  }, [cityActive]);
 
   return (
-    <div className={`basil-container phase-${phase} draw-${drawDirection}${cityActive ? ' city-active' : ''}`}>
-      {artwork === 'cathedral' && (
-        <>
-          <canvas ref={canvasRef} width={CANVAS_W} height={CANVAS_H} className="basil-canvas" />
-          <img src="/images/basil-golden-lineart.png" className="basil-png-fade" alt="" />
-        </>
-      )}
-      {artwork !== 'cathedral' && (
-        <div className="basil-image" style={{ backgroundImage: `url(${imageSrc})` }} />
-      )}
-      {phase === 'drawing' && <div className={`basil-pen-light draw-${drawDirection}`} />}
+    <div ref={containerRef} className="basil-container phase-waiting draw-vertical">
+      <div ref={imageRef} className="basil-image" />
+      <div ref={penRef} className="basil-pen-light draw-vertical" style={{ display: 'none' }} />
     </div>
   );
 }
