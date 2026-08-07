@@ -53,41 +53,37 @@ export default function BasilCathedral({ cityActive }) {
   const imageRef = useRef(null);
   const penRef = useRef(null);
   const rafRef = useRef(null);
+  const startTimeRef = useRef(null);
   const lastRenderedRef = useRef('');
+  const cityActiveRef = useRef(cityActive);
+  cityActiveRef.current = cityActive;
 
-  useEffect(() => {
-    // Get or create cycle start timestamp in sessionStorage
-    let startTime;
+  // Initialize startTime ONCE - never resets
+  if (startTimeRef.current === null) {
     try {
       const val = sessionStorage.getItem(STORAGE_KEY);
-      startTime = val ? parseInt(val, 10) : null;
-    } catch (e) { startTime = null; }
-
-    if (!startTime) {
-      startTime = Date.now();
-      try { sessionStorage.setItem(STORAGE_KEY, String(startTime)); } catch (e) { /* */ }
+      startTimeRef.current = val ? parseInt(val, 10) : Date.now();
+      sessionStorage.setItem(STORAGE_KEY, String(startTimeRef.current));
+    } catch (e) {
+      startTimeRef.current = Date.now();
     }
+  }
 
+  useEffect(() => {
     function update() {
       if (!containerRef.current || !imageRef.current || !penRef.current) return;
 
-      const elapsed = Date.now() - startTime;
+      const elapsed = Date.now() - startTimeRef.current;
       const { artwork, phase } = calcState(elapsed);
 
-      // Build a cache key to avoid redundant DOM updates
-      const key = `${artwork}|${phase}`;
+      const key = `${artwork}|${phase}|${cityActiveRef.current ? 'ca' : ''}`;
       if (key !== lastRenderedRef.current) {
         lastRenderedRef.current = key;
 
         const drawDirection = artwork === 'reindeer' ? 'horizontal' : 'vertical';
 
-        // Update container classes
-        containerRef.current.className = `basil-container phase-${phase} draw-${drawDirection}${cityActive ? ' city-active' : ''}`;
-
-        // Update image
+        containerRef.current.className = `basil-container phase-${phase} draw-${drawDirection}${cityActiveRef.current ? ' city-active' : ''}`;
         imageRef.current.style.backgroundImage = `url(${getImageUrl(artwork)})`;
-
-        // Update pen visibility
         penRef.current.style.display = phase === 'drawing' ? '' : 'none';
         penRef.current.className = `basil-pen-light draw-${drawDirection}`;
       }
@@ -95,13 +91,13 @@ export default function BasilCathedral({ cityActive }) {
       rafRef.current = requestAnimationFrame(update);
     }
 
-    // Start the animation loop
     rafRef.current = requestAnimationFrame(update);
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
     };
-  }, [cityActive]);
+  }, []);
 
   return (
     <div ref={containerRef} className="basil-container phase-waiting draw-vertical">
