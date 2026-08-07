@@ -48,32 +48,44 @@ function calcState(elapsed) {
   return { artwork: 'cathedral', phase: 'waiting' };
 }
 
+// Module-level variable: persists across component remounts within the same page session
+let cycleStartTime = null;
+
+function getCycleStartTime() {
+  if (cycleStartTime !== null) return cycleStartTime;
+
+  try {
+    const val = sessionStorage.getItem(STORAGE_KEY);
+    if (val) {
+      cycleStartTime = parseInt(val, 10);
+      return cycleStartTime;
+    }
+  } catch (e) { /* ignore */ }
+
+  // Create new timestamp
+  cycleStartTime = Date.now();
+  try {
+    sessionStorage.setItem(STORAGE_KEY, String(cycleStartTime));
+  } catch (e) { /* ignore */ }
+  return cycleStartTime;
+}
+
 export default function BasilCathedral({ cityActive }) {
   const containerRef = useRef(null);
   const imageRef = useRef(null);
   const penRef = useRef(null);
   const rafRef = useRef(null);
-  const startTimeRef = useRef(null);
   const lastRenderedRef = useRef('');
   const cityActiveRef = useRef(cityActive);
   cityActiveRef.current = cityActive;
 
-  // Initialize startTime ONCE - never resets
-  if (startTimeRef.current === null) {
-    try {
-      const val = sessionStorage.getItem(STORAGE_KEY);
-      startTimeRef.current = val ? parseInt(val, 10) : Date.now();
-      sessionStorage.setItem(STORAGE_KEY, String(startTimeRef.current));
-    } catch (e) {
-      startTimeRef.current = Date.now();
-    }
-  }
-
   useEffect(() => {
+    const startTime = getCycleStartTime();
+
     function update() {
       if (!containerRef.current || !imageRef.current || !penRef.current) return;
 
-      const elapsed = Date.now() - startTimeRef.current;
+      const elapsed = Date.now() - startTime;
       const { artwork, phase } = calcState(elapsed);
 
       const key = `${artwork}|${phase}|${cityActiveRef.current ? 'ca' : ''}`;
