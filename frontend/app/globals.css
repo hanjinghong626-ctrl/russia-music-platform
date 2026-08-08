@@ -52,7 +52,7 @@ body {
 
 /* Floating light particles */
 
-/* ====== 油画光束动画 - 叠加在背景图两束耶稣光上 ====== */
+/* ====== 浮光跃金 - 精致光束动画 ====== */
 .hero-light-beams {
   position: absolute;
   inset: 0;
@@ -61,47 +61,156 @@ body {
   overflow: hidden;
 }
 
+/* --- 光束基础：梯形，上窄下宽 --- */
 .light-beam {
   position: absolute;
-  top: -5%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 225, 140, 0.28) 0%,
-    rgba(255, 210, 100, 0.18) 20%,
-    rgba(255, 200, 80, 0.08) 50%,
-    rgba(255, 190, 60, 0.02) 80%,
-    transparent 100%
-  );
-  filter: blur(18px);
+  top: -8%;
   transform-origin: top center;
   animation: beamBreath ease-in-out infinite;
 }
 
-/* 左侧光束 - 对应背景图左上方云隙光 */
+/* 外层散射光 - 大范围柔光 */
+.light-beam .beam-outer {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(38% 0%, 62% 0%, 100% 100%, 0% 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 235, 170, 0.22) 0%,
+    rgba(255, 215, 100, 0.12) 30%,
+    rgba(255, 200, 80, 0.05) 60%,
+    transparent 100%
+  );
+  filter: blur(30px);
+}
+
+/* 中层主体光束 */
+.light-beam .beam-core {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(42% 0%, 58% 0%, 85% 100%, 15% 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 240, 190, 0.30) 0%,
+    rgba(255, 220, 120, 0.18) 25%,
+    rgba(255, 205, 90, 0.08) 55%,
+    transparent 90%
+  );
+  filter: blur(12px);
+}
+
+/* 内层高亮核心 - 最亮最窄 */
+.light-beam .beam-highlight {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(46% 0%, 54% 0%, 70% 100%, 30% 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 250, 220, 0.35) 0%,
+    rgba(255, 235, 160, 0.15) 35%,
+    transparent 75%
+  );
+  filter: blur(6px);
+}
+
+/* 底部散射光晕 */
+.light-beam .beam-glow {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140%;
+  height: 25%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 220, 120, 0.10) 0%,
+    rgba(255, 200, 80, 0.04) 50%,
+    transparent 80%
+  );
+  filter: blur(20px);
+}
+
+/* 光束内漂浮光尘 */
+.light-beam .beam-dust {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 235, 170, 0.9) 0%, rgba(255, 220, 120, 0.3) 50%, transparent 80%);
+  animation: dustFloat linear infinite;
+}
+
+/* --- 左侧光束 --- */
 .light-beam-left {
-  left: 22%;
-  width: 180px;
-  height: 75%;
-  transform: rotate(-20deg);
-  animation-duration: 5s;
+  left: 18%;
+  width: 220px;
+  height: 80%;
+  transform: rotate(-18deg);
+  animation-duration: 7s;
   animation-delay: 0s;
 }
 
-/* 右侧光束 - 对应背景图右上方云隙光 */
+/* --- 右侧光束 --- */
 .light-beam-right {
-  left: 58%;
-  width: 200px;
-  height: 70%;
+  left: 55%;
+  width: 260px;
+  height: 78%;
   transform: rotate(-10deg);
-  animation-duration: 6.5s;
-  animation-delay: 1.5s;
+  animation-duration: 8.5s;
+  animation-delay: 2s;
 }
 
+/* 光束呼吸动画 - 包含轻微摇摆 */
 @keyframes beamBreath {
-  0%, 100% { opacity: 0.2; transform: rotate(var(--beam-rotate, -15deg)) scaleX(0.85); }
-  30%      { opacity: 0.75; transform: rotate(var(--beam-rotate, -15deg)) scaleX(1.08); }
-  55%      { opacity: 0.45; transform: rotate(var(--beam-rotate, -15deg)) scaleX(0.95); }
-  75%      { opacity: 0.9;  transform: rotate(var(--beam-rotate, -15deg)) scaleX(1.12); }
+  0%, 100% {
+    opacity: 0.25;
+    transform: rotate(var(--beam-base-rotate, -15deg)) scaleX(0.9);
+  }
+  25% {
+    opacity: 0.7;
+    transform: rotate(calc(var(--beam-base-rotate, -15deg) + 0.8deg)) scaleX(1.05);
+  }
+  50% {
+    opacity: 0.4;
+    transform: rotate(calc(var(--beam-base-rotate, -15deg) - 0.5deg)) scaleX(0.97);
+  }
+  75% {
+    opacity: 0.85;
+    transform: rotate(calc(var(--beam-base-rotate, -15deg) + 0.3deg)) scaleX(1.1);
+  }
+}
+
+/* 光尘漂浮动画 */
+@keyframes dustFloat {
+  0%   { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+  15%  { opacity: 0.8; }
+  50%  { transform: translateY(-40px) translateX(12px) scale(1); opacity: 0.5; }
+  85%  { opacity: 0.7; }
+  100% { transform: translateY(-80px) translateX(-8px) scale(0.3); opacity: 0; }
+}
+
+/* 天空区域金色微光 overlay */
+.hero-golden-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 220, 100, 0.0) 0%,
+    rgba(255, 210, 80, 0.05) 30%,
+    rgba(255, 200, 60, 0.03) 60%,
+    rgba(255, 215, 90, 0.04) 100%
+  );
+  animation: shimmerDrift 14s ease-in-out infinite;
+  mix-blend-mode: soft-light;
+}
+
+@keyframes shimmerDrift {
+  0%, 100% { opacity: 0.3; transform: translateX(-3%); }
+  50%      { opacity: 0.7; transform: translateX(3%); }
 }
 
 .hero-particles {

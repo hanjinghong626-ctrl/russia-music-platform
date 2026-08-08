@@ -79,10 +79,33 @@ export default async function HomePage() {
         </div>
         <div className="hero-overlay" />
 
-        {/* 油画光束动画 */}
+        {/* 浮光跃金 - 精致光束动画 */}
+        <div className="hero-golden-shimmer" />
         <div className="hero-light-beams">
-          <div className="light-beam light-beam-left" />
-          <div className="light-beam light-beam-right" />
+          {/* 左侧光束 */}
+          <div className="light-beam light-beam-left" style={{'--beam-base-rotate': '-18deg'}}>
+            <div className="beam-outer" />
+            <div className="beam-core" />
+            <div className="beam-highlight" />
+            <div className="beam-glow" />
+            <div className="beam-dust" style={{width:'4px',height:'4px',top:'25%',left:'48%',animationDuration:'5s',animationDelay:'0s'}} />
+            <div className="beam-dust" style={{width:'3px',height:'3px',top:'40%',left:'42%',animationDuration:'6.5s',animationDelay:'1.2s'}} />
+            <div className="beam-dust" style={{width:'5px',height:'5px',top:'55%',left:'55%',animationDuration:'7s',animationDelay:'2.5s'}} />
+            <div className="beam-dust" style={{width:'3px',height:'3px',top:'35%',left:'52%',animationDuration:'5.8s',animationDelay:'3.8s'}} />
+            <div className="beam-dust" style={{width:'4px',height:'4px',top:'60%',left:'45%',animationDuration:'6.2s',animationDelay:'0.8s'}} />
+          </div>
+          {/* 右侧光束 */}
+          <div className="light-beam light-beam-right" style={{'--beam-base-rotate': '-10deg'}}>
+            <div className="beam-outer" />
+            <div className="beam-core" />
+            <div className="beam-highlight" />
+            <div className="beam-glow" />
+            <div className="beam-dust" style={{width:'5px',height:'5px',top:'20%',left:'50%',animationDuration:'6s',animationDelay:'0.5s'}} />
+            <div className="beam-dust" style={{width:'3px',height:'3px',top:'38%',left:'44%',animationDuration:'7.2s',animationDelay:'1.8s'}} />
+            <div className="beam-dust" style={{width:'4px',height:'4px',top:'50%',left:'56%',animationDuration:'5.5s',animationDelay:'3s'}} />
+            <div className="beam-dust" style={{width:'3px',height:'3px',top:'30%',left:'48%',animationDuration:'6.8s',animationDelay:'4.2s'}} />
+            <div className="beam-dust" style={{width:'5px',height:'5px',top:'65%',left:'52%',animationDuration:'5.3s',animationDelay:'1s'}} />
+          </div>
         </div>
 
         {/* 浮动光粒子 */}
