@@ -93,7 +93,7 @@ export default async function HomePage() {
           <div className="particle" />
         </div>
 
-        {/* 文字内容 - 左下对齐 */}
+        {/* 文字内容 - 居中 */}
         <div className="hero-content">
           <div className="hero-text-group">
             <p className="hero-russian-title">Музыка — путь к душе</p>
