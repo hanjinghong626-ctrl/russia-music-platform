@@ -51,6 +51,59 @@ body {
 }
 
 /* Floating light particles */
+
+/* ====== 油画光束动画 - 叠加在背景图两束耶稣光上 ====== */
+.hero-light-beams {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.light-beam {
+  position: absolute;
+  top: -5%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 225, 140, 0.28) 0%,
+    rgba(255, 210, 100, 0.18) 20%,
+    rgba(255, 200, 80, 0.08) 50%,
+    rgba(255, 190, 60, 0.02) 80%,
+    transparent 100%
+  );
+  filter: blur(18px);
+  transform-origin: top center;
+  animation: beamBreath ease-in-out infinite;
+}
+
+/* 左侧光束 - 对应背景图左上方云隙光 */
+.light-beam-left {
+  left: 22%;
+  width: 180px;
+  height: 75%;
+  transform: rotate(-20deg);
+  animation-duration: 5s;
+  animation-delay: 0s;
+}
+
+/* 右侧光束 - 对应背景图右上方云隙光 */
+.light-beam-right {
+  left: 58%;
+  width: 200px;
+  height: 70%;
+  transform: rotate(-10deg);
+  animation-duration: 6.5s;
+  animation-delay: 1.5s;
+}
+
+@keyframes beamBreath {
+  0%, 100% { opacity: 0.2; transform: rotate(var(--beam-rotate, -15deg)) scaleX(0.85); }
+  30%      { opacity: 0.75; transform: rotate(var(--beam-rotate, -15deg)) scaleX(1.08); }
+  55%      { opacity: 0.45; transform: rotate(var(--beam-rotate, -15deg)) scaleX(0.95); }
+  75%      { opacity: 0.9;  transform: rotate(var(--beam-rotate, -15deg)) scaleX(1.12); }
+}
+
 .hero-particles {
   position: absolute;
   inset: 0;

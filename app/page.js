@@ -79,6 +79,12 @@ export default async function HomePage() {
         </div>
         <div className="hero-overlay" />
 
+        {/* 油画光束动画 */}
+        <div className="hero-light-beams">
+          <div className="light-beam light-beam-left" />
+          <div className="light-beam light-beam-right" />
+        </div>
+
         {/* 浮动光粒子 */}
         <div className="hero-particles">
           <div className="particle" />
