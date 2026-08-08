@@ -79,23 +79,6 @@ export default async function HomePage() {
         </div>
         <div className="hero-overlay" />
 
-        {/* 浮光跃金 - 金色光效 */}
-        <div className="hero-golden-shimmer" />
-        <div className="hero-golden-light">
-          <div className="light-ray" />
-          <div className="light-ray" />
-          <div className="light-ray" />
-          <div className="light-ray" />
-          <div className="golden-sparkle" />
-          <div className="golden-sparkle" />
-          <div className="golden-sparkle" />
-          <div className="golden-sparkle" />
-          <div className="golden-sparkle" />
-          <div className="golden-sparkle" />
-          <div className="golden-sparkle" />
-          <div className="golden-sparkle" />
-        </div>
-
         {/* 浮动光粒子 */}
         <div className="hero-particles">
           <div className="particle" />
