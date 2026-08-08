@@ -98,7 +98,7 @@ export default async function HomePage() {
           <div className="hero-text-group">
             <p className="hero-russian-title">Музыка — путь к душе</p>
             <h1 className="hero-main-title">
-              在莫斯科<br />开启您的<span className="text-amber-300">音乐</span>之旅
+              在俄罗斯<br />开启您的<span className="text-amber-300">音乐</span>之旅
             </h1>
             <p className="hero-subtitle">
               从红场到音乐学院，从古典到未来<br className="hidden md:block" />
