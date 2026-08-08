@@ -53,6 +53,7 @@ module.exports = {
       },
       backgroundImage: {
         'hero-gradient': 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #1e3a8a 100%)',
+        'hero-gradient-dark': 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e3a5f 100%)',
         'accent-gradient': 'linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%)',
         'gold-gradient': 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
         'decorative': 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%)',
