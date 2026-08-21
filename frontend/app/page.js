@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import ScrollEffects from './ScrollEffects'
 
-// 首页服务端获取热门院校
+// 首页服务端获取热门院校 [build-trigger]
 async function getFeaturedSchools() {
   const FEISHU_APP_ID = process.env.FEISHU_APP_ID || 'cli_a968b3c219b9dbd3'
   const FEISHU_APP_SECRET = process.env.FEISHU_APP_SECRET || 'JkpPVLK9IySp24RawJ4ASgfgKX8GjLGU'
