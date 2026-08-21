@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import ScrollEffects from './ScrollEffects'
 
 // 首页服务端获取热门院校
 async function getFeaturedSchools() {
@@ -42,7 +41,7 @@ export default async function HomePage() {
   const featuredSchools = await getFeaturedSchools()
   return (
     <div className="min-h-screen bg-gray-50">
-      <ScrollEffects />
+      {/* ScrollEffects disabled temporarily */}
 
       {/* 导航栏 - 毛玻璃透明 */}
       <nav className="nav-hero-fixed">
