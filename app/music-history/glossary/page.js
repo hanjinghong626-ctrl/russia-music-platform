@@ -1,97 +1,169 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import Link from 'next/link';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import './glossary.css';
 
 export default function GlossaryPage() {
-  const [glossaryData, setGlossaryData] = useState({ categories: [] });
+  const [data, setData] = useState(null);
+  const [entries, setEntries] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [activeEntry, setActiveEntry] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState('card'); // 'card' | 'list' | 'table'
+  const [qualityFilter, setQualityFilter] = useState(null); // null | 'expert' | 'full' | 'detailed' | 'brief'
+  const mainRef = useRef(null);
 
   useEffect(() => {
-    fetch('/data/glossary.json')
-      .then(r => r.json())
-      .then(data => {
-        setGlossaryData(data);
+    async function loadData() {
+      try {
+        const res = await fetch('/data/encyclopedia_unified.json');
+        if (!res.ok) throw new Error('Failed to load');
+        const json = await res.json();
+        setData(json);
+        setEntries(json.entries || []);
+      } catch (e) {
+        console.error('Failed to load encyclopedia:', e);
+      } finally {
         setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      }
+    }
+    loadData();
   }, []);
 
-  const categories = glossaryData.categories || [];
-
-  // Flatten all terms for search
-  const allTerms = useMemo(() => {
-    const terms = [];
-    categories.forEach(cat => {
-      cat.terms.forEach(term => {
-        terms.push({ ...term, category: cat.name });
-      });
-    });
-    return terms;
-  }, [categories]);
-
-  const filteredTerms = useMemo(() => {
-    let result = allTerms;
-    
-    if (activeCategory !== 'all') {
-      result = result.filter(t => t.category === activeCategory);
+  // Filter entries
+  const filteredEntries = useMemo(() => {
+    let result = entries;
+    if (selectedCategory) {
+      result = result.filter(e => e.category_zh === selectedCategory);
     }
-    
+    if (qualityFilter) {
+      result = result.filter(e => e.quality === qualityFilter);
+    }
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(t =>
-        t.zh.toLowerCase().includes(q) ||
-        t.ru.toLowerCase().includes(q) ||
-        (t.abbr && t.abbr.toLowerCase().includes(q))
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(e =>
+        e.ru.toLowerCase().includes(q) ||
+        e.zh.toLowerCase().includes(q) ||
+        e.definition_zh.toLowerCase().includes(q) ||
+        (e.definition_ru && e.definition_ru.toLowerCase().includes(q))
       );
     }
-    
     return result;
-  }, [allTerms, searchQuery, activeCategory]);
+  }, [entries, searchQuery, selectedCategory, qualityFilter]);
 
-  // Group filtered terms by category
-  const groupedTerms = useMemo(() => {
-    const groups = {};
-    filteredTerms.forEach(term => {
-      if (!groups[term.category]) {
-        groups[term.category] = [];
+  // Entry lookup map
+  const getEntryById = useMemo(() => {
+    const map = {};
+    entries.forEach(e => { map[e.id] = e; });
+    return map;
+  }, [entries]);
+
+  // Quality stats
+  const qualityStats = useMemo(() => {
+    const s = { expert: 0, full: 0, detailed: 0, brief: 0 };
+    entries.forEach(e => { if (s[e.quality] !== undefined) s[e.quality]++; });
+    return s;
+  }, [entries]);
+
+  // Navigate to entry (cross-view interaction)
+  const navigateToEntry = useCallback((entryId) => {
+    const entry = getEntryById[entryId];
+    if (!entry) return;
+    // Switch to card view for detail
+    setViewMode('card');
+    setActiveEntry(entry);
+    // Scroll after state update
+    setTimeout(() => {
+      const el = document.getElementById(`entry-${entryId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('highlight-flash');
+        setTimeout(() => el.classList.remove('highlight-flash'), 2000);
       }
-      groups[term.category].push(term);
+    }, 100);
+  }, [getEntryById]);
+
+  const handleCrossRefClick = useCallback((entryId) => {
+    navigateToEntry(entryId);
+  }, [navigateToEntry]);
+
+  const handleEntryClick = useCallback((entry) => {
+    setActiveEntry(entry);
+  }, []);
+
+  const handleCloseDetail = useCallback(() => {
+    setActiveEntry(null);
+  }, []);
+
+  // Table row click
+  const handleTableEntryClick = useCallback((entry) => {
+    setActiveEntry(entry);
+  }, []);
+
+
+  // Group filtered entries by category for table view
+  const groupedByCategory = useMemo(() => {
+    const groups = {};
+    filteredEntries.forEach(e => {
+      const cat = e.category_zh;
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(e);
     });
     return groups;
-  }, [filteredTerms]);
+  }, [filteredEntries]);
 
   if (loading) {
     return (
       <div className="glossary-loading">
         <div className="loading-spinner"></div>
-        <p>正在加载术语库...</p>
+        <p>正在加载知识库...</p>
       </div>
     );
   }
 
+  const categoryTree = data?.category_tree || {};
+  const categoryGroups = data?.category_groups || [];
+  const stats = data?.stats || {};
+  const hasRussianDef = (e) => e.definition_ru && e.definition_ru.length > 0;
+  const hasCrossRefs = (e) => e.cross_refs && e.cross_refs.length > 0;
+
   return (
     <div className="glossary-page">
+      {/* Header */}
       <header className="glossary-header">
-        <div className="header-content">
-          <Link href="/music-history" className="back-link">
-            <span className="back-arrow">←</span> 返回音乐史
-          </Link>
-          <h1 className="page-title">俄语音乐术语库</h1>
-          <p className="page-subtitle">Русско-китайский словарь музыкальных терминов — {allTerms.length}个术语</p>
+        <div className="header-left">
+          <a href="/" className="back-link">← 返回首页</a>
+          <div className="header-title">
+            <h1>俄罗斯音乐知识库</h1>
+            <p className="header-subtitle">Энциклопедия русской музыки · 百科 + 术语库</p>
+          </div>
+        </div>
+        <div className="header-stats">
+          <div className="stat-badge">
+            <span className="stat-num">{entries.length}</span>
+            <span className="stat-label">词条</span>
+          </div>
+          <div className="stat-badge">
+            <span className="stat-num">{Object.keys(categoryTree).length}</span>
+            <span className="stat-label">分类</span>
+          </div>
+          <div className="stat-badge">
+            <span className="stat-num">{stats.cross_references?.entries_with_refs || 0}</span>
+            <span className="stat-label">交叉引用</span>
+          </div>
         </div>
       </header>
 
-      <main className="glossary-main">
-        {/* Search */}
-        <div className="search-section">
-          <div className="search-box">
-            <span className="search-icon">🔍</span>
+      <div className="glossary-body">
+        {/* Left sidebar */}
+        <aside className="glossary-sidebar">
+          {/* Search */}
+          <div className="sidebar-search">
             <input
               type="text"
-              placeholder="搜索中文或俄语术语..."
+              placeholder="搜索术语（中/俄）..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="search-input"
@@ -100,364 +172,441 @@ export default function GlossaryPage() {
               <button className="search-clear" onClick={() => setSearchQuery('')}>✕</button>
             )}
           </div>
-        </div>
 
-        {/* Category filter */}
-        <div className="category-filters">
-          <button
-            className={`cat-btn ${activeCategory === 'all' ? 'active' : ''}`}
-            onClick={() => setActiveCategory('all')}
-          >
-            全部
-          </button>
-          {categories.map(cat => (
+          {/* Quality filter */}
+          <div className="quality-filter-section">
+            <h3 className="section-title">内容深度</h3>
+            <div className="quality-filters">
+              <button
+                className={`qf-btn ${!qualityFilter ? 'active' : ''}`}
+                onClick={() => setQualityFilter(null)}
+              >
+                全部 <span>{entries.length}</span>
+              </button>
+              <button
+                className={`qf-btn qf-expert ${qualityFilter === 'expert' ? 'active' : ''}`}
+                onClick={() => setQualityFilter(qualityFilter === 'expert' ? null : 'expert')}
+              >
+                专家级 <span>{qualityStats.expert}</span>
+              </button>
+              <button
+                className={`qf-btn qf-full ${qualityFilter === 'full' ? 'active' : ''}`}
+                onClick={() => setQualityFilter(qualityFilter === 'full' ? null : 'full')}
+              >
+                完整 <span>{qualityStats.full}</span>
+              </button>
+              <button
+                className={`qf-btn qf-detailed ${qualityFilter === 'detailed' ? 'active' : ''}`}
+                onClick={() => setQualityFilter(qualityFilter === 'detailed' ? null : 'detailed')}
+              >
+                详细 <span>{qualityStats.detailed}</span>
+              </button>
+              <button
+                className={`qf-btn qf-brief ${qualityFilter === 'brief' ? 'active' : ''}`}
+                onClick={() => setQualityFilter(qualityFilter === 'brief' ? null : 'brief')}
+              >
+                基础 <span>{qualityStats.brief}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Category navigation */}
+          <div className="category-section">
+            <h3 className="section-title">分类导航</h3>
             <button
-              key={cat.name}
-              className={`cat-btn ${activeCategory === cat.name ? 'active' : ''}`}
-              onClick={() => setActiveCategory(cat.name)}
+              className={`group-btn ${!selectedCategory ? 'active' : ''}`}
+              onClick={() => { setSelectedCategory(null); setSelectedGroup(null); }}
             >
-              {cat.name}
-              <span className="cat-count">{cat.terms.length}</span>
+              全部词条
+              <span className="count">{entries.length}</span>
             </button>
-          ))}
-        </div>
 
-        {/* Results info */}
-        <div className="results-info">
-          共 {filteredTerms.length} 个术语
-        </div>
-
-        {/* Terms table by category */}
-        <div className="terms-section">
-          {Object.entries(groupedTerms).map(([catName, terms]) => (
-            <div key={catName} className="term-group">
-              <h3 className="group-title">{catName}</h3>
-              <div className="terms-table">
-                <div className="table-header">
-                  <span className="col-zh">中文</span>
-                  <span className="col-ru">Русский</span>
-                  <span className="col-abbr">缩写</span>
-                </div>
-                {terms.map((term, i) => (
-                  <div key={i} className="table-row">
-                    <span className="col-zh">{term.zh}</span>
-                    <span className="col-ru">{term.ru}</span>
-                    <span className="col-abbr">{term.abbr || ''}</span>
+            {categoryGroups.map((group, gi) => (
+              <div key={gi} className="category-group">
+                <button
+                  className={`group-header ${selectedGroup === group.group ? 'expanded' : ''}`}
+                  onClick={() => setSelectedGroup(selectedGroup === group.group ? null : group.group)}
+                >
+                  <span className="group-icon">{group.icon}</span>
+                  <span className="group-name">{group.group}</span>
+                  <span className="group-count">{group.total_entries}</span>
+                </button>
+                {selectedGroup === group.group && (
+                  <div className="group-categories">
+                    {group.categories.map((cat, ci) => {
+                      const treeEntry = categoryTree[cat];
+                      return (
+                        <button
+                          key={ci}
+                          className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
+                          onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
+                        >
+                          {cat}
+                          <span className="count">{treeEntry?.count || 0}</span>
+                        </button>
+                      );
+                    })}
                   </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Learning paths */}
+          {data?.learning_paths && (
+            <div className="learning-section">
+              <h3 className="section-title">学习路径</h3>
+              <p className="section-hint">按分类推荐由浅入深的阅读顺序</p>
+              <select
+                className="path-select"
+                onChange={(e) => {
+                  const cat = e.target.value;
+                  if (cat) setSelectedCategory(cat);
+                }}
+                defaultValue=""
+              >
+                <option value="" disabled>选择分类查看</option>
+                {Object.keys(data.learning_paths).map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
                 ))}
+              </select>
+            </div>
+          )}
+        </aside>
+
+        {/* Main content */}
+        <main className="glossary-main" ref={mainRef}>
+          {/* Toolbar with view mode switch */}
+          <div className="main-toolbar">
+            <span className="result-count">
+              {selectedCategory ? `${selectedCategory} · ` : ''}
+              {filteredEntries.length} 条
+              {searchQuery && ` · 搜索"${searchQuery}"`}
+            </span>
+            <div className="toolbar-right">
+              {/* View mode tabs */}
+              <div className="view-tabs">
+                <button
+                  className={`view-tab ${viewMode === 'card' ? 'active' : ''}`}
+                  onClick={() => setViewMode('card')}
+                  title="百科视图：卡片展示完整释义"
+                >
+                  📖 百科
+                </button>
+                <button
+                  className={`view-tab ${viewMode === 'table' ? 'active' : ''}`}
+                  onClick={() => setViewMode('table')}
+                  title="术语表视图：紧凑表格快速查阅"
+                >
+                  📋 术语表
+                </button>
+                <button
+                  className={`view-tab ${viewMode === 'list' ? 'active' : ''}`}
+                  onClick={() => setViewMode('list')}
+                  title="列表视图：简洁列表"
+                >
+                  📝 列表
+                </button>
               </div>
             </div>
-          ))}
-        </div>
-
-        {filteredTerms.length === 0 && (
-          <div className="no-results">
-            <p>未找到匹配的术语</p>
-            <button className="clear-btn" onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}>
-              清除筛选条件
-            </button>
           </div>
-        )}
-      </main>
 
-      <style jsx>{`
-        .glossary-page {
-          min-height: 100vh;
-          background: var(--color-bg-deep);
-          color: var(--color-text-primary);
-          font-family: 'Noto Sans SC', sans-serif;
-        }
+          {/* View mode descriptions */}
+          {viewMode === 'card' && (
+            <div className="view-hint">
+              💡 百科视图 — 点击词条查看完整释义，通过<span className="hint-link">相关术语</span>标签跳转关联知识
+            </div>
+          )}
+          {viewMode === 'table' && (
+            <div className="view-hint">
+              💡 术语表视图 — 紧凑表格快速查阅，点击任意行打开详情，点击分类标签可筛选
+            </div>
+          )}
+          {viewMode === 'list' && (
+            <div className="view-hint">
+              💡 列表视图 — 简洁展示所有词条，适合快速浏览
+            </div>
+          )}
 
-        .glossary-loading {
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          background: var(--color-bg-deep);
-          color: var(--color-text-primary);
-          gap: 16px;
-        }
+          {/* ===== CARD VIEW (百科) ===== */}
+          {viewMode === 'card' && (
+            <div className="entries-container card">
+              {filteredEntries.length === 0 ? (
+                <div className="no-results">
+                  <p>未找到匹配的词条</p>
+                  <button onClick={() => { setSearchQuery(''); setSelectedCategory(null); setQualityFilter(null); }}>
+                    清除筛选
+                  </button>
+                </div>
+              ) : (
+                filteredEntries.map(entry => (
+                  <div
+                    key={entry.id}
+                    id={`entry-${entry.id}`}
+                    className={`entry-card quality-${entry.quality} ${activeEntry?.id === entry.id ? 'active' : ''}`}
+                    onClick={() => handleEntryClick(entry)}
+                  >
+                    <div className="entry-header">
+                      <span className="entry-ru">{entry.ru}</span>
+                      <span className="entry-zh">{entry.zh}</span>
+                      <span className={`quality-badge quality-${entry.quality}`}>
+                        {entry.quality === 'expert' ? '专家' :
+                         entry.quality === 'full' ? '完整' :
+                         entry.quality === 'detailed' ? '详细' : '基础'}
+                      </span>
+                    </div>
+                    <div className="entry-category">{entry.category_zh}</div>
+                    <div className="entry-definition">
+                      {entry.definition_zh.length > 200
+                        ? entry.definition_zh.slice(0, 200) + '...'
+                        : entry.definition_zh}
+                      {entry.definition_zh.length > 200 && (
+                        <button className="read-more" onClick={(e) => { e.stopPropagation(); handleEntryClick(entry); }}>
+                          展开全文
+                        </button>
+                      )}
+                    </div>
 
-        .loading-spinner {
-          width: 40px;
-          height: 40px;
-          border: 3px solid rgba(212, 175, 55, 0.2);
-          border-top-color: var(--color-primary);
-          border-radius: 50%;
-          animation: spin 0.8s linear infinite;
-        }
+                    {/* Cross references */}
+                    {hasCrossRefs(entry) && (
+                      <div className="cross-refs">
+                        <span className="refs-label">🔗 相关术语：</span>
+                        <div className="refs-tags">
+                          {entry.cross_refs.slice(0, 6).map(refId => {
+                            const refEntry = getEntryById[refId];
+                            if (!refEntry) return null;
+                            return (
+                              <button
+                                key={refId}
+                                className="ref-tag"
+                                onClick={(e) => { e.stopPropagation(); handleCrossRefClick(refId); }}
+                              >
+                                {refEntry.zh}
+                              </button>
+                            );
+                          })}
+                          {entry.cross_refs.length > 6 && (
+                            <span className="ref-more">+{entry.cross_refs.length - 6}</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
+                    {hasRussianDef(entry) && (
+                      <div className="entry-ru-def">
+                        <span className="ru-label">RU:</span>
+                        <span className="ru-text">
+                          {entry.definition_ru.length > 100
+                            ? entry.definition_ru.slice(0, 100) + '...'
+                            : entry.definition_ru}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
 
-        /* Header */
-        .glossary-header {
-          background: var(--color-bg-card);
-          border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-          padding: 24px;
-        }
+          {/* ===== TABLE VIEW (术语表) ===== */}
+          {viewMode === 'table' && (
+            <div className="table-view">
+              {Object.keys(groupedByCategory).length === 0 ? (
+                <div className="no-results">
+                  <p>未找到匹配的词条</p>
+                  <button onClick={() => { setSearchQuery(''); setSelectedCategory(null); setQualityFilter(null); }}>
+                    清除筛选
+                  </button>
+                </div>
+              ) : (
+                Object.entries(groupedByCategory).map(([cat, catEntries]) => (
+                  <div key={cat} className="table-group">
+                    <div className="table-group-header">
+                      <h3>{cat}</h3>
+                      <span className="table-group-count">{catEntries.length} 条</span>
+                    </div>
+                    <table className="glossary-table">
+                      <thead>
+                        <tr>
+                          <th className="col-ru">РУССКИЙ</th>
+                          <th className="col-zh">中文</th>
+                          <th className="col-quality">深度</th>
+                          <th className="col-refs">关联</th>
+                          <th className="col-ru-def">俄语释义</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {catEntries.map(entry => (
+                          <tr
+                            key={entry.id}
+                            id={`table-entry-${entry.id}`}
+                            className={`table-row quality-${entry.quality} ${activeEntry?.id === entry.id ? 'active' : ''}`}
+                            onClick={() => handleTableEntryClick(entry)}
+                          >
+                            <td className="col-ru">{entry.ru}</td>
+                            <td className="col-zh">{entry.zh}</td>
+                            <td className="col-quality">
+                              <span className={`quality-dot quality-${entry.quality}`}></span>
+                            </td>
+                            <td className="col-refs">
+                              {hasCrossRefs(entry) && (
+                                <div className="table-refs">
+                                  {entry.cross_refs.slice(0, 3).map(refId => {
+                                    const refEntry = getEntryById[refId];
+                                    if (!refEntry) return null;
+                                    return (
+                                      <button
+                                        key={refId}
+                                        className="table-ref-tag"
+                                        onClick={(e) => { e.stopPropagation(); handleCrossRefClick(refId); }}
+                                        title={refEntry.ru}
+                                      >
+                                        {refEntry.zh}
+                                      </button>
+                                    );
+                                  })}
+                                  {entry.cross_refs.length > 3 && (
+                                    <span className="table-ref-more">+{entry.cross_refs.length - 3}</span>
+                                  )}
+                                </div>
+                              )}
+                            </td>
+                            <td className="col-ru-def">
+                              {hasRussianDef(entry) ? (
+                                <span className="ru-preview">
+                                  {entry.definition_ru.length > 60
+                                    ? entry.definition_ru.slice(0, 60) + '…'
+                                    : entry.definition_ru}
+                                </span>
+                              ) : (
+                                <span className="no-data">—</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
 
-        .header-content {
-          max-width: 960px;
-          margin: 0 auto;
-        }
+          {/* ===== LIST VIEW ===== */}
+          {viewMode === 'list' && (
+            <div className="entries-container list">
+              {filteredEntries.length === 0 ? (
+                <div className="no-results">
+                  <p>未找到匹配的词条</p>
+                  <button onClick={() => { setSearchQuery(''); setSelectedCategory(null); setQualityFilter(null); }}>
+                    清除筛选
+                  </button>
+                </div>
+              ) : (
+                filteredEntries.map(entry => (
+                  <div
+                    key={entry.id}
+                    id={`entry-${entry.id}`}
+                    className={`list-item quality-${entry.quality} ${activeEntry?.id === entry.id ? 'active' : ''}`}
+                    onClick={() => handleEntryClick(entry)}
+                  >
+                    <span className="list-ru">{entry.ru}</span>
+                    <span className="list-zh">{entry.zh}</span>
+                    <span className="list-cat">{entry.category_zh}</span>
+                    <span className={`quality-dot quality-${entry.quality}`}></span>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </main>
+      </div>
 
-        .back-link {
-          color: var(--color-primary);
-          text-decoration: none;
-          font-size: 14px;
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-          margin-bottom: 16px;
-          transition: color 0.2s;
-        }
+      {/* Detail panel */}
+      {activeEntry && (
+        <div className="detail-overlay" onClick={handleCloseDetail}>
+          <div className="detail-panel" onClick={(e) => e.stopPropagation()}>
+            <button className="detail-close" onClick={handleCloseDetail}>✕</button>
 
-        .back-link:hover {
-          color: var(--color-primary-light);
-        }
+            <div className="detail-header">
+              <h2 className="detail-ru">{activeEntry.ru}</h2>
+              <h3 className="detail-zh">{activeEntry.zh}</h3>
+              <div className="detail-meta">
+                <button
+                  className="detail-category-btn"
+                  onClick={() => { setSelectedCategory(activeEntry.category_zh); handleCloseDetail(); }}
+                >
+                  {activeEntry.category_zh}
+                </button>
+                <span className={`quality-badge quality-${activeEntry.quality}`}>
+                  {activeEntry.quality === 'expert' ? '专家级' :
+                   activeEntry.quality === 'full' ? '完整' :
+                   activeEntry.quality === 'detailed' ? '详细' : '基础'}
+                </span>
+              </div>
+            </div>
 
-        .page-title {
-          font-family: 'Noto Serif SC', serif;
-          font-size: 32px;
-          font-weight: 700;
-          color: var(--color-primary);
-          margin-bottom: 4px;
-        }
+            <div className="detail-body">
+              <div className="detail-section">
+                <h4>中文释义</h4>
+                <p className="detail-definition">{activeEntry.definition_zh}</p>
+              </div>
 
-        .page-subtitle {
-          font-size: 15px;
-          color: var(--color-text-muted);
-          font-style: italic;
-        }
+              {hasRussianDef(activeEntry) && (
+                <div className="detail-section">
+                  <h4>俄语原文</h4>
+                  <p className="detail-ru-text">{activeEntry.definition_ru}</p>
+                </div>
+              )}
 
-        /* Main */
-        .glossary-main {
-          max-width: 960px;
-          margin: 0 auto;
-          padding: 24px;
-        }
+              {hasCrossRefs(activeEntry) && (
+                <div className="detail-section">
+                  <h4>相关术语 ({activeEntry.cross_refs.length})</h4>
+                  <div className="detail-refs">
+                    {activeEntry.cross_refs.map(refId => {
+                      const refEntry = getEntryById[refId];
+                      if (!refEntry) return null;
+                      return (
+                        <button
+                          key={refId}
+                          className="detail-ref-btn"
+                          onClick={() => navigateToEntry(refId)}
+                        >
+                          <span className="ref-ru">{refEntry.ru}</span>
+                          <span className="ref-zh">{refEntry.zh}</span>
+                          <span className="ref-cat">{refEntry.category_zh}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
-        /* Search */
-        .search-section {
-          margin-bottom: 20px;
-        }
-
-        .search-box {
-          display: flex;
-          align-items: center;
-          background: var(--color-bg-card);
-          border: 1px solid rgba(212, 175, 55, 0.2);
-          border-radius: 8px;
-          padding: 0 16px;
-          transition: border-color 0.2s;
-        }
-
-        .search-box:focus-within {
-          border-color: var(--color-primary);
-        }
-
-        .search-icon {
-          font-size: 16px;
-          margin-right: 8px;
-        }
-
-        .search-input {
-          flex: 1;
-          background: transparent;
-          border: none;
-          outline: none;
-          color: var(--color-text-primary);
-          font-size: 15px;
-          padding: 12px 0;
-          font-family: inherit;
-        }
-
-        .search-input::placeholder {
-          color: var(--color-text-muted);
-        }
-
-        .search-clear {
-          background: none;
-          border: none;
-          color: var(--color-text-muted);
-          cursor: pointer;
-          font-size: 14px;
-          padding: 4px;
-        }
-
-        /* Category filters */
-        .category-filters {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          margin-bottom: 20px;
-        }
-
-        .cat-btn {
-          background: rgba(212, 175, 55, 0.05);
-          border: 1px solid rgba(212, 175, 55, 0.12);
-          color: var(--color-text-secondary);
-          padding: 5px 12px;
-          border-radius: 16px;
-          cursor: pointer;
-          font-size: 12px;
-          font-family: inherit;
-          transition: all 0.2s;
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
-
-        .cat-btn:hover {
-          border-color: rgba(212, 175, 55, 0.3);
-          color: var(--color-primary);
-        }
-
-        .cat-btn.active {
-          background: rgba(212, 175, 55, 0.15);
-          border-color: var(--color-primary);
-          color: var(--color-primary);
-        }
-
-        .cat-count {
-          font-size: 10px;
-          background: rgba(212, 175, 55, 0.1);
-          padding: 1px 6px;
-          border-radius: 8px;
-          color: var(--color-text-muted);
-        }
-
-        .results-info {
-          font-size: 14px;
-          color: var(--color-text-muted);
-          margin-bottom: 16px;
-        }
-
-        /* Terms */
-        .terms-section {
-          display: flex;
-          flex-direction: column;
-          gap: 32px;
-        }
-
-        .term-group {
-          background: var(--color-bg-card);
-          border: 1px solid rgba(212, 175, 55, 0.1);
-          border-radius: 10px;
-          overflow: hidden;
-        }
-
-        .group-title {
-          font-family: 'Noto Serif SC', serif;
-          font-size: 18px;
-          font-weight: 600;
-          color: var(--color-primary);
-          padding: 14px 20px;
-          background: rgba(212, 175, 55, 0.05);
-          border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-        }
-
-        .terms-table {
-          width: 100%;
-        }
-
-        .table-header {
-          display: grid;
-          grid-template-columns: 1fr 1.5fr 80px;
-          padding: 8px 20px;
-          background: rgba(10, 14, 23, 0.3);
-          border-bottom: 1px solid rgba(212, 175, 55, 0.06);
-        }
-
-        .table-header span {
-          font-size: 12px;
-          color: var(--color-text-muted);
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          font-weight: 500;
-        }
-
-        .table-row {
-          display: grid;
-          grid-template-columns: 1fr 1.5fr 80px;
-          padding: 10px 20px;
-          border-bottom: 1px solid rgba(212, 175, 55, 0.04);
-          transition: background 0.15s;
-        }
-
-        .table-row:hover {
-          background: rgba(212, 175, 55, 0.03);
-        }
-
-        .table-row:last-child {
-          border-bottom: none;
-        }
-
-        .col-zh {
-          font-size: 14px;
-          color: var(--color-text-primary);
-          padding-right: 12px;
-        }
-
-        .col-ru {
-          font-size: 14px;
-          color: var(--color-text-secondary);
-          font-style: italic;
-        }
-
-        .col-abbr {
-          font-size: 13px;
-          color: var(--color-primary);
-          font-weight: 500;
-        }
-
-        /* No results */
-        .no-results {
-          text-align: center;
-          padding: 60px 20px;
-          color: var(--color-text-muted);
-        }
-
-        .clear-btn {
-          background: rgba(212, 175, 55, 0.1);
-          border: 1px solid rgba(212, 175, 55, 0.2);
-          color: var(--color-primary);
-          padding: 8px 20px;
-          border-radius: 8px;
-          cursor: pointer;
-          margin-top: 12px;
-          font-family: inherit;
-          transition: all 0.2s;
-        }
-
-        .clear-btn:hover {
-          background: rgba(212, 175, 55, 0.2);
-        }
-
-        @media (max-width: 768px) {
-          .page-title {
-            font-size: 24px;
-          }
-
-          .table-header,
-          .table-row {
-            grid-template-columns: 1fr 1.5fr 60px;
-            padding: 8px 12px;
-          }
-
-          .category-filters {
-            gap: 4px;
-          }
-
-          .cat-btn {
-            font-size: 11px;
-            padding: 4px 10px;
-          }
-        }
-      `}</style>
+              {activeEntry.back_refs && activeEntry.back_refs.length > 0 && (
+                <div className="detail-section">
+                  <h4>被以下术语引用 ({activeEntry.back_refs.length})</h4>
+                  <div className="detail-refs">
+                    {activeEntry.back_refs.map(refId => {
+                      const refEntry = getEntryById[refId];
+                      if (!refEntry) return null;
+                      return (
+                        <button
+                          key={refId}
+                          className="detail-ref-btn back-ref"
+                          onClick={() => navigateToEntry(refId)}
+                        >
+                          <span className="ref-ru">{refEntry.ru}</span>
+                          <span className="ref-zh">{refEntry.zh}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
