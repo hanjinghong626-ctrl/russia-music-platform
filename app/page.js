@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import ScrollEffects from './ScrollEffects'
 
 // 首页服务端获取热门院校
 async function getFeaturedSchools() {
@@ -41,7 +42,7 @@ export default async function HomePage() {
   const featuredSchools = await getFeaturedSchools()
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ScrollEffects disabled temporarily */}
+      <ScrollEffects />
 
       {/* 导航栏 - 毛玻璃透明 */}
       <nav className="nav-hero-fixed">
@@ -58,7 +59,7 @@ export default async function HomePage() {
               <Link href="/schools" className="text-white/80 hover:text-white transition-colors text-sm font-medium">院校</Link>
               <Link href="/sheet-music" className="text-white/80 hover:text-white transition-colors text-sm font-medium">曲库</Link>
               <Link href="/music-history" className="text-white/80 hover:text-white transition-colors text-sm font-medium">音乐史</Link>
-              <Link href="/music-history/glossary" className="text-white/80 hover:text-white transition-colors text-sm font-medium">📖 百科</Link>
+                <Link href="/music-history/glossary" className="text-white/80 hover:text-white transition-colors text-sm font-medium">📖 百科</Link>
               <Link href="/evaluate" className="text-white/80 hover:text-white transition-colors text-sm font-medium">AI评估</Link>
             </div>
           </div>
