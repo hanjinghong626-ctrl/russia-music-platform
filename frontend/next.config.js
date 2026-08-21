@@ -1,5 +1,4 @@
 const nextConfig = {
-  images: { unoptimized: true },
-  experimental: { workerThreads: false, cpus: 1 }
+  images: { unoptimized: true }
 }
 module.exports = nextConfig
