@@ -59,6 +59,7 @@ export default async function HomePage() {
               <Link href="/schools" className="text-white/80 hover:text-white transition-colors text-sm font-medium">院校</Link>
               <Link href="/sheet-music" className="text-white/80 hover:text-white transition-colors text-sm font-medium">曲库</Link>
               <Link href="/music-history" className="text-white/80 hover:text-white transition-colors text-sm font-medium">音乐史</Link>
+              <Link href="/music-history/glossary" className="text-white/80 hover:text-white transition-colors text-sm font-medium">📖 百科</Link>
               <Link href="/evaluate" className="text-white/80 hover:text-white transition-colors text-sm font-medium">AI评估</Link>
             </div>
           </div>
