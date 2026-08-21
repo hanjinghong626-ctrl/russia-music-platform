@@ -102,6 +102,18 @@ export default function GlossaryPage() {
     setActiveEntry(entry);
   }, []);
 
+
+  // Group filtered entries by category for table view
+  const groupedByCategory = useMemo(() => {
+    const groups = {};
+    filteredEntries.forEach(e => {
+      const cat = e.category_zh;
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(e);
+    });
+    return groups;
+  }, [filteredEntries]);
+
   if (loading) {
     return (
       <div className="glossary-loading">
@@ -116,17 +128,6 @@ export default function GlossaryPage() {
   const stats = data?.stats || {};
   const hasRussianDef = (e) => e.definition_ru && e.definition_ru.length > 0;
   const hasCrossRefs = (e) => e.cross_refs && e.cross_refs.length > 0;
-
-  // Group filtered entries by category for table view
-  const groupedByCategory = useMemo(() => {
-    const groups = {};
-    filteredEntries.forEach(e => {
-      const cat = e.category_zh;
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(e);
-    });
-    return groups;
-  }, [filteredEntries]);
 
   return (
     <div className="glossary-page">
