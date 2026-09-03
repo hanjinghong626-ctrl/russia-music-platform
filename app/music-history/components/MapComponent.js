@@ -12,14 +12,24 @@ import CityCard from './CityCard';
 import './MapComponent.css';
 import BasilCathedral from './BasilCathedral';
 
-const createCustomIcon = (isActive = false, isHighlighted = false, isDimmed = false) => {
-  let color = '#8B7355'; let size = 24; let innerSize = 8;
-  if (isActive) { color = '#D4AF37'; size = 32; innerSize = 12; }
-  else if (isHighlighted) { color = '#4A90D9'; size = 28; innerSize = 10; }
+// 学派颜色配置（星河配色）
+const schoolColors = {
+  'mighty-handful': 'rgb(135,206,250)',  // 冰蓝
+  'moscow': 'rgb(255,215,140)',          // 暖金
+  'silver-age': 'rgb(255,182,193)',      // 玫瑰金
+  'soviet': 'rgb(220,220,230)',          // 银白
+};
+
+const createCustomIcon = (isActive = false, isHighlighted = false, isDimmed = false, school = null) => {
+  let color = schoolColors[school] || '#8B7355';
+  let size = 24; let innerSize = 8;
+  if (isActive) { size = 32; innerSize = 12; }
+  else if (isHighlighted) { size = 28; innerSize = 10; }
   if (isDimmed) { color = '#3a3a3a'; }
+  const glowColor = color.replace('rgb', 'rgba').replace(')', ',0.5)');
   return L.divIcon({
     className: 'custom-marker',
-    html: `<div class="marker-wrapper ${isActive?'active':''} ${isHighlighted?'highlighted':''} ${isDimmed?'dimmed':''}" style="width:${size}px;height:${size}px;position:relative;cursor:pointer;"><div style="position:absolute;inset:0;background:${color};border-radius:50%;box-shadow:0 0 ${isActive?'20px':'10px'} ${color}80;animation:marker-pulse ${isActive?'1.5s':'2.5s'} ease-in-out infinite;transition:all 0.3s ease;"></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:${innerSize}px;height:${innerSize}px;background:#0A0E17;border-radius:50%;border:2px solid ${color};"></div></div>`,
+    html: `<div class="marker-wrapper ${isActive?'active':''} ${isHighlighted?'highlighted':''} ${isDimmed?'dimmed':''}" style="width:${size}px;height:${size}px;position:relative;cursor:pointer;"><div style="position:absolute;inset:0;background:${color};border-radius:50%;box-shadow:0 0 ${isActive?'20px':'10px'} ${glowColor};animation:marker-pulse ${isActive?'1.5s':'2.5s'} ease-in-out infinite;transition:all 0.3s ease;"></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:${innerSize}px;height:${innerSize}px;background:#030810;border-radius:50%;border:2px solid ${color};"></div></div>`,
     iconSize: [size, size], iconAnchor: [size/2, size/2]
   });
 };
@@ -38,13 +48,16 @@ export default function MapComponent({ activePeriod, onComposerSelect, onCitySel
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
     const map = L.map(mapRef.current, { center: mapCenter, zoom: mapZoom, zoomControl: false, attributionControl: false, minZoom: 3, maxZoom: 12 });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+    // 不使用瓦片底图，用纯深色背景
+
+
+
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-    L.control.attribution({ position: 'bottomright', prefix: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>' }).addTo(map);
+    L.control.attribution({ position: 'bottomright', prefix: '© Esri' }).addTo(map);
     mapInstanceRef.current = map;
     const style = document.createElement('style');
     style.id = 'rel-dynamic-styles';
-    style.textContent = `@keyframes marker-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.8}}.custom-marker{background:transparent!important;border:none!important}.city-marker{background:transparent!important;border:none!important}.leaflet-container{background:#0A0E17!important;font-family:'Noto Sans SC',sans-serif}.leaflet-control-zoom a{background:#141B2D!important;color:#D4AF37!important;border-color:rgba(212,175,55,.3)!important}.leaflet-control-zoom a:hover{background:#1E2A40!important}.leaflet-control-attribution{background:rgba(10,14,23,.8)!important;color:#6B7B8C!important;font-size:10px!important}.leaflet-control-attribution a{color:#B8C5D6!important}.marker-wrapper.dimmed>div:first-child{opacity:.12!important;box-shadow:none!important;animation:none!important}.marker-wrapper.dimmed>div:last-child{opacity:.12!important;border-color:#3a3a3a!important}`;
+    style.textContent = `@keyframes marker-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.8}}.custom-marker{background:transparent!important;border:none!important}.city-marker{background:transparent!important;border:none!important}.leaflet-container{background:#030810!important;font-family:'Noto Sans SC',sans-serif}.leaflet-control-zoom a{background:#0a1520!important;color:rgb(135,206,250)!important;border-color:rgba(135,206,250,.3)!important}.leaflet-control-zoom a:hover{background:#0f1f30!important}.leaflet-control-attribution{background:rgba(8,14,24,.8)!important;color:rgba(135,206,250,0.5)!important;font-size:10px!important}.leaflet-control-attribution a{color:rgba(135,206,250,0.7)!important}.marker-wrapper.dimmed>div:first-child{opacity:.12!important;box-shadow:none!important;animation:none!important}.marker-wrapper.dimmed>div:last-child{opacity:.12!important;border-color:#3a3a3a!important}`;
     document.head.appendChild(style);
     return () => { map.remove(); mapInstanceRef.current = null; document.getElementById('rel-dynamic-styles')?.remove(); };
   }, []);
@@ -58,11 +71,56 @@ export default function MapComponent({ activePeriod, onComposerSelect, onCitySel
     cityMarkersRef.current.forEach(m => map.removeLayer(m)); cityMarkersRef.current = [];
     let filtered = activePeriod ? composers.filter(c => c.period === activePeriod.id) : composers;
     filtered.forEach(composer => {
-      const marker = L.marker(composer.coordinates, { icon: createCustomIcon(false, false, false) });
+      const marker = L.marker(composer.coordinates, { icon: createCustomIcon(false, false, false, composer.school) });
       marker.bindTooltip(`<div class="marker-tooltip"><strong>${composer.name}</strong><br/><span>${composer.birthYear}-${composer.deathYear}</span></div>`, { className: 'custom-tooltip', direction: 'top', offset: [0, -12] });
       marker.on('click', () => onComposerSelect(composer));
       marker.composerId = composer.id; marker.addTo(map); markersRef.current.push(marker); composerMapRef.current[composer.id] = marker;
     });
+
+    // 星座连线：同学派作曲家之间的连线
+    const constellationLines = [];
+    const schoolGroups = {};
+    filtered.forEach(c => {
+      if (!schoolGroups[c.school]) schoolGroups[c.school] = [];
+      schoolGroups[c.school].push(c);
+    });
+    
+    // 学派颜色和星座名称
+    const schoolConstellation = {
+      'mighty-handful': { color: 'rgba(135,206,250,0.6)', name: '北斗·强力集团' },
+      'moscow': { color: 'rgba(255,215,140,0.6)', name: '天琴·莫斯科学派' },
+      'silver-age': { color: 'rgba(255,182,193,0.6)', name: '仙后·白银时代' },
+      'soviet': { color: 'rgba(220,220,230,0.6)', name: '南十字·苏联学派' }
+    };
+    
+    Object.entries(schoolGroups).forEach(([school, members]) => {
+      if (members.length > 1 && schoolConstellation[school]) {
+        // 星座连线：连接同学派作曲家
+        for (let i = 0; i < members.length - 1; i++) {
+          const line = L.polyline(
+            [members[i].coordinates, members[i + 1].coordinates],
+            { color: schoolConstellation[school].color, weight: 1.5, dashArray: '4,6', opacity: 0.8 }
+          );
+          line.addTo(map);
+          constellationLines.push(line);
+        }
+        // 星座标签（显示在学派中心）
+        if (members.length >= 3) {
+          const centerLat = members.reduce((s, m) => s + m.coordinates[0], 0) / members.length;
+          const centerLng = members.reduce((s, m) => s + m.coordinates[1], 0) / members.length;
+          const label = L.divIcon({
+            className: 'constellation-label',
+            html: `<div class="constellation-name">${schoolConstellation[school].name}</div>`,
+            iconSize: [120, 20],
+            iconAnchor: [60, 10]
+          });
+          const labelMarker = L.marker([centerLat, centerLng], { icon: label, interactive: false });
+          labelMarker.addTo(map);
+          constellationLines.push(labelMarker);
+        }
+      }
+    });
+    window.constellationLines = constellationLines;
     cities.forEach(city => {
       const hasImage = city.image && city.image.length > 0;
       const icon = hasImage ? createCityIcon() : createSmallCityIcon();
@@ -80,6 +138,7 @@ export default function MapComponent({ activePeriod, onComposerSelect, onCitySel
   return (
     <div className="map-wrapper">
       <div ref={mapRef} className="leaflet-map" />
+      <div className="map-dreamy-overlay" />
       <div className="map-overlay-tl">
         <div className="map-title-elegant">
           <div className="title-main">俄罗斯音乐之魂</div>
