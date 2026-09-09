@@ -13,9 +13,16 @@ import './globals.css';
 const MapComponent = dynamic(() => import('./components/MapComponent'), {
   ssr: false,
   loading: () => (
-    <div className="map-loading">
-      <div className="loading-spinner"></div>
-      <p>正在加载地图...</p>
+    <div className="map-loading stardust-loading">
+      <div className="stardust-canvas">
+        <div className="dust-layer dust-far"></div>
+        <div className="dust-layer dust-mid"></div>
+        <div className="dust-layer dust-near"></div>
+        <div className="stardust-core">
+          <span className="core-note">♪</span>
+        </div>
+      </div>
+      <p className="loading-verse">星河为谱 · 群星作章</p>
     </div>
   )
 });
@@ -51,13 +58,12 @@ export default function MusicHistoryPage() {
         </div>
         <nav className="header-nav">
           <a href="/" className="nav-link">返回首页</a>
-          <a href="/music-history" className="nav-link active">交互地图</a>
-          <Link href="/music-history/composers" className="nav-link">作曲家</Link>
-          <Link href="/music-history/schools" className="nav-link">学派</Link>
-          <Link href="/music-history/glossary" className="nav-link">术语库</Link>
-          <Link href="/music-history/topics/romance" className="nav-link">浪漫曲</Link>
-          <Link href="/music-history/topics/opera" className="nav-link">歌剧</Link>
-          <Link href="/music-history/mystery" className="nav-link">🎭 剧本杀</Link>
+          <a href="/" className="nav-link active">交互地图</a>
+          <Link href="/composers" className="nav-link">作曲家</Link>
+          <Link href="/schools" className="nav-link">学派</Link>
+          <Link href="/topics/romance" className="nav-link">浪漫曲</Link>
+          <Link href="/topics/opera" className="nav-link">歌剧</Link>
+          <Link href="/mystery" className="nav-link">🎭 剧本杀</Link>
         </nav>
       </header>
 
@@ -93,20 +99,20 @@ export default function MusicHistoryPage() {
         
         /* CSS Variables */
         :root {
-          --color-primary: #D4AF37;
-          --color-primary-light: #F4E4BA;
-          --color-primary-dark: #8B7355;
-          --color-secondary-blue: #1E3A5F;
+          --color-primary: #87CEFA;
+          --color-primary-light: #C5E8F7;
+          --color-primary-dark: #87CEFA;
+          --color-secondary-blue: #0F2A3F;
           --color-secondary-red: #8B0000;
           --color-accent-passion: #FF4444;
           --color-accent-romance: #E8B4B8;
-          --color-accent-mystic: #6B5B95;
-          --color-bg-deep: #0A0E17;
-          --color-bg-card: #141B2D;
+          --color-accent-mystic: #4A7FA8;
+          --color-bg-deep: #050D15;
+          --color-bg-card: #0A1520;
           --color-bg-overlay: rgba(10, 14, 23, 0.95);
           --color-text-primary: #F5F5F5;
           --color-text-secondary: #B8C5D6;
-          --color-text-muted: #6B7B8C;
+          --color-text-muted: #5A7A8C;
         }
 
         * {
@@ -133,12 +139,12 @@ export default function MusicHistoryPage() {
         }
 
         ::-webkit-scrollbar-thumb {
-          background: rgba(212, 175, 55, 0.3);
+          background: rgba(135, 206, 250, 0.3);
           border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-          background: rgba(212, 175, 55, 0.5);
+          background: rgba(135, 206, 250, 0.5);
         }
       `}</style>
     </div>
