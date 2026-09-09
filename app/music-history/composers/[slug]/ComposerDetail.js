@@ -4,32 +4,767 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { composers } from '../../data/composers';
 import { relationships } from '../../data/relationships';
+
+const periodNames = {
+  'classical': '古典时期',
+  'national-foundation': '民族音乐奠基',
+  'national-prosperity': '民族乐派繁荣',
+  'late-romantic': '晚期浪漫与过渡',
+  'modern': '现代与苏联时期'
+};
+
 export default function ComposerDetail({ params }) {
-  const [detail, setDetail] = useState(null);
   const [composer, setComposer] = useState(null);
+  const [detail, setDetail] = useState(null);
   const [relatedComposers, setRelatedComposers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [expandedCategories, setExpandedCategories] = useState({});
+  const [expandedWorks, setExpandedWorks] = useState({});
   const slug = params.slug;
+
   useEffect(() => {
-    const basic = composers.find(c => c.id === slug);
-    setComposer(basic);
-    fetch('/data/composer-details.json').then(r => r.json()).then(data => { setDetail(data.composers?.[slug]); setLoading(false); }).catch(() => setLoading(false));
+    const c = composers.find(comp => comp.id === slug);
+    setComposer(c);
+    // Load detailed academic data
+    fetch('/data/composer-details.json')
+      .then(r => r.json())
+      .then(data => {
+        setDetail(data.composers?.[slug] || null);
+      })
+      .catch(() => {});
+    // Load related composers
+    if (slug) {
+      const related = relationships
+        .filter(r => r.from === slug || r.to === slug)
+        .map(r => {
+          const other = composers.find(c => c.id === (r.from === slug ? r.to : r.from));
+          return other ? { ...other, relationType: r.type } : null;
+        })
+        .filter(Boolean);
+      setRelatedComposers(related);
+    }
   }, [slug]);
-  useEffect(() => {
-    if (!slug) return;
-    const related = relationships.filter(r => r.from === slug || r.to === slug).map(r => { const other = composers.find(c => c.id === (r.from === slug ? r.to : r.from)); return other ? {...other, relationType: r.type} : null; }).filter(Boolean);
-    setRelatedComposers(related);
-  }, [slug]);
-  if (loading) return <div className="p-20 text-center">加载中...</div>;
-  if (!composer) return <div className="p-20 text-center"><h2>未找到</h2><Link href="/music-history/composers">返回</Link></div>;
+
+  if (!composer) return (
+    <div style={{ minHeight: '100vh', background: '#0a0e1a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ color: '#8899bb', fontSize: '1.1rem' }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', fontFamily: '"Noto Serif SC", serif' }}>未找到该作曲家</h2>
+        <Link href="/music-history/composers" style={{ color: '#6b8ccc' }}>← 返回作曲家列表</Link>
+      </div>
+    </div>
+  );
+
+  // Merge data: prefer detail (richer) over composer (basic)
+  const bio = detail?.bio_zh || composer.description || '';
+  const style = detail?.style_zh || composer.style || '';
+  const styleRu = detail?.style_ru || composer.styleRu || '';
+  const historicalPosition = detail?.historical_position || '';
+  const mentorOf = detail?.mentor_of || [];
+  const influencedBy = detail?.influenced_by || [];
+  const keyIdeas = detail?.key_ideas || [];
+  const sources = detail?.source || '';
+  const portrait = composer.portrait || detail?.portrait_url || '';
+  const quote = composer.quote || '';
+  const works = composer.works || detail?.works || [];
+  const completeWorks = detail?.complete_works || null;
+  const worksAnalysis = detail?.works_analysis || [];
+
+  const toggleCategory = (cat) => setExpandedCategories(prev => ({...prev, [cat]: !prev[cat]}));
+  const toggleWork = (idx) => setExpandedWorks(prev => ({...prev, [idx]: !prev[idx]}));
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b p-4"><Link href="/music-history">← 返回</Link> | <Link href="/music-history/composers">作曲家</Link> | <span>{detail?.name_zh || composer.name}</span></header>
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-primary-600 mb-2">{detail?.name_zh || composer.name}</h1>
-        <p className="text-gray-600 mb-4">{composer.nameRu} ({composer.birthYear}–{composer.deathYear})</p>
-        <p className="text-gray-700">{detail?.bio_zh || composer.description}</p>
-        {relatedComposers.length > 0 && <div className="mt-8"><h2 className="text-xl font-bold mb-4">相关作曲家</h2><div className="grid grid-cols-4 gap-4">{relatedComposers.slice(0,8).map(r => <Link key={r.id} href={"/music-history/composers/"+r.id} className="bg-white p-4 rounded shadow hover:shadow-md">{r.name}</Link>)}</div></div>}
+    <div style={{ minHeight: '100vh', background: '#0a0e1a', color: '#d0d8e8' }}>
+      {/* Navigation */}
+      <nav style={{ 
+        padding: '1rem 2rem', 
+        borderBottom: '1px solid rgba(100,140,200,0.15)',
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: '1rem',
+        background: 'rgba(10,14,26,0.95)',
+        backdropFilter: 'blur(10px)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10
+      }}>
+        <Link href="/" style={{ color: '#6b8ccc', textDecoration: 'none', fontSize: '0.9rem' }}>← 返回</Link>
+        <span style={{ color: 'rgba(100,140,200,0.3)' }}>|</span>
+        <Link href="/music-history/composers" style={{ color: '#6b8ccc', textDecoration: 'none', fontSize: '0.9rem' }}>作曲家</Link>
+        <span style={{ color: 'rgba(100,140,200,0.3)' }}>|</span>
+        <span style={{ color: '#8899bb', fontSize: '0.9rem' }}>{composer.name}</span>
+      </nav>
+
+      {/* Hero Section */}
+      <header style={{ 
+        padding: '3rem 2rem',
+        display: 'flex',
+        gap: '2.5rem',
+        alignItems: 'flex-start',
+        maxWidth: '1000px',
+        margin: '0 auto',
+        flexWrap: 'wrap'
+      }}>
+        {/* Portrait */}
+        {portrait && (
+          <div style={{ 
+            flexShrink: 0,
+            width: '180px',
+            height: '240px',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            border: '1px solid rgba(100,140,200,0.2)',
+            boxShadow: '0 0 40px rgba(80,120,200,0.12)'
+          }}>
+            <img 
+              src={portrait} 
+              alt={composer.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </div>
+        )}
+
+        {/* Name & Info */}
+        <div style={{ flex: 1, minWidth: '280px' }}>
+          <h1 style={{ 
+            fontSize: '2.4rem', 
+            fontWeight: 700, 
+            color: '#e8edf5',
+            marginBottom: '0.3rem',
+            fontFamily: '"Noto Serif SC", serif',
+            letterSpacing: '0.05em'
+          }}>
+            {composer.name}
+          </h1>
+          <p style={{ 
+            fontSize: '1.15rem', 
+            color: '#7a8db5',
+            marginBottom: '0.5rem',
+            fontFamily: 'serif'
+          }}>
+            {composer.fullNameRu || composer.nameRu}
+          </p>
+          <p style={{ 
+            fontSize: '0.95rem', 
+            color: '#5a6d8f',
+            marginBottom: '1.2rem'
+          }}>
+            {composer.birthYear}–{composer.deathYear}
+            {detail?.birth_place_zh && ` · ${detail.birth_place_zh}`}
+          </p>
+
+          {/* Tags */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+            {(detail?.school_zh || composer.school) && (
+              <span style={{
+                padding: '0.3rem 0.8rem',
+                background: 'rgba(80,120,200,0.1)',
+                border: '1px solid rgba(80,120,200,0.25)',
+                borderRadius: '20px',
+                fontSize: '0.85rem',
+                color: '#8aa4d4'
+              }}>
+                {detail?.school_zh || composer.school}
+              </span>
+            )}
+            {composer.period && (
+              <span style={{
+                padding: '0.3rem 0.8rem',
+                background: 'rgba(100,160,140,0.1)',
+                border: '1px solid rgba(100,160,140,0.2)',
+                borderRadius: '20px',
+                fontSize: '0.85rem',
+                color: '#7db8a4'
+              }}>
+                {periodNames[composer.period] || composer.period}
+              </span>
+            )}
+            {composer.mainCity && (
+              <span style={{
+                padding: '0.3rem 0.8rem',
+                background: 'rgba(160,120,80,0.1)',
+                border: '1px solid rgba(160,120,80,0.2)',
+                borderRadius: '20px',
+                fontSize: '0.85rem',
+                color: '#c4a87a'
+              }}>
+                {composer.mainCity}
+              </span>
+            )}
+          </div>
+
+          {/* Genres */}
+          {composer.genres && composer.genres.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+              {composer.genres.map((g, i) => (
+                <span key={i} style={{
+                  padding: '0.2rem 0.6rem',
+                  background: 'rgba(100,140,200,0.06)',
+                  border: '1px solid rgba(100,140,200,0.12)',
+                  borderRadius: '4px',
+                  fontSize: '0.8rem',
+                  color: '#7a8db5'
+                }}>
+                  {g}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* Quote */}
+      {quote && quote.trim() !== '' && (
+        <section style={{ 
+          maxWidth: '860px', 
+          margin: '0 auto 2rem',
+          padding: '0 2rem'
+        }}>
+          <div style={{
+            padding: '1.5rem 2rem',
+            background: 'rgba(80,120,200,0.05)',
+            borderLeft: '3px solid rgba(100,150,220,0.4)',
+            borderRadius: '0 8px 8px 0',
+            fontFamily: '"Noto Serif SC", serif',
+            fontSize: '1.05rem',
+            color: '#9ab0d4',
+            lineHeight: 1.8,
+            fontStyle: 'italic'
+          }}>
+            &ldquo;{quote}&rdquo;
+          </div>
+        </section>
+      )}
+
+      {/* Main Content */}
+      <main style={{ maxWidth: '860px', margin: '0 auto', padding: '0 2rem 4rem' }}>
+        
+        {/* Historical Position */}
+        {historicalPosition && (
+          <section style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{
+              fontSize: '1.2rem',
+              fontWeight: 600,
+              color: '#b8c8e0',
+              marginBottom: '1rem',
+              paddingBottom: '0.5rem',
+              borderBottom: '1px solid rgba(100,140,200,0.15)',
+              fontFamily: '"Noto Serif SC", serif'
+            }}>
+              历史定位
+            </h2>
+            <p style={{
+              fontSize: '0.95rem',
+              lineHeight: 2,
+              color: '#a0b0cc',
+              textAlign: 'justify'
+            }}>
+              {historicalPosition}
+            </p>
+          </section>
+        )}
+
+        {/* Biography */}
+        {bio && (
+          <section style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{
+              fontSize: '1.2rem',
+              fontWeight: 600,
+              color: '#b8c8e0',
+              marginBottom: '1rem',
+              paddingBottom: '0.5rem',
+              borderBottom: '1px solid rgba(100,140,200,0.15)',
+              fontFamily: '"Noto Serif SC", serif'
+            }}>
+              生平与创作
+            </h2>
+            {bio.split('\n\n').map((para, i) => (
+              <p key={i} style={{
+                fontSize: '0.95rem',
+                lineHeight: 2,
+                color: '#a0b0cc',
+                textAlign: 'justify',
+                marginBottom: i < bio.split('\n\n').length - 1 ? '1rem' : 0
+              }}>
+                {para}
+              </p>
+            ))}
+          </section>
+        )}
+
+        {/* Key Ideas */}
+        {keyIdeas.length > 0 && (
+          <section style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{
+              fontSize: '1.2rem',
+              fontWeight: 600,
+              color: '#b8c8e0',
+              marginBottom: '1rem',
+              paddingBottom: '0.5rem',
+              borderBottom: '1px solid rgba(100,140,200,0.15)',
+              fontFamily: '"Noto Serif SC", serif'
+            }}>
+              核心艺术理念
+            </h2>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+              {keyIdeas.map((idea, i) => (
+                <div key={i} style={{
+                  padding: '0.6rem 1rem',
+                  background: 'rgba(80,120,200,0.06)',
+                  border: '1px solid rgba(80,120,200,0.15)',
+                  borderRadius: '6px',
+                  fontSize: '0.9rem',
+                  color: '#8aa4d4',
+                  lineHeight: 1.5
+                }}>
+                  {idea}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Style */}
+        {style && (
+          <section style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{
+              fontSize: '1.2rem',
+              fontWeight: 600,
+              color: '#b8c8e0',
+              marginBottom: '1rem',
+              paddingBottom: '0.5rem',
+              borderBottom: '1px solid rgba(100,140,200,0.15)',
+              fontFamily: '"Noto Serif SC", serif'
+            }}>
+              风格特征
+            </h2>
+            <p style={{
+              fontSize: '0.95rem',
+              lineHeight: 2,
+              color: '#a0b0cc',
+              textAlign: 'justify'
+            }}>
+              {style}
+            </p>
+            {styleRu && (
+              <p style={{
+                fontSize: '0.85rem',
+                lineHeight: 1.8,
+                color: '#5a6d8f',
+                marginTop: '0.8rem',
+                fontStyle: 'italic'
+              }}>
+                {styleRu}
+              </p>
+            )}
+          </section>
+        )}
+
+        {/* Influence Network */}
+        {(influencedBy.length > 0 || mentorOf.length > 0) && (
+          <section style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{
+              fontSize: '1.2rem',
+              fontWeight: 600,
+              color: '#b8c8e0',
+              marginBottom: '1rem',
+              paddingBottom: '0.5rem',
+              borderBottom: '1px solid rgba(100,140,200,0.15)',
+              fontFamily: '"Noto Serif SC", serif'
+            }}>
+              师承与影响
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+              {influencedBy.length > 0 && (
+                <div style={{
+                  padding: '1.2rem',
+                  background: 'rgba(100,160,140,0.05)',
+                  border: '1px solid rgba(100,160,140,0.15)',
+                  borderRadius: '8px'
+                }}>
+                  <h3 style={{ fontSize: '0.9rem', color: '#7db8a4', marginBottom: '0.8rem', fontWeight: 500 }}>
+                    受影响于 ↑
+                  </h3>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                    {influencedBy.map((inf, i) => (
+                      <span key={i} style={{
+                        padding: '0.25rem 0.6rem',
+                        background: 'rgba(100,160,140,0.08)',
+                        border: '1px solid rgba(100,160,140,0.12)',
+                        borderRadius: '4px',
+                        fontSize: '0.85rem',
+                        color: '#7db8a4'
+                      }}>
+                        {inf}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {mentorOf.length > 0 && (
+                <div style={{
+                  padding: '1.2rem',
+                  background: 'rgba(80,120,200,0.05)',
+                  border: '1px solid rgba(80,120,200,0.15)',
+                  borderRadius: '8px'
+                }}>
+                  <h3 style={{ fontSize: '0.9rem', color: '#8aa4d4', marginBottom: '0.8rem', fontWeight: 500 }}>
+                    影响/培养了 ↓
+                  </h3>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                    {mentorOf.map((m, i) => (
+                      <span key={i} style={{
+                        padding: '0.25rem 0.6rem',
+                        background: 'rgba(80,120,200,0.08)',
+                        border: '1px solid rgba(80,120,200,0.12)',
+                        borderRadius: '4px',
+                        fontSize: '0.85rem',
+                        color: '#8aa4d4'
+                      }}>
+                        {m}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* Complete Works Overview */}
+        {completeWorks && Object.keys(completeWorks).length > 0 && (
+          <section style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{
+              fontSize: '1.2rem',
+              fontWeight: 600,
+              color: '#b8c8e0',
+              marginBottom: '1rem',
+              paddingBottom: '0.5rem',
+              borderBottom: '1px solid rgba(100,140,200,0.15)',
+              fontFamily: '"Noto Serif SC", serif'
+            }}>
+              全部作品总览
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {Object.entries(completeWorks).map(([category, worksList]) => (
+                <div key={category} style={{
+                  background: 'rgba(20,28,50,0.5)',
+                  border: '1px solid rgba(100,140,200,0.1)',
+                  borderRadius: '8px',
+                  overflow: 'hidden'
+                }}>
+                  <div 
+                    onClick={() => toggleCategory(category)}
+                    style={{
+                      padding: '0.8rem 1.2rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      background: expandedCategories[category] ? 'rgba(80,120,200,0.06)' : 'transparent',
+                      transition: 'background 0.2s ease'
+                    }}
+                  >
+                    <span style={{ fontSize: '0.95rem', color: '#c0cee0', fontWeight: 500 }}>
+                      {category}
+                    </span>
+                    <span style={{ fontSize: '0.85rem', color: '#5a6d8f' }}>
+                      {Array.isArray(worksList) ? worksList.length + ' 首/部' : ''}
+                      <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem' }}>
+                        {expandedCategories[category] ? '▼' : '▶'}
+                      </span>
+                    </span>
+                  </div>
+                  {expandedCategories[category] && Array.isArray(worksList) && (
+                    <div style={{ padding: '0 1.2rem 0.8rem' }}>
+                      {worksList.map((w, i) => (
+                        <div key={i} style={{
+                          padding: '0.4rem 0',
+                          borderBottom: i < worksList.length - 1 ? '1px solid rgba(100,140,200,0.06)' : 'none',
+                          fontSize: '0.88rem',
+                          color: '#8899bb',
+                          lineHeight: 1.6
+                        }}>
+                          {typeof w === 'string' ? w : `${w.title_zh || w.title || ''}${w.year ? ` (${w.year})` : ''}`}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Works */}
+        {works.length > 0 && (
+          <section style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{
+              fontSize: '1.2rem',
+              fontWeight: 600,
+              color: '#b8c8e0',
+              marginBottom: '1rem',
+              paddingBottom: '0.5rem',
+              borderBottom: '1px solid rgba(100,140,200,0.15)',
+              fontFamily: '"Noto Serif SC", serif'
+            }}>
+              代表作品
+            </h2>
+            <div style={{
+              background: 'rgba(20,28,50,0.5)',
+              borderRadius: '8px',
+              border: '1px solid rgba(100,140,200,0.1)',
+              overflow: 'hidden'
+            }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: 'rgba(80,120,200,0.08)' }}>
+                    <th style={{ padding: '0.8rem 1rem', textAlign: 'left', fontSize: '0.85rem', color: '#7a8db5', fontWeight: 500 }}>作品名称</th>
+                    <th style={{ padding: '0.8rem 1rem', textAlign: 'left', fontSize: '0.85rem', color: '#7a8db5', fontWeight: 500 }}>俄语原名</th>
+                    <th style={{ padding: '0.8rem 1rem', textAlign: 'center', fontSize: '0.85rem', color: '#7a8db5', fontWeight: 500, width: '70px' }}>年份</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {works.map((w, i) => (
+                    <tr key={i} style={{ 
+                      borderTop: '1px solid rgba(100,140,200,0.06)',
+                      background: i % 2 === 0 ? 'transparent' : 'rgba(80,120,200,0.02)'
+                    }}>
+                      <td style={{ padding: '0.7rem 1rem', fontSize: '0.9rem', color: '#c0cee0' }}>{w.title || w.title_zh || ''}</td>
+                      <td style={{ padding: '0.7rem 1rem', fontSize: '0.85rem', color: '#7a8db5', fontStyle: 'italic' }}>{w.titleRu || w.title_ru || ''}</td>
+                      <td style={{ padding: '0.7rem 1rem', fontSize: '0.85rem', color: '#5a6d8f', textAlign: 'center' }}>{w.year || w.年份 || '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* Works Deep Analysis */}
+        {worksAnalysis.length > 0 && (
+          <section style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{
+              fontSize: '1.2rem',
+              fontWeight: 600,
+              color: '#b8c8e0',
+              marginBottom: '1rem',
+              paddingBottom: '0.5rem',
+              borderBottom: '1px solid rgba(100,140,200,0.15)',
+              fontFamily: '"Noto Serif SC", serif'
+            }}>
+              代表作品深度分析
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              {worksAnalysis.map((work, idx) => (
+                <div key={idx} style={{
+                  background: 'rgba(20,28,50,0.5)',
+                  border: expandedWorks[idx] ? '1px solid rgba(100,150,220,0.25)' : '1px solid rgba(100,140,200,0.1)',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  transition: 'border-color 0.2s ease'
+                }}>
+                  <div 
+                    onClick={() => toggleWork(idx)}
+                    style={{
+                      padding: '1rem 1.2rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <div>
+                      <span style={{ fontSize: '0.95rem', color: '#c0cee0', fontWeight: 500 }}>
+                        {work.title_zh || work.title || ''}
+                      </span>
+                      <span style={{ fontSize: '0.85rem', color: '#5a6d8f', marginLeft: '0.8rem' }}>
+                        {work.genre_zh || work.genre || ''}
+                        {work.year ? ` · ${work.year}` : ''}
+                      </span>
+                    </div>
+                    <span style={{ fontSize: '0.75rem', color: '#5a6d8f' }}>
+                      {expandedWorks[idx] ? '▼' : '▶'}
+                    </span>
+                  </div>
+                  {expandedWorks[idx] && (
+                    <div style={{ padding: '0 1.2rem 1.2rem', borderTop: '1px solid rgba(100,140,200,0.08)' }}>
+                      {/* Header info */}
+                      <div style={{ paddingTop: '0.8rem', marginBottom: '1rem' }}>
+                        {work.title_ru && (
+                          <p style={{ fontSize: '0.9rem', color: '#7a8db5', fontStyle: 'italic', marginBottom: '0.5rem' }}>
+                            {work.title_ru}
+                          </p>
+                        )}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.8rem', fontSize: '0.85rem', color: '#5a6d8f' }}>
+                          {work.premiere && <span>首演：{work.premiere}</span>}
+                          {work.libretto && <span>脚本：{work.libretto}</span>}
+                        </div>
+                      </div>
+                      {/* Significance */}
+                      {work.significance && (
+                        <div style={{ marginBottom: '1rem' }}>
+                          <h4 style={{ fontSize: '0.85rem', color: '#7db8a4', marginBottom: '0.4rem', fontWeight: 500 }}>
+                            创作背景与历史意义
+                          </h4>
+                          <p style={{ fontSize: '0.9rem', lineHeight: 1.9, color: '#a0b0cc', textAlign: 'justify' }}>
+                            {work.significance}
+                          </p>
+                        </div>
+                      )}
+                      {/* Musical Analysis */}
+                      {work.musical_analysis && (
+                        <div style={{ marginBottom: '1rem' }}>
+                          <h4 style={{ fontSize: '0.85rem', color: '#8aa4d4', marginBottom: '0.4rem', fontWeight: 500 }}>
+                            音乐分析
+                          </h4>
+                          <p style={{ fontSize: '0.9rem', lineHeight: 1.9, color: '#a0b0cc', textAlign: 'justify' }}>
+                            {work.musical_analysis}
+                          </p>
+                        </div>
+                      )}
+                      {/* Key Numbers */}
+                      {work.key_numbers && work.key_numbers.length > 0 && (
+                        <div style={{ marginBottom: '1rem' }}>
+                          <h4 style={{ fontSize: '0.85rem', color: '#c4a87a', marginBottom: '0.4rem', fontWeight: 500 }}>
+                            关键段落
+                          </h4>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                            {work.key_numbers.map((n, i) => (
+                              <span key={i} style={{
+                                padding: '0.2rem 0.6rem',
+                                background: 'rgba(160,120,80,0.08)',
+                                border: '1px solid rgba(160,120,80,0.15)',
+                                borderRadius: '4px',
+                                fontSize: '0.82rem',
+                                color: '#c4a87a'
+                              }}>
+                                {n}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {/* Historical Context */}
+                      {work.historical_context && (
+                        <div>
+                          <h4 style={{ fontSize: '0.85rem', color: '#7a8db5', marginBottom: '0.4rem', fontWeight: 500 }}>
+                            历史语境
+                          </h4>
+                          <p style={{ fontSize: '0.88rem', lineHeight: 1.8, color: '#8899bb', textAlign: 'justify' }}>
+                            {work.historical_context}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Related Composers (from relationships.js) */}
+        {relatedComposers.length > 0 && (
+          <section style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{
+              fontSize: '1.2rem',
+              fontWeight: 600,
+              color: '#b8c8e0',
+              marginBottom: '1rem',
+              paddingBottom: '0.5rem',
+              borderBottom: '1px solid rgba(100,140,200,0.15)',
+              fontFamily: '"Noto Serif SC", serif'
+            }}>
+              人物关系网
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.8rem' }}>
+              {relatedComposers.map(r => (
+                <Link 
+                  key={r.id} 
+                  href={`/composers/${r.id}`}
+                  style={{
+                    padding: '1rem',
+                    background: 'rgba(20,28,50,0.5)',
+                    border: '1px solid rgba(100,140,200,0.1)',
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(100,150,220,0.3)';
+                    e.currentTarget.style.background = 'rgba(30,40,70,0.6)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(100,140,200,0.1)';
+                    e.currentTarget.style.background = 'rgba(20,28,50,0.5)';
+                  }}
+                >
+                  <div style={{ fontSize: '0.95rem', color: '#c0cee0', marginBottom: '0.3rem' }}>{r.name}</div>
+                  <div style={{ fontSize: '0.8rem', color: '#5a6d8f', marginBottom: '0.4rem' }}>{r.nameRu}</div>
+                  {r.relationType && (
+                    <span style={{
+                      fontSize: '0.75rem',
+                      color: '#7db8a4',
+                      background: 'rgba(100,160,140,0.1)',
+                      padding: '0.15rem 0.5rem',
+                      borderRadius: '10px'
+                    }}>
+                      {r.relationType}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Russian Bio */}
+        {(composer.bioRu || detail?.bio_ru) && (
+          <section style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{
+              fontSize: '1.1rem',
+              fontWeight: 600,
+              color: '#8899bb',
+              marginBottom: '1rem',
+              paddingBottom: '0.5rem',
+              borderBottom: '1px solid rgba(100,140,200,0.1)',
+              fontFamily: 'serif'
+            }}>
+              Биография
+            </h2>
+            <p style={{
+              fontSize: '0.88rem',
+              lineHeight: 1.9,
+              color: '#5a6d8f',
+              fontStyle: 'italic'
+            }}>
+              {composer.bioRu || detail?.bio_ru}
+            </p>
+          </section>
+        )}
+
+        {/* Sources */}
+        {sources && (
+          <section style={{ marginBottom: '2rem' }}>
+            <h2 style={{
+              fontSize: '1rem',
+              fontWeight: 500,
+              color: '#6b7d9f',
+              marginBottom: '0.8rem',
+              paddingBottom: '0.4rem',
+              borderBottom: '1px solid rgba(100,140,200,0.08)',
+              fontFamily: '"Noto Serif SC", serif'
+            }}>
+              学术来源
+            </h2>
+            <p style={{
+              fontSize: '0.82rem',
+              lineHeight: 1.7,
+              color: '#4d5f7f'
+            }}>
+              {sources}
+            </p>
+          </section>
+        )}
       </main>
     </div>
   );
